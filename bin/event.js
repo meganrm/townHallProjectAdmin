@@ -73,7 +73,7 @@
   // check if there is a time zone, if not, looks up on google
   TownHall.prototype.validateZone = function () {
     var newTownHall = this
-    var time = new Date(newTownHall.Date + ' ' + newTownHall.Time).getUTCSeconds()
+    var time =  Date.parse(newTownHall.Date + ' ' + newTownHall.Time)/1000
     var loc = newTownHall.lat + ',' + newTownHall.lng
     return new Promise(function (resolve, reject) {
       var options = {
@@ -90,10 +90,17 @@
         res.on('end', () => {
           var r = JSON.parse(str)
           if (!r.timeZoneName) {
-            console.log('no zipcode results', newTownHall.eventId)
+            console.log('no timezone results', newTownHall.eventId, r)
           } else {
-            resolve(r)
+            newTownHall.zoneString = r.timeZoneId
+            var timezoneAb = r.timeZoneName.split(' ')
+            newTownHall.timeZone = timezoneAb[0][0]
+            for (var i = 1; i < timezoneAb.length; i++) {
+              newTownHall.timeZone = newTownHall.timeZone + timezoneAb[i][0]
+              newTownHall.formatDateTime()
+            }
           }
+          resolve(newTownHall)
         })
       })
       req.on('error', (e) => {
@@ -179,6 +186,7 @@
   // geocodes an address
   TownHall.prototype.getLatandLog = function (address) {
     var addressQuery = escape(address)
+    var addresskey = address.replace(/\W/g, '')
     var options = {
       hostname: 'maps.googleapis.com',
       path: `/maps/api/geocode/json?address=${addressQuery}&key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM`,
@@ -195,7 +203,7 @@
         var r = JSON.parse(str)
         if (!r.results[0]) {
           console.log('no geocode results', newTownHall.eventId)
-          firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set({eventId: newTownHall.eventId})
+          firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set({ eventId: newTownHall.eventId})
         } else {
             newTownHall.lat = r.results[0].geometry.location.lat
             newTownHall.lng = r.results[0].geometry.location.lng
@@ -216,7 +224,7 @@
     req.on('error', (e) => {
       console.error('error requests', e, newTownHall.eventId)
       newTownHall.finalParsing()
-      firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set({eventId: newTownHall.eventId, addresskey: addresskey})
+      firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set({eventId: newTownHall.eventId})
     })
     req.end()
   }
@@ -234,8 +242,9 @@
         newTownHall.finalParsing()
       } else if (snapshot.child('lat').exists() === false) {
         firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).once('value').then(function (snapID) {
-          if (snapID.child('addresskey').val() === newTownHall.addresskey) {
-            console.log('known geocoding problem', newTownHall.eventId);
+          if (snapID.child('eventId').val() === newTownHall.eventId) {
+            console.log('known geocoding problem', newTownHall.eventId)
+            newTownHall.finalParsing()
           } else {
             newTownHall.getLatandLog(address)
           }
@@ -339,7 +348,7 @@
     if (response.length > 0) {
       setTimeout(function(){
         TownHall.batchCalls(response);
-      }, 2000);
+      }, 1000);
     } else {
       // When done, update firebase
       console.log('got all data')
@@ -379,16 +388,9 @@
 
   TownHall.prototype.finalParsing = function finalParsing(){
     var newTownHall = this
-    newTownHall.validateZone().then(function (zoneData) {
-      newTownHall.zoneString = zoneData.timeZoneId
-      var timezoneAb = zoneData.timeZoneName.split(' ')
-      newTownHall.timeZone = timezoneAb[0][0]
-      for (var i = 1; i < timezoneAb.length; i++) {
-        newTownHall.timeZone = newTownHall.timeZone + timezoneAb[i][0]
-        newTownHall.formatDateTime()
-      }
-      newTownHall.findLinks()
-      newTownHall.updateFB(newTownHall.eventId)
+    newTownHall.validateZone().then(function (returnedTownHall) {
+      returnedTownHall.findLinks()
+      returnedTownHall.updateFB(returnedTownHall.eventId)
     })
   }
 
