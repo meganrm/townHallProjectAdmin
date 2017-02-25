@@ -304,7 +304,7 @@
         var firebaseUpdate = new Date(snapshot.val().lastUpdated).getTime()
         var googleUpdate = new Date(newTownHall.lastUpdated).getTime()
         if (firebaseUpdate === googleUpdate) {
-          console.log('already in database');
+          // console.log('already in database');
         } else {
           newTownHall.formattAddressQuery()
         }

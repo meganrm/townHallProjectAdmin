@@ -279,7 +279,7 @@
   eventHandler.metaData = function(){
     metaDataObj = new TownHall();
     metaDataObj.topZeroResults = []
-    firebase.database().ref('/lastupdated/time').on('changed', function(snapshot){
+    firebase.database().ref('/lastupdated/time').on('child_changed', function(snapshot){
       metaDataObj.time = new Date(snapshot.val())
       metaDataObj.total = TownHall.allTownHallsFB.length
       var topZeros = firebase.database().ref('zipZeroResults/').orderByValue().limitToLast(10);
@@ -299,7 +299,7 @@
   }
 
   eventHandler.readData = function (){
-    firebase.database().ref('/townHalls/').on('child_added', function getSnapShot(snapshot) {
+    firebase.database().ref('/townHalls/').on('child_changed', function getSnapShot(snapshot) {
       var ele = new TownHall (snapshot.val());
       var id = ele.eventId;
       TownHall.allTownHallsFB.push(ele)
