@@ -368,12 +368,12 @@
 
   TownHall.dataProcess = function (){
     firebase.database().ref('/lastupdated/time').set(Date.now());
-    // TownHall.fetchAllGoogle().then(function(result) {
-    //   var results = result;
-    //   TownHall.lengthOfGoogle = results.length;
-    //   results.forEach(function(ele){
-    //     TownHall.allIdsGoogle.push(ele.eventId);
-    //     ele.isInDatabase();
+    TownHall.fetchAllGoogle().then(function(result) {
+      var results = result;
+      TownHall.lengthOfGoogle = results.length;
+      results.forEach(function(ele){
+        TownHall.allIdsGoogle.push(ele.eventId);
+        ele.isInDatabase();
       });
       TownHall.removeOld();
     }, function(err) {
