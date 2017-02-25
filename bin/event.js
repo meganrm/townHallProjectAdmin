@@ -153,7 +153,7 @@
       var yearMonthDay = this.dateObj.getFullYear() + '-' + month + '-' + day
       this.timeStart24 = TownHall.toTwentyFour(this.Time)
       // If no ending time, just add 2 hours
-      if (timeEnd) {
+      if (timeEnd && timeEnd.split(':').length > 0) {
         this.timeEnd24 = TownHall.toTwentyFour(timeEnd)
       } else {
         var hour = parseInt(this.timeStart24.split(':')[0]) + 2
@@ -378,14 +378,16 @@
 
   TownHall.prototype.finalParsing = function finalParsing(){
     var newTownHall = this
-    newTownHall.validateZone().then(function (returnedtownHall) {
-      newTownHall.zoneString = returnedtownHall.timeZoneId
-      var timezoneAb = returnedtownHall.timeZoneName.split(' ')
-      newTownHall.timeZone = timezoneAb[0][0]
-      for (var i = 1; i < timezoneAb.length; i++) {
-        newTownHall.timeZone = newTownHall.timeZone + timezoneAb[i][0]
+    newTownHall.validateZone().then(function (zoneData) {
+      newTownHall.zoneString = zoneData.timeZoneId
+      if (zoneData.timeZoneName) {
+        var timezoneAb = zoneData.timeZoneName.split(' ')
+        newTownHall.timeZone = timezoneAb[0][0]
+        for (var i = 1; i < timezoneAb.length; i++) {
+          newTownHall.timeZone = newTownHall.timeZone + timezoneAb[i][0]
+        }
+        newTownHall.formatDateTime()
       }
-      newTownHall.formatDateTime()
       newTownHall.findLinks()
       newTownHall.updateFB(newTownHall.eventId)
     })
