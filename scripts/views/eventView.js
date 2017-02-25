@@ -299,7 +299,7 @@
   }
 
   eventHandler.readData = function (){
-    firebase.database().ref('/townHalls/').on('child_changed', function getSnapShot(snapshot) {
+    firebase.database().ref('/townHalls/').on('child_added', function getSnapShot(snapshot) {
       var ele = new TownHall (snapshot.val());
       var id = ele.eventId;
       TownHall.allTownHallsFB.push(ele)
