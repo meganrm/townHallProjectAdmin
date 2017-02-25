@@ -318,7 +318,7 @@
           if (newTownHall.meetingType.slice(0,4)==='Tele') {
             address = newTownHall.State;
           }
-          else if (newTownHall.streetAddress.length>2) {
+          else if (newTownHall.streetAddress.length > 2) {
             address = newTownHall.streetAddress + ' ' + newTownHall.City + ' ' +newTownHall.StateAb;
           }
             // Otherwise, geocode on Home state
@@ -368,12 +368,12 @@
 
   TownHall.dataProcess = function (){
     firebase.database().ref('/lastupdated/time').set(Date.now());
-    TownHall.fetchAllGoogle().then(function(result) {
-      var results = result;
-      TownHall.lengthOfGoogle = results.length;
-      results.forEach(function(ele){
-        TownHall.allIdsGoogle.push(ele.eventId);
-        ele.isInDatabase();
+    // TownHall.fetchAllGoogle().then(function(result) {
+    //   var results = result;
+    //   TownHall.lengthOfGoogle = results.length;
+    //   results.forEach(function(ele){
+    //     TownHall.allIdsGoogle.push(ele.eventId);
+    //     ele.isInDatabase();
       });
       TownHall.removeOld();
     }, function(err) {

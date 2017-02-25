@@ -20,6 +20,10 @@
   var admin = require('firebase-admin')
   var google = require('googleapis')
 
+  var sendgrid  = require('sendgrid')(
+    process.env.SENDGRID_USERNAME,
+    process.env.SENDGRID_PASSWORD
+  )
   // Initialize the app with a custom auth variable, limiting the server's access
   var firebasekey =  process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n')
 
@@ -29,7 +33,7 @@
       clientEmail: "herokuadmin@townhallproject-86312.iam.gserviceaccount.com",
       privateKey: firebasekey
     }),
-    databaseURL: "https://<DATABASE_NAME>.firebaseio.com"
+    databaseURL: "https://townhallproject-86312.firebaseio.com"
   });
 
   var firebasedb = admin.database()
@@ -186,7 +190,7 @@
       res.on('end', () => {
         var r = JSON.parse(str)
         if (!r.results[0]) {
-          console.log('no geocode results', newTownHall.eventId, r)
+          console.log('no geocode results', newTownHall.eventId)
           newTownHall.formatDateTime()
           newTownHall.findLinks()
           newTownHall.updateFB(newTownHall.eventId)
@@ -234,7 +238,6 @@
         newTownHall.address = snapshot.val().formatted_address
         newTownHall.formatDateTime()
         newTownHall.findLinks()
-        TownHall.allTownHalls.push(newTownHall)
         newTownHall.updateFB(newTownHall.eventId)
       } else if (snapshot.child('lat').exists() === false) {
         firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).once('value').then(function (snapID) {
@@ -257,7 +260,7 @@
       var sheets = google.sheets('v4')
       sheets.spreadsheets.values.get({
         spreadsheetId: '1yq1NT9DZ2z3B8ixhid894e77u9rN5XIgOwWtTW72IYA',
-        range: 'Upcoming%20Events!C:S',
+        range: 'Upcoming%20Events!C:U',
         key: 'AIzaSyBw6HZ7Y4J1dATyC4-_mKmt3u0hLRRqthQ',
       }, function (err, response) {
         if (err) {
@@ -276,7 +279,7 @@
   }
 
   TownHall.loadAll = function loadAll(array) {
-    var googlekeys = ['eventId', 'lastUpdated', 'Member', 'Party', 'State', 'District', 'meetingType', 'RSVP', 'eventName', 'Date', 'Time', 'timeEnd', 'timeZone', 'Location', 'streetAddress', 'City', 'StateAb', 'Zip', 'Notes', 'source']
+    var googlekeys = ['eventId', 'lastUpdated', 'Member', 'Party', 'State', 'District', 'meetingType', 'RSVP', 'eventName', 'Date', 'Time', 'timeEnd', 'Location', 'streetAddress', 'City', 'StateAb', 'Zip', 'Notes', 'source']
     var encodedArray = []
     for (var j = 0; j < array.length; j++) {
       var row = array[j]
@@ -286,7 +289,7 @@
       }
       if (parseInt(rowObj.eventId)) {
         // checks if data is complete
-        if (row.length >= 12) {
+        if (row.length >= 11) {
           encodedArray.push(rowObj)
         } else {
           // If incomplete store to seperate table
@@ -306,16 +309,20 @@
     var ref = firebasedb.ref('/townHallIdsTesting/' + newTownHall.eventId)
     ref.once('value', function (snapshot) {
       if (snapshot.exists()) {
+        console.log('already in database');
         var firebaseUpdate = new Date(snapshot.val().lastUpdated).getTime()
         var googleUpdate = new Date(newTownHall.lastUpdated).getTime()
         if (firebaseUpdate === googleUpdate) {
-          // TownHall.allTownHalls.push(newTownHall)
         } else {
+          console.log('has been updated');
           newTownHall.formattAddressQuery()
         }
       } else if (snapshot.child('lat').exists() === false) {
+        console.log('new');
         newTownHall.formattAddressQuery()
       }
+    }).catch(function(error){
+      newTownHall.formattAddressQuery()
     })
   }
 
@@ -324,7 +331,7 @@
     var address
     if (newTownHall.meetingType.slice(0, 4) === 'Tele') {
       address = newTownHall.State
-    } else if (newTownHall.streetAddress.length > 2) {
+    } else if (newTownHall.streetAddress && newTownHall.streetAddress.length > 2) {
       address = newTownHall.streetAddress + ' ' + newTownHall.City + ' ' + newTownHall.StateAb
     } else {
       newTownHall.noLoc = true
@@ -334,8 +341,8 @@
   }
 
   TownHall.batchCalls = function(response) {
+    var chunck = response.splice(0,10)
     console.log('checking 10');
-    chunck = response.splice(0,10)
     chunck.forEach(function(ele){
       ele.isInDatabase()
     })
@@ -345,21 +352,37 @@
       }, 2000);
     } else {
       // When done, update firebase
-      console.log('got all data');
+      console.log('got all data')
+      TownHall.sendEmail
     };
 }
+  TownHall.sendEmail = function (){
+    sendgrid.send({
+    to: 'meganrm@gmail.com',
+    from: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
+    subject: 'Updated firebase',
+    text: 'I just updated firebase'
+  }, function(err, json) {
+    if (err) {
+      console.error(err);
+    }
+    done()
+});
+  }
 
   TownHall.removeOld = function removeOld() {
-    firebasedb.ref('/townHallsTesting/').on('child_added', function getSnapShot(snapshot) {
-      var ele = new TownHall(snapshot.val())
-      if (TownHall.allIdsGoogle.indexOf(ele.eventId) < 0) {
-        console.log('old', ele)
-        if (snapshot.val().eventId) {
-          var oldTownHall = firebasedb.ref('/townHallsTesting/' + ele.eventId)
-          firebasedb.ref('/townHallsOldTesting/' + ele.eventId).set(ele)
-          oldTownHall.remove()
+    firebasedb.ref('/townHallsTesting/').once('value').then(function getSnapShot(snapshot) {
+      snapshot.forEach(function(townhall){
+        var ele = new TownHall(townhall.val())
+        if (TownHall.allIdsGoogle.indexOf(ele.eventId) < 0) {
+          console.log('old', ele.eventId)
+          if (townhall.val().eventId) {
+            var oldTownHall = firebasedb.ref('/townHallsTesting/' + ele.eventId)
+            firebasedb.ref('/townHallsOldTesting/' + ele.eventId).set(ele)
+            oldTownHall.remove()
+          }
         }
-      }
+      })
     })
   }
 
@@ -379,7 +402,7 @@
       TownHall.batchCalls(results)
       TownHall.removeOld()
     }, function (err) {
-      console.log(err)
+      console.error(err)
     })
   }
 
