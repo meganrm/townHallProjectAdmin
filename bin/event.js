@@ -379,8 +379,8 @@
   TownHall.prototype.finalParsing = function finalParsing(){
     var newTownHall = this
     newTownHall.validateZone().then(function (zoneData) {
-      newTownHall.zoneString = zoneData.timeZoneId
       if (zoneData.timeZoneName) {
+        newTownHall.zoneString = zoneData.timeZoneId
         var timezoneAb = zoneData.timeZoneName.split(' ')
         newTownHall.timeZone = timezoneAb[0][0]
         for (var i = 1; i < timezoneAb.length; i++) {
