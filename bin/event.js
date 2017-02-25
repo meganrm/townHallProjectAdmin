@@ -16,6 +16,10 @@
     Party:'',
     State:'',
   }
+  TownHall.allIdsGoogle = []
+  TownHall.allIdsFirebase = []
+  TownHall.lengthOfGoogle
+
   var https = require('https')
   var admin = require('firebase-admin')
   var google = require('googleapis')
@@ -57,47 +61,48 @@
     var newEvent = this
     var metaData = { eventId:newEvent.eventId, lastUpdated:newEvent.lastUpdated }
     var updates = {}
-    updates['/townHallsTesting/' + key] = newEvent
-    updates['/townHallIdsTesting/' + key] = metaData
+    updates['/townHalls/' + key] = newEvent
+    updates['/townHallIds/' + key] = metaData
     console.log(`writing ${newEvent.eventId}`);
     return firebasedb.ref().update(updates).catch(function (error) {
       console.log('could not update', newEvent.eventId)
     })
   }
 
-  TownHall.saveZipLookup = function (zip) {
-    firebasedb.ref('/zipZeroResults/' + zip).once('value').then(function (snapshot) {
-      console.log(zip)
-      var newVal
-      if (snapshot.exists()) {
-        newVal = snapshot.val() + 1
-        console.log('new val', newVal)
-      } else {
-        newVal = 1
-      }
-      return firebasedb.ref('/zipZeroResults/' + zip).set(newVal)
-    })
-  }
-
-
   // DATA PROCESSING BEFORE WRITE
   // check if there is a time zone, if not, looks up on google
   TownHall.prototype.validateZone = function () {
-    var tz = TownHall.timeZones[this.timeZone]
-    if (!tz) {
-      var time = Date.now()
-      var loc = this.lat + ',' + this.lng
-      console.log('look up timezone')
-      // url = 'https://maps.googleapis.com/maps/api/timezone/json?location='+loc+'&timestamp=1331766000&key=AIzaSyBlmL9awpTV6AQKQJOmOuUlH1APXWmCHLQ';
-      // $.get(url, function (response){
-      //   this.zoneString = response.timeZoneId;
-      //   return this;
-      // })
-    } else {
-      this.zoneString = tz
-      return this
-    }
+    var newTownHall = this
+    var time = new Date(newTownHall.Date + ' ' + newTownHall.Time).getUTCSeconds()
+    var loc = newTownHall.lat + ',' + newTownHall.lng
+    return new Promise(function (resolve, reject) {
+      var options = {
+        hostname: 'maps.googleapis.com',
+        path: `/maps/api/timezone/json?location=${loc}&timestamp=${time}&key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM`,
+        method: 'GET',
+      }
+      var str = ''
+      var req = https.request(options, (res) => {
+        res.setEncoding('utf8')
+        res.on('data', (chunk) => {
+          str += chunk
+        })
+        res.on('end', () => {
+          var r = JSON.parse(str)
+          if (!r) {
+            console.log('no zipcode results', newTownHall.eventId)
+          } else {
+            resolve(r)
+          }
+        })
+      })
+      req.on('error', (e) => {
+        console.error('error requests', e, newTownHall.eventId)
+      })
+      req.end()
+    })
   }
+
 
   TownHall.prototype.findLinks = function () {
     var $regExUrl = /(https?:\/\/[^\s]+)/g
@@ -154,7 +159,6 @@
         var hour = parseInt(this.timeStart24.split(':')[0]) + 2
         this.timeEnd24 = hour + ':' + this.timeStart24.split(':')[1] + ':' + '00'
       }
-      this.validateZone()
       this.yearMonthDay = yearMonthDay
       this.dateObj = this.dateObj.getTime()
       return this
@@ -191,40 +195,31 @@
         var r = JSON.parse(str)
         if (!r.results[0]) {
           console.log('no geocode results', newTownHall.eventId)
-          newTownHall.formatDateTime()
-          newTownHall.findLinks()
-          newTownHall.updateFB(newTownHall.eventId)
           firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set({eventId: newTownHall.eventId})
         } else {
-        newTownHall.lat = r.results[0].geometry.location.lat
-        newTownHall.lng = r.results[0].geometry.location.lng
-        newTownHall.address = r.results[0].formatted_address.split(', USA')[0]
-        newTownHall.formatDateTime()
-        newTownHall.findLinks()
-        console.log('geolcate google', newTownHall.eventId)
-        newTownHall.updateFB(newTownHall.eventId)
-        var addresskey = addressQuery.replace(/\W/g, '')
-        addresskey.trim()
-        firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).remove()
-        firebasedb.ref('geolocateTesting/' + addresskey).set(
-          {
-            lat : newTownHall.lat,
-            lng : newTownHall.lng,
-            formatted_address : newTownHall.address,
-          })
+            newTownHall.lat = r.results[0].geometry.location.lat
+            newTownHall.lng = r.results[0].geometry.location.lng
+            newTownHall.address = r.results[0].formatted_address.split(', USA')[0]
+            var addresskey = addressQuery.replace(/\W/g, '')
+            addresskey.trim()
+            firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).remove()
+            firebasedb.ref('geolocate/' + addresskey).set(
+            {
+              lat : newTownHall.lat,
+              lng : newTownHall.lng,
+              formatted_address : newTownHall.address,
+            })
         }
+        newTownHall.finalParsing()
       })
     })
     req.on('error', (e) => {
       console.error('error requests', e, newTownHall.eventId)
-      newTownHall.formatDateTime()
-      newTownHall.findLinks()
-      newTownHall.updateFB(newTownHall.eventId)
+      newTownHall.finalParsing()
       firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set({eventId: newTownHall.eventId})
     })
     req.end()
   }
-
 
   // checks firebase for address, if it's not there, calls google geocode
   TownHall.prototype.geoCodeFirebase = function (address) {
@@ -236,13 +231,10 @@
         newTownHall.lat = snapshot.val().lat
         newTownHall.lng = snapshot.val().lng
         newTownHall.address = snapshot.val().formatted_address
-        newTownHall.formatDateTime()
-        newTownHall.findLinks()
-        newTownHall.updateFB(newTownHall.eventId)
+        newTownHall.finalParsing()
       } else if (snapshot.child('lat').exists() === false) {
         firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).once('value').then(function (snapID) {
           if (snapID.child('streetAddress').exists() === newTownHall.streetAddress) {
-            console.log('known error')
           } else {
             newTownHall.getLatandLog(address)
           }
@@ -260,7 +252,7 @@
       var sheets = google.sheets('v4')
       sheets.spreadsheets.values.get({
         spreadsheetId: '1yq1NT9DZ2z3B8ixhid894e77u9rN5XIgOwWtTW72IYA',
-        range: 'Upcoming%20Events!C:U',
+        range: 'Upcoming%20Events!C:T',
         key: 'AIzaSyBw6HZ7Y4J1dATyC4-_mKmt3u0hLRRqthQ',
       }, function (err, response) {
         if (err) {
@@ -306,19 +298,16 @@
 
   TownHall.prototype.isInDatabase = function () {
     var newTownHall = this
-    var ref = firebasedb.ref('/townHallIdsTesting/' + newTownHall.eventId)
+    var ref = firebasedb.ref('/townHallIds/' + newTownHall.eventId)
     ref.once('value', function (snapshot) {
       if (snapshot.exists()) {
-        console.log('already in database');
         var firebaseUpdate = new Date(snapshot.val().lastUpdated).getTime()
         var googleUpdate = new Date(newTownHall.lastUpdated).getTime()
         if (firebaseUpdate === googleUpdate) {
         } else {
-          console.log('has been updated');
           newTownHall.formattAddressQuery()
         }
       } else if (snapshot.child('lat').exists() === false) {
-        console.log('new');
         newTownHall.formattAddressQuery()
       }
     }).catch(function(error){
@@ -342,7 +331,6 @@
 
   TownHall.batchCalls = function(response) {
     var chunck = response.splice(0,10)
-    console.log('checking 10');
     chunck.forEach(function(ele){
       ele.isInDatabase()
     })
@@ -353,32 +341,32 @@
     } else {
       // When done, update firebase
       console.log('got all data')
-      TownHall.sendEmail
+      // TownHall.sendEmail
     };
-}
-  TownHall.sendEmail = function (){
-    sendgrid.send({
-    to: 'meganrm@gmail.com',
-    from: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
-    subject: 'Updated firebase',
-    text: 'I just updated firebase'
-  }, function(err, json) {
-    if (err) {
-      console.error(err);
-    }
-    done()
-});
   }
+  // TownHall.sendEmail = function (){
+  //   sendgrid.send({
+  //   to: 'meganrm@gmail.com',
+  //   from: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
+  //   subject: 'Updated firebase',
+  //   text: 'I just updated firebase'
+  // }, function(err, json) {
+  //   if (err) {
+  //     console.error(err);
+  //   }
+  //   done()
+  // });
+  // }
 
   TownHall.removeOld = function removeOld() {
-    firebasedb.ref('/townHallsTesting/').once('value').then(function getSnapShot(snapshot) {
+    firebasedb.ref('/townHalls/').once('value').then(function getSnapShot(snapshot) {
       snapshot.forEach(function(townhall){
         var ele = new TownHall(townhall.val())
         if (TownHall.allIdsGoogle.indexOf(ele.eventId) < 0) {
           console.log('old', ele.eventId)
           if (townhall.val().eventId) {
-            var oldTownHall = firebasedb.ref('/townHallsTesting/' + ele.eventId)
-            firebasedb.ref('/townHallsOldTesting/' + ele.eventId).set(ele)
+            var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId)
+            firebasedb.ref('/townHallsOld/' + ele.eventId).set(ele)
             oldTownHall.remove()
           }
         }
@@ -386,12 +374,24 @@
     })
   }
 
-  TownHall.allIdsGoogle = []
-  TownHall.allIdsFirebase = []
-  TownHall.lengthOfGoogle
+
+  TownHall.prototype.finalParsing = function finalParsing(){
+    var newTownHall = this
+    newTownHall.validateZone().then(function (returnedtownHall) {
+      newTownHall.zoneString = returnedtownHall.timeZoneId
+      var timezoneAb = returnedtownHall.timeZoneName.split(' ')
+      newTownHall.timeZone = timezoneAb[0][0]
+      for (var i = 1; i < timezoneAb.length; i++) {
+        newTownHall.timeZone = newTownHall.timeZone + timezoneAb[i][0]
+      }
+      newTownHall.formatDateTime()
+      newTownHall.findLinks()
+      newTownHall.updateFB(newTownHall.eventId)
+    })
+  }
 
   TownHall.dataProcess = function dataProcess() {
-    firebasedb.ref('/lastupdatedTesting/time').set(Date.now())
+    firebasedb.ref('/lastupdated/time').set(Date.now())
     console.log('time', new Date())
     TownHall.fetchAllGoogle().then(function (result) {
       var results = result
