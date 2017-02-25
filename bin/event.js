@@ -89,7 +89,7 @@
         })
         res.on('end', () => {
           var r = JSON.parse(str)
-          if (!r) {
+          if (!r.timeZoneName) {
             console.log('no zipcode results', newTownHall.eventId)
           } else {
             resolve(r)
@@ -216,7 +216,7 @@
     req.on('error', (e) => {
       console.error('error requests', e, newTownHall.eventId)
       newTownHall.finalParsing()
-      firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set({eventId: newTownHall.eventId})
+      firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set({eventId: newTownHall.eventId, addresskey: addresskey})
     })
     req.end()
   }
@@ -234,7 +234,8 @@
         newTownHall.finalParsing()
       } else if (snapshot.child('lat').exists() === false) {
         firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).once('value').then(function (snapID) {
-          if (snapID.child('streetAddress').exists() === newTownHall.streetAddress) {
+          if (snapID.child('addresskey').val() === newTownHall.addresskey) {
+            console.log('known geocoding problem', newTownHall.eventId);
           } else {
             newTownHall.getLatandLog(address)
           }
@@ -379,13 +380,11 @@
   TownHall.prototype.finalParsing = function finalParsing(){
     var newTownHall = this
     newTownHall.validateZone().then(function (zoneData) {
-      if (zoneData.timeZoneName) {
-        newTownHall.zoneString = zoneData.timeZoneId
-        var timezoneAb = zoneData.timeZoneName.split(' ')
-        newTownHall.timeZone = timezoneAb[0][0]
-        for (var i = 1; i < timezoneAb.length; i++) {
-          newTownHall.timeZone = newTownHall.timeZone + timezoneAb[i][0]
-        }
+      newTownHall.zoneString = zoneData.timeZoneId
+      var timezoneAb = zoneData.timeZoneName.split(' ')
+      newTownHall.timeZone = timezoneAb[0][0]
+      for (var i = 1; i < timezoneAb.length; i++) {
+        newTownHall.timeZone = newTownHall.timeZone + timezoneAb[i][0]
         newTownHall.formatDateTime()
       }
       newTownHall.findLinks()
