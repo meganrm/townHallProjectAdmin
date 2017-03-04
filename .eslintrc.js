@@ -17,7 +17,7 @@ module.exports = {
     ],
     'semi': [
       ERROR,
-      'never',
+      'always',
     ],
     'vars-on-top': OFF,
     'no-plusplus': OFF,

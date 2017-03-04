@@ -5,101 +5,10 @@
   // object to hold the front end view functions
   var eventHandler = {};
 
-  // creates new TownHall object from form
-  eventHandler.save = function (e) {
-    e.preventDefault();
-    var newTownHall = new TownHall( $('#save-event input').get().reduce(function(newObj, cur){
-      newObj[cur.id] = $(cur).val();
-      return newObj;
-    }, {})
-  );
-    newTownHall.getLatandLog(newTownHall.address);
-  };
-
-
-// Given a new event, creates TownHall Object and encodes with lat and lng based on address from google docs
-  eventHandler.saveSimple = function (newevent) {
-    var newTownHall = new TownHall(newevent);
-    newTownHall.getLatandLog(newTownHall.streetNumber + newTownHall.streetName +newTownHall.Zip);
-  };
-
-  // given an event and a current key, update that event.
-  eventHandler.update = function (newevent , key) {
-    var newTownHall = new TownHall(newevent);
-    var address = newTownHall.streetNumber +' '+ newTownHall.streetName +' '+ newTownHall.City + ' ' + newTownHall.Zip;
-    console.log(address);
-    newTownHall.getLatandLog(address, key);
-  };
-
-  // Renders the page in response to lookup
-  eventHandler.lookup = function (e) {
-    e.preventDefault();
-    var zip = $('#look-up input').val();
-    if (zip) {
-      TownHall.lookupZip($('#look-up input').val());
-    }
-
-  };
-
-  // reset the home page to originial view
-  eventHandler.resetHome = function () {
-    $('[data-toggle="popover"]').popover('hide');
-    $('.header-small').hide();
-    $('.header-large').fadeIn();
-    $('#look-up input').val('');
-    $('.form-text-results').removeClass('text-center');
-    $('.left-panels').removeClass('left-panels-border');
-    $('#nearest').removeClass('nearest-with-results');
-    $('#button-to-form').hide();
-    $('.spacer').show();
-    $('#look-up').appendTo($('.right-panels'));
-    $('#resetTable').hide();
-    TownHall.isCurrentContext = false;
-    TownHall.currentContext = [];
-    TownHall.zipQuery = '';
-    $('#map').appendTo('.map-large');
-    onResizeMap();
-    var $parent = $('#nearest');
-    var $results = $('#textresults');
-    $parent.empty();
-    $results.empty();
-    $table = $('#all-events-table');
-    $table.empty();
-    TownHall.allTownHalls.forEach(function(ele){
-      eventHandler.renderTable(ele, $table);
-    });
-    $('[data-toggle="popover"]').popover({
-      container: 'body',
-      html:true
-    });
-    $('[data-toggle="popover"]').on('click', function (e) {
-      $('[data-toggle="popover"]').not(this).popover('hide');
-    });
-  };
-
-  // Renders one panel, assumes data processing has happened
-  eventHandler.renderPanels = function(event, $parent) {
-    var $panel = $(event.toHtml($('#event-template')));
-    $panel.children('.panel').addClass(event.Party);
-    $panel.appendTo($parent);
-  };
-
-  eventHandler.renderTableWithArray = function (array, $table) {
-    array.forEach(function(ele){
-      eventHandler.renderTable(ele, $table);
-    });
-    $('[data-toggle="popover"]').popover({
-      container: 'body',
-      html:true
-    });
-    $('[data-toggle="popover"]').on('click', function (e) {
-      $('[data-toggle="popover"]').not(this).popover('hide');
-    });
-  };
 
   // render table row
-  eventHandler.renderTable = function (townhall, $tableid) {
-    townhall.dist = Math.round(townhall.dist/1609.344);
+  eventHandler.renderTable = function renderTable(townhall, $tableid) {
+    townhall.dist = Math.round(townhall.dist /1609.344);
     townhall.addressLink = 'https://www.google.com/maps?q=' + escape(townhall.address);
     $($tableid).append(townhall.toHtml($('#table-template')));
   };
@@ -173,70 +82,11 @@
     eventHandler.renderTableWithArray(data, $table);
   };
 
-
-  // renders results of search
-  eventHandler.render = function (events, zipQuery) {
-    $('[data-toggle="popover"]').popover('hide');
-    $('.header-small').removeClass('hidden');
-    $('.header-small').fadeIn();
-    $('.header-large').hide();
-    $('.form-text-results').addClass('text-center');
-    $('.left-panels').addClass('left-panels-border');
-    $('#nearest').addClass('nearest-with-results');
-    $('#look-up').appendTo($('.left-panels'));
-    $('#button-to-form').removeClass('hidden');
-    $('#button-to-form').fadeIn();
-    $('.spacer').hide();
-    var $zip = $('#look-up input').val();
-    var $parent = $('#nearest');
-    var $results = $('#textresults');
-    $parent.empty();
-    $results.empty();
-    var $table = $('#all-events-table');
-    var $text = $('<h4>');
-    $table.empty();
-    maxDist = 80467.2;
-    var nearest = events.reduce(function(acc, cur){
-      if (cur.dist < maxDist) {
-        acc.push(cur);
-      }
-      return acc;
-    },[]);
-    $('#map').appendTo('.map-small');
-    if (nearest.length === 0) {
-      var townHall = events[0];
-      var townHalls = [townHall];
-      recenterMap(townHalls, zipQuery);
-      eventHandler.renderTableWithArray(events, $table);
-      $text.text('No events within 50 miles of your zip, the closest one is ' + townHall.dist + ' miles away.');
-      $results.append($text);
-      TownHall.saveZipLookup($zip);
-      eventHandler.renderPanels(townHall, $parent);
-    } else {
-      TownHall.currentContext = nearest;
-      TownHall.isCurrentContext = true;
-      recenterMap(nearest, zipQuery);
-      if (nearest.length ===1) {
-        $text.text('There is ' + nearest.length + ' upcoming events within 50 miles of you.');
-      }
-      else {
-        $text.text('There are ' + nearest.length + ' upcoming events within 50 miles of you.');
-      }
-      $results.append($text);
-      eventHandler.renderTableWithArray(nearest, $table);
-      nearest.forEach(function(ele){
-        eventHandler.renderPanels(ele, $parent);
-      });
-    }
-    addtocalendar.load();
-  };
-
-
   // url hash for direct links to subtabs
   // slightly hacky routing
   $(document).ready(function(){
     var filterSelector = $('.filter');
-    $('[data-toggle="popover"]').popover({html:true});
+    $('[data-toggle="popover"]').popover({ html: true });
     $('#button-to-form').hide();
     $('#save-event').on('submit', eventHandler.save);
     $('#look-up').on('submit', eventHandler.lookup);
@@ -300,16 +150,33 @@
 
   eventHandler.readData = function (){
     firebase.database().ref('/townHalls/').on('child_added', function getSnapShot(snapshot) {
-      var ele = new TownHall (snapshot.val());
+      var ele = new TownHall(snapshot.val());
       var id = ele.eventId;
-      TownHall.allTownHallsFB.push(ele)
+      obj = {};
+      TownHall.allTownHallsFB[ele.eventId] = ele;
+      var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
+      var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
+      var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs')
+
+      var $toAppend = $(tableRowTemplate(ele));
+      switch (ele.meetingType.slice(0,4)) {
+        case 'Tele':
+          $toAppend.find('.location-data').empty();
+          $toAppend.find('.location-data').append(teleInputsTemplate(ele));
+          break;
+        case 'Tick':
+          $toAppend.find('.location-data').append(ticketInputsTemplate(ele));
+          break;
+      }
+
       if (!ele.lat) {
-        $('#location-errors').append(ele.toHtml($('#table-template')));
+        console.log($('#location-errors').get());
+        $('#location-errors').append($toAppend.clone());
       }
       if (!ele.dateValid) {
-        $('#date-errors').append(ele.toHtml($('#table-template')));
+        $('#date-errors').append($toAppend.clone());
       }
-      $('#all-events-table').append(ele.toHtml($('#table-template')));
+      $('#all-events-table').append($toAppend);
     });
   };
 

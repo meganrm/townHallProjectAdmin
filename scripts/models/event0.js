@@ -7,7 +7,7 @@
 
 
   //Global data stete
-  TownHall.allTownHalls = [];
+  TownHall.allTownHalls = {};
   TownHall.allTownHallsFB = [];
   TownHall.currentContext = [];
   TownHall.filteredResults = [];
@@ -177,14 +177,21 @@
     return renderTemplate(this);
   };
 
-  // geocodes an address
-  TownHall.prototype.getLatandLog = function(address) {
+TownHall.cacheGeocode = function(addresskey, lat, lng, address, type) {
+  firebasedb.ref('geolocate/' + type +'/' + addresskey).set(
+    {
+      lat : lat,
+      lng : lng,
+      formatted_address : address
+    })
+  }
+
+  TownHall.prototype.getLatandLog = function(address, type) {
     var newTownHall = this;
-    if (address === 'undefined undefined undefined undefined') {
-    } else {
+    return new Promise(function (resolve, reject) {
       $.ajax({
-        url : 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM',
-        data : {
+        url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM',
+        data: {
           'address' : address
         },
         dataType : 'json',
@@ -193,35 +200,21 @@
             newTownHall.lat = r.results[0].geometry.location.lat;
             newTownHall.lng = r.results[0].geometry.location.lng;
             newTownHall.address = r.results[0].formatted_address.split(', USA')[0];
-            newTownHall.formatDateTime();
-            newTownHall.findLinks();
-            console.log('geolcate google', r.results);
-            TownHall.allTownHalls.push(newTownHall);
-            newTownHall.updateFB(newTownHall.eventId);
             var addresskey = address.replace(/\W/g ,'');
             addresskey.trim();
-            firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).remove();
-            firebasedb.ref('geolocate/' + addresskey).set(
-              {
-                lat : newTownHall.lat,
-                lng : newTownHall.lng,
-                formatted_address : newTownHall.address
-              }
-            );
+            // firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).remove();
+            // TownHall.cacheGeocode(addresskey, newTownHall.lat, newTownHall.lng, newTownHall.address, type)
+            resolve(newTownHall)
           } else {
             console.log('error geocoding', newTownHall);
-            newTownHall.formatDateTime();
-            newTownHall.findLinks();
-            TownHall.allTownHalls.push(newTownHall);
-            newTownHall.updateFB(newTownHall.eventId);
-            firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set(newTownHall);
+            // firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set(newTownHall);
           }
         },
         error: function(e){
           console.log('we got an error', e);
         }
       });
-    }
+    })
   };
 
   // checks firebase for address, if it's not there, calls google geocode
@@ -387,7 +380,5 @@
     setInterval(TownHall.dataProcess, time);
   };
 
-  // TownHall.dataProcess();
-  // TownHall.readGoogle();
   module.TownHall = TownHall;
 })(window);

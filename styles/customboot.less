@@ -164,13 +164,15 @@ body{
   color: #1E2528;
   font-family: 'Raleway', sans-serif;
   margin-bottom: 60px;
+  padding-top: 70px;
+
 }
 
 h2 {
   font-weight: 900;
 }
 
-.navbar{
+.navbar-fixed-top{
   border-bottom: @brand-secondary 2px solid;
   margin-bottom: 0;
 }
@@ -223,6 +225,27 @@ article{
   padding-left:20px;
 }
 
+.form-group, .input-group{
+  padding:10px;
+}
+
+form{
+  border-bottom: 1.5px solid @brand-gray;
+  border-bottom-style: dotted;
+  padding-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+.list-group-item{
+  border-color: @brand-success;
+}
+
+#address{
+  width: 300px;
+}
+#Notes{
+  width: 600px;
+}
 // add to cal styles
 .atcb-list {
     width: 170px;
@@ -277,9 +300,6 @@ article{
   margin-bottom: 0;
 }
 
-.list-group-item:last-of-type{
-   border-bottom: none;
- }
 
 .Democratic .panel-heading{
   color: white;
@@ -300,10 +320,7 @@ article{
    display: none;
 }
 
-.list-group-item{
-  border-right:none;
-  border-left:none;
-}
+
 
 // Table formatting
 .table .meetingType{

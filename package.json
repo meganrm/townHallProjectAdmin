@@ -25,6 +25,7 @@
     "express-session": "^1.15.0",
     "firebase": "^3.6.6",
     "firebase-admin": "^4.1.1",
+    "firebaseui": "^1.0.0",
     "geo-distance": "^0.1.2",
     "google-auth-library": "^0.10.0",
     "google-maps": "^3.2.1",
