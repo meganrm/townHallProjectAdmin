@@ -170,7 +170,6 @@
       }
 
       if (!ele.lat) {
-        console.log($('#location-errors').get());
         $('#location-errors').append($toAppend.clone());
       }
       if (!ele.dateValid) {
