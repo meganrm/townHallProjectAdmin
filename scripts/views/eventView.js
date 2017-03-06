@@ -157,6 +157,17 @@
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
       var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
+      if (ele.yearMonthDay) {
+        var month = ele.yearMonthDay.split('-')[1];
+        var day = ele.yearMonthDay.split('-')[2];
+        if (month.length === 1) {
+          month = 0 + month;
+        }
+        if (day.length === 1) {
+          day = 0 + day;
+        }
+        ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
+      }
 
       var $toAppend = $(tableRowTemplate(ele));
       switch (ele.meetingType.slice(0,4)) {

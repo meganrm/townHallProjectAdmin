@@ -49,12 +49,13 @@
     <div class="time-data">
       <div class="checkbox">
         <label>
-          <input type="checkbox">Enter repeating date (ex. 'First Wed'), instead of actual date.
+          <input type="checkbox" class="date-string">
+          <span class="checkbox-label">Click to enter repeating date (ex. 'First Wed'), instead of actual date.</span>
         </label>
       </div>
       <div class="form-group">
         <label class="sr-only" for="yearMonthDay">Date</label>
-        <input type="date" class="form-control datetime" id="yearMonthDay" placeholder="Date" value="">
+        <input type="date" class="form-control datetime date" id="yearMonthDay" placeholder="Date" value="{{yearMonthDay}}">
       </div>
       <div class="form-group">
         <label for="Time">Start Time (HH:MM AM/PM)</label>

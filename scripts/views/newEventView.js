@@ -55,6 +55,23 @@
     newEventView.updatedView($form, $listgroup);
   };
 
+  newEventView.dateString = function (event) {
+    event.preventDefault();
+    var $input = $(this);
+    var $form = $input.parents('form');
+    var $dateInput = $form.find('.date');
+    var $checkbox = $form.find('.checkbox-label');
+    if (this.checked) {
+      $dateInput.attr('type', 'text').attr('id', 'dateString');
+      $checkbox.text('Click to enter formatted date');
+      console.log('checked');
+    } else {
+      $dateInput.attr('type', 'date').attr('id', 'yearMonthDay');
+      $checkbox.text('Click to enter repeating event description');
+      console.log('not checked');
+    }
+  };
+
   newEventView.submitForm = function (event) {
     event.preventDefault();
     $form = $(this);
@@ -71,6 +88,8 @@
   $('.events-table').on('submit', 'form', newEventView.submitForm)
   $('.events-table').on('keyup', '.form-control', newEventView.formChanged);
   $('.events-table').on('change', '.datetime', newEventView.dateChanged);
+  $('.events-table').on('change', '.date-string', newEventView.dateString);
+
 
   $('.events-table').on('click', '#geocode-button', function (event) {
     event.preventDefault();
