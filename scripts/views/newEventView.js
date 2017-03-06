@@ -34,14 +34,16 @@
       var $curValue = $(cur).val()
       switch (cur.id) {
         case 'timeStart24':
-        newObj.timeStart24 = $curValue + ':00';
-        newObj.Time = newEventView.humanTime($curValue)
-        console.log(newObj.Time);
+          newObj.timeStart24 = $curValue + ':00';
+          newObj.Time = newEventView.humanTime($curValue)
           break;
         case 'timeEnd24':
-        newObj.timeEnd24 = $curValue + ':00';
-        newObj.timeEnd = newEventView.humanTime($curValue)
+          newObj.timeEnd24 = $curValue + ':00';
+          newObj.timeEnd = newEventView.humanTime($curValue)
           break;
+        case 'yearMonthDay':
+          newObj[cur.id] = $curValue;
+          newObj.Date = new Date($curValue).toDateString();
         default:
           newObj[cur.id] = $curValue;
       }
