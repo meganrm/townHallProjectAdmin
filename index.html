@@ -42,21 +42,6 @@
     <link href="https://addtocalendar.com/atc/1.5/atc-style-blue.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,900" rel="stylesheet">
     <link rel="stylesheet" href="/styles/css/bootstrap.min.css">
-
-    <script type="text/x-handlebars-template" id="meta-data-template">
-      <h4>Summary</h4>
-      <ul id="meta-data-list">
-        <li>Last updated: {{time}}
-        </li>
-        <li>Total events: {{total}}
-        </li>
-        {{#each topZeroResults}}
-        <li>{{zip}}: {{count}}
-        </li>
-        {{/each}}
-      </ul>
-    </script>
-
   </head>
   <body>
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -72,7 +57,6 @@
         </div>
         <div class="collapse navbar-collapse" id="main-nav">
           <ul class="nav navbar-nav navbar-left" roll="tablists">
-            <li></li>
             <li><a class="hash-link" data-toggle="tab" href="#new-page">New Event</a></li>
             <li><a class="hash-link"  data-toggle="tab" href="#location-errors-page">Location Errors</a></li>
             <li><a class="hash-link" data-toggle="tab" href="#date-errors-page">Date Errors</a></li>
@@ -82,97 +66,112 @@
         </div>
       </div>
     </nav><!-- end nav -->
-
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="metadata">
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="tab-content">
-      <div role="tabpanel" class="tab-pane page active" id="new-page">
+      <div role="tabpanel" class="tab-pane page active" id="home">
         <section class=" container container-fluid">
-        </section>
-      </div>
+            <h3 class="text-primary table-title text-center">Town Hall Admin Site</h3>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-12">
+                  <p>The Archive and Delete buttons are not active yet. You can update events, they will be saved with a new "last updated" timestamp, and your user email (we could do name instead).</p>
+                  <div class="metadata">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div role="tabpanel" class="tab-pane page" id="new-page">
+          <section class=" container container-fluid">
+          </section>
+        </div>
 
-      <div role="tabpanel" class="tab-pane page active" id="location-errors-page">
-        <section class="container container-fluid">
-          <h3 class="text-primary table-title text-center">Location Errors</h3>
-          <div class="row">
-            <div class="col-sm-10 col-sm-offset-2">
-              These had problems with the geocoding.<br>
+        <div role="tabpanel" class="tab-pane page" id="location-errors-page">
+          <section class="container container-fluid">
+            <h3 class="text-primary table-title text-center">Location Errors</h3>
+            <div class="row">
+              <div class="col-sm-10 col-sm-offset-2">
+                These had problems with the geocoding.<br>
+                To update:
+                <ul>
+                  <li>Enter a new address and click "Geocode!"</li>
+                  <li>Make sure the address is correct in the preview</li>
+                  <li>Click "Update" to save changes to the database</li>
+                </ul>
+                If there is no actual address, leave the street address blank.<br>
+                If there is something like a room number, that might be the problem, maybe put that in the "location" field instead.
+              </div>
+            </div>
+            <div>
+              <ul id="location-errors" class="list-group events-table">
+
+              </ul><!--end table-->
+            </div>
+          </section>
+        </div>
+          <!-- ALL EVENTS -->
+        <div role="tabpanel" class="tab-pane page" id="all-events-page">
+          <section class="container container-fluid">
+            <h3 class="text-primary table-title text-center">All current public events</h3>
+            <div class="row">
+              <div class="col-sm-10 col-sm-offset-2">
+                These are the events currently on the public site. <br>
+                If an event has occurred, click "archive" to remove from the public site (will still be saved in the database).<br>
+                If an event has been canceled, click "delete" to remove it from the database all together.
+              </div>
+            </div>
+            <div>
+              <ul id="all-events-table" class="list-group events-table">
+
+              </ul><!--end table-->
+            </div>
+          </section>
+        </div>
+        <div role="tabpanel" class="tab-pane page" id="date-errors-page">
+          <section class=" container container-fluid">
+            <!-- DATE ERRORS -->
+            <h3 class="text-primary table-title text-center">Date errors</h3>
+              These had problems with assiging a date, mostly because they are repeating events.<br>
               To update:
               <ul>
-                <li>Enter a new address and click "Geocode!"</li>
-                <li>Make sure the address is correct in the preview</li>
+                <li>enter a new Date or Time</li>
+                <li>Make sure the date and time is correct in the preview</li>
                 <li>Click "Update" to save changes to the database</li>
               </ul>
-              If there is no actual address, leave the street address blank.<br>
-              If there is something like a room number, that might be the problem, maybe put that in the "location" field instead.
-            </div>
-          </div>
-          <div>
-            <ul id="location-errors" class="list-group events-table">
+              If the date has a '22nd' please change it to 22.<br>
+              If the date looks fine, it may be the time or time zone.
+              <div>
+                <ul id="date-errors" class="list-group events-table">
 
-            </ul><!--end table-->
+                </ul><!--end table-->
+              </div>
+            </section>
           </div>
-        </section>
-      </div>
-        <!-- ALL EVENTS -->
-      <div role="tabpanel" class="tab-pane page active" id="all-events-page">
-        <section class="container container-fluid">
-          <h3 class="text-primary table-title text-center">All current public events</h3>
-          <div class="row">
-            <div class="col-sm-10 col-sm-offset-2">
-              These are the events currently on the public site. <br>
-              If an event has occurred, click "archive" to remove from the public site (will still be saved in the database).<br>
-              If an event has been canceled, click "delete" to remove it from the database all together.
-            </div>
-          </div>
-          <div>
-          <ul id="all-events-table" class="list-group events-table">
+          <div role="tabpanel" class="tab-pane page" id="for-approval-page">
+            <section class=" container container-fluid">
+              <!-- DATE ERRORS -->
+              <h3 class="text-primary table-title text-center">Events submitted by the public</h3>
+              <div>
+                <ul id="for-approval" class="list-group events-table">
 
-          </ul><!--end table-->
+                </ul><!--end table-->
+              </div>
+            </section>
+          </div>
         </div>
-      </section>
-    </div>
-    <div role="tabpanel" class="tab-pane page active" id="date-errors-page">
-      <section class=" container container-fluid">
-        <!-- DATE ERRORS -->
-        <h2 class="text-primary table-title text-center">Date errors</h2>
-          These had problems with assiging a date, mostly because they are repeating events.<br>
-          To update:
-          <ul>
-            <li>enter a new Date or Time</li>
-            <li>Make sure the date and time is correct in the preview</li>
-            <li>Click "Update" to save changes to the database</li>
-          </ul>
-          If the date has a '22nd' please change it to 22.<br>
-          If the date looks fine, it may be the time or time zone.
-          <div>
-            <ul id="date-errors" class="list-group events-table">
-
-            </ul><!--end table-->
+        <footer class="footer">
+          <div class="container text-center">
+            <ul class="list-unstyled">
+              <li><a href="mailto:townhallproject2018@gmail.com" class="text-white"><i class="fa fa-envelope-square fa-3x" aria-hidden="true"></i></a>
+                <a href="https://twitter.com/townhallproject" class="text-white"><i class="fa fa-twitter-square fa-3x" aria-hidden="true"></i></a>
+                <a href="https://www.facebook.com/TownHallProject/" class="text-white"><i class="fa fa-facebook-square fa-3x" aria-hidden="true"></i></a>
+              </li>
+              <li><small>Compiled by Town Hall Project volunteers. </small></li>
+              <li><small>All efforts are made to verify accuracy of events. </small></li>
+              <li><small>Event details can change at short notice, please contact your representative to confirm.</small></li>
+            </ul>
           </div>
-        </section>
-      </div>
-    </div>
-    <footer class="footer">
-      <div class="container text-center">
-        <ul class="list-unstyled">
-          <li><a href="mailto:townhallproject2018@gmail.com" class="text-white"><i class="fa fa-envelope-square fa-3x" aria-hidden="true"></i></a>
-            <a href="https://twitter.com/townhallproject" class="text-white"><i class="fa fa-twitter-square fa-3x" aria-hidden="true"></i></a>
-            <a href="https://www.facebook.com/TownHallProject/" class="text-white"><i class="fa fa-facebook-square fa-3x" aria-hidden="true"></i></a>
-          </li>
-          <li><small>Compiled by Town Hall Project volunteers. </small></li>
-          <li><small>All efforts are made to verify accuracy of events. </small></li>
-          <li><small>Event details can change at short notice, please contact your representative to confirm.</small></li>
-        </ul>
-      </div>
-    </footer>
+        </footer>
     <!-- Vendor Files -->
     <script src="/vendor/scripts/jquery-2.1.4.js"></script>
     <script src="/vendor/scripts/bootstrap.min.js"></script>

@@ -1,12 +1,17 @@
 <li id="{{eventId}}" class="event-row list-group-item ">
-  <span class="text-secondary pull-right">Update data</span>
+  <span class="text-secondary pull-right">Edit event</span>
   <form class="form-inline " id="{{eventId}}-form">
-    <div class="main-data">
-      <div class="form-group"><strong>
-        <input type="text" class="pull-left state-info-text" readonly value="{{eventId}}">
-        <input type="text" class="pull-left timestamp" id="lastUpdated" readonly value="{{lastUpdated}}">
+    <div class="form-group">
+      <strong>
+        <input type="text" class="state-info-text pull-left" readonly value="{{eventId}}">
+        <input type="text" class="timestamp pull-left" id="lastUpdated" readonly value="{{lastUpdated}}">
+        {{#if updatedBy}}
+        <input type="text" class="pull-left" id="updatedBy" readonly value="{{updatedBy}}">
+        {{/if}}
       </strong>
-      </div>
+    </div>
+    <div class="main-data">
+
       <div class="form-group">
         <label class="sr-only" for="Member">Member</label>
         <input type="text" class="form-control" id="Member" placeholder="Member" value="{{Member}}">
@@ -83,7 +88,7 @@
     <div class="extra-data">
       <div class="form-group">
         <label for="Notes">Notes</label>
-        <textarea class="form-control" id="Notes" placeholder="Notes" value="{{Notes}}" rows=3></textarea>
+        <textarea class="form-control" id="Notes" placeholder="Notes about event that cannont be entered anywhere else." value="{{Notes}}" rows=3></textarea>
       </div>
     </div>
     <div class="text-center">

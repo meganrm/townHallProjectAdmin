@@ -87,12 +87,7 @@
   $(document).ready(function(){
     var filterSelector = $('.filter');
     $('[data-toggle="popover"]').popover({ html: true });
-    $('#button-to-form').hide();
-    $('#save-event').on('submit', eventHandler.save);
-    $('#look-up').on('submit', eventHandler.lookup);
-    $('#view-all').on('click', TownHall.viewAll);
     $('#sort-date').on('click', eventHandler.viewByDate);
-    $('#resetTable').on('click', eventHandler.resetTable);
     $('#resetTable').hide();
     filterSelector.on('click', 'a', eventHandler.filterTable);
     filterSelector.keyup(eventHandler.filterTableByInput);
@@ -104,22 +99,9 @@
     }
     $('nav').on('click', '.hash-link', function onClickGethref(event) {
       var hashid = this.getAttribute('href');
-      if (hashid === '#home' && TownHall.isMap === false) {
+      if (hashid === '#home' && TownHall.isMap === true) {
         history.replaceState({}, document.title, '.');
-        setTimeout( function(){
-          onResizeMap();
-          if (location.pathname ='/') {
-            eventHandler.resetHome();
-            TownHall.isMap = true;
-          }
-        }, 50);
-      }
-      else if (hashid === '#home' && TownHall.isMap === true) {
-        console.log('going home and map');
-        history.replaceState({}, document.title, '.');
-        eventHandler.resetHome();
-      }
-      else {
+      } else {
         location.hash = this.getAttribute('href');
       }
       $('[data-toggle="popover"]').popover('hide');
@@ -129,24 +111,14 @@
   eventHandler.metaData = function(){
     metaDataObj = new TownHall();
     metaDataObj.topZeroResults = []
-    firebase.database().ref('/lastupdated/time').on('child_added', function(snapshot){
+    firebase.database().ref('/lastupdated/').on('child_added', function(snapshot){
+      console.log(snapshot);
       metaDataObj.time = new Date(snapshot.val())
-      metaDataObj.total = TownHall.allTownHallsFB.length
-      var topZeros = firebase.database().ref('zipZeroResults/').orderByValue().limitToLast(10);
-      topZeros.once('value',function(snapshot){
-        console.log(snapshot.val());
-        Object.keys(snapshot.val()).forEach(function(key) {
-          console.log(key, snapshot.val()[key]);
-          metaDataObj.topZeroResults.push ({zip:key, count: snapshot.val()[key]})
-
-        })
-      }).then(function(ele){
-        $('.metadata').append(metaDataObj.toHtml($('#meta-data-template')));
-
-      })
-
-    })
-  }
+      metaDataObj.total = TownHall.allTownHalls.length
+        var metaDataTemplate = Handlebars.getTemplate('metaData');
+        $('.metadata').html(metaDataTemplate(metaDataObj));
+    });
+  };
 
   eventHandler.checkTime = function (time){
     var times = time.split(':');
@@ -167,6 +139,7 @@
       var id = ele.eventId;
       obj = {};
       TownHall.allTownHallsFB[ele.eventId] = ele;
+      TownHall.allTownHalls.push(ele);
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
       var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
@@ -205,8 +178,6 @@
             break;
         }
       }
-
-
       if (!ele.lat) {
         $('#location-errors').append($toAppend.clone());
       }
@@ -216,9 +187,6 @@
       $('#all-events-table').append($toAppend);
     });
   };
-
-  eventHandler.readData();
-  eventHandler.metaData();
 
 
   module.eventHandler = eventHandler;

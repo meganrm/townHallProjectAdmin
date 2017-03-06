@@ -89,11 +89,9 @@
     if (this.checked) {
       $dateInput.attr('type', 'text').attr('id', 'dateString');
       $checkbox.text('Click to enter formatted date');
-      console.log('checked');
     } else {
       $dateInput.attr('type', 'date').attr('id', 'yearMonthDay');
       $checkbox.text('Click to enter repeating event description');
-      console.log('not checked');
     }
   };
 
@@ -164,6 +162,9 @@
     if (user) {
     // User is signed in.
       console.log(user.displayName, ' is signed in');
+      eventHandler.readData();
+      eventHandler.metaData();
+
     } else {
       newEventView.signIn();
       // No user is signed in.

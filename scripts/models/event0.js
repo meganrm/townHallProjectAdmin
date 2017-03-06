@@ -7,8 +7,8 @@
 
 
   //Global data stete
-  TownHall.allTownHalls = {};
-  TownHall.allTownHallsFB = [];
+  TownHall.allTownHalls = [];
+  TownHall.allTownHallsFB = {};
   TownHall.currentContext = [];
   TownHall.filteredResults = [];
   TownHall.filterIds = {
