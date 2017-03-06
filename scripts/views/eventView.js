@@ -156,16 +156,15 @@
       TownHall.allTownHallsFB[ele.eventId] = ele;
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
-      var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs')
+      var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
 
       var $toAppend = $(tableRowTemplate(ele));
       switch (ele.meetingType.slice(0,4)) {
         case 'Tele':
-          $toAppend.find('.location-data').empty();
-          $toAppend.find('.location-data').append(teleInputsTemplate(ele));
+          $toAppend.find('.location-data').html(teleInputsTemplate(ele));
           break;
         case 'Tick':
-          $toAppend.find('.location-data').append(ticketInputsTemplate(ele));
+          $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
           break;
       }
 

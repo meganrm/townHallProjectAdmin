@@ -19,9 +19,12 @@ module.exports = {
       ERROR,
       'always',
     ],
+    'prefer-arrow-callback': OFF,
+    'no-undef': OFF,
     'vars-on-top': OFF,
     'no-plusplus': OFF,
     'no-var': OFF,
+    'func-names': OFF,
     'prefer-template': OFF,
     'quote-props': [
       ERROR,

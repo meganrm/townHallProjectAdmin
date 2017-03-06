@@ -100,11 +100,19 @@
 
       <div role="tabpanel" class="tab-pane page active" id="location-errors-page">
         <section class="container container-fluid">
-          <h2 class="text-primary table-title text-center">Location Errors</h2>
+          <h3 class="text-primary table-title text-center">Location Errors</h3>
           <div class="row">
-                These had problems with the geocoding. Some are obvious, others are not.<br>
-                If there is no actual address, leave the street address as a single space.<br>
-                If there is something like a room number, that might be the problem, maybe put that in the "location" field instead.
+            <div class="col-sm-10 col-sm-offset-2">
+              These had problems with the geocoding.<br>
+              To update:
+              <ul>
+                <li>Enter a new address and click "Geocode!"</li>
+                <li>Make sure the address is correct in the preview</li>
+                <li>Click "Update" to save changes to the database</li>
+              </ul>
+              If there is no actual address, leave the street address blank.<br>
+              If there is something like a room number, that might be the problem, maybe put that in the "location" field instead.
+            </div>
           </div>
           <div>
             <ul id="location-errors" class="list-group events-table">
@@ -184,8 +192,15 @@
       </div>
         <!-- ALL EVENTS -->
       <div role="tabpanel" class="tab-pane page active" id="all-events-page">
-        <section class="container-fluid">
-          <h2 class="text-primary table-title text-center">All events</h2>
+        <section class="container container-fluid">
+          <h3 class="text-primary table-title text-center">All current public</h3>
+          <div class="row">
+            <div class="col-sm-10 col-sm-offset-2">
+              These are the events currently on the public site. <br>
+              If an event has occurred, click "archive" to remove from the public site (will still be saved in the database).<br>
+              If an event has been canceled, click "delete" to remove it from the database all together.
+            </div>
+          </div>
           <div>
           <ul id="all-events-table" class="list-group events-table">
             <li class="list-group-item list-group-heading">
@@ -267,6 +282,12 @@
         <!-- DATE ERRORS -->
         <h2 class="text-primary table-title text-center">Date errors</h2>
           These had problems with assiging a date, mostly because they are repeating events.<br>
+          To update:
+          <ul>
+            <li>enter a new Date or Time</li>
+            <li>Make sure the date and time is correct in the preview</li>
+            <li>Click "Update" to save changes to the database</li>
+          </ul>
           If the date has a '22nd' please change it to 22.<br>
           If the date looks fine, it may be the time or time zone.
           <div>

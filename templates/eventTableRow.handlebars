@@ -33,69 +33,94 @@
       <div class="input-group">
           <input type="text" class="form-control" placeholder="Address" id="address" value="{{address}}">
           <span class="input-group-btn">
-            <button class="btn btn-default" type="button" id="geocode-button">GeoCode!</button>
+            <button class="btn btn-default disabled" type="button" id="geocode-button">GeoCode!</button>
           </span>
       </div><!-- /input-group -->
       <div class="form-group">
         <label class="sr-only" for="addressType">Address Type</label>
         <input type="text" class="" id="addressType" placeholder="Address type" value="street" readonly>
       </div>
+
+      <div class="form-group">
+        <label class="sr-only" for="locationCheck">Location Check</label>
+        <input type="text" class="text-success" id="locationCheck" placeholder="please geocode" {{#if lat}}value="Location is valid"{{/if }} readonly>
+      </div>
     </div>
     <div class="time-data">
       <div class="checkbox">
         <label>
-          <input type="checkbox"> Repeating Event
+          <input type="checkbox">Enter repeating date (ex. 'First Wed'), instead of actual date.
         </label>
       </div>
       <div class="form-group">
         <label class="sr-only" for="yearMonthDay">Date</label>
-        <input type="date" class="form-control" id="yearMonthDay" placeholder="Date" value="">
+        <input type="date" class="form-control datetime" id="yearMonthDay" placeholder="Date" value="">
       </div>
       <div class="form-group">
-        <label for="Time">Start Time</label>
-        <input type="time" class="form-control" id="timeStart24" placeholder="Start Time" value="">
+        <label for="Time">Start Time (HH:MM AM/PM)</label>
+        <input type="time" class="form-control datetime" id="timeStart24" placeholder="Start Time" value="">
       </div>
       <div class="form-group">
-        <label for="endTime">End Time</label>
-        <input type="time" class="form-control" id="timeEnd24" placeholder="End Time" value="">
+        <label for="endTime">End Time (HH:MM AM/PM)</label>
+        <input type="time" class="form-control datetime" id="timeEnd24" placeholder="End Time" value="">
+      </div>
+      <div class="form-group">
+        <label class="sr-only" for="dateChanged">Date Changed Flag</label>
+        <input type="hidden" class="form-control" id="dateChanged" placeholder="" value="true" readonly>
       </div>
     </div>
     <div class="extra-data">
       <div class="form-group">
-        <label for="link">URL related to event</label>
+        <label for="link">URL related to event (optional)</label>
         <input type="url" class="form-control" id="link" placeholder="Link" value="{{Link}}">
+      </div>
+      <div class="form-group">
+        <label  for="linkName">Link name (optional)</label>
+        <input type="text" class="form-control" id="linkName" placeholder="Link Name" value="{{linkName}}">
       </div>
     </div>
     <div class="extra-data">
       <div class="form-group">
         <label for="Notes">Notes</label>
-        <input type="text" class="form-control" id="Notes" placeholder="Notes" value="{{Notes}}">
+        <textarea class="form-control" id="Notes" placeholder="Notes" value="{{Notes}}" rows=3></textarea>
       </div>
     </div>
-    <button type="button" class="btn btn-secondary " id="archive" data-id="{{eventId}}">Archive</button>
-    <button type="button" class="btn btn-secondary " id="delete" data-id="{{eventId}}">Delete</button>
-    <button type="submit" class="btn btn-secondary ">Save</button>
+    <div class="text-center">
+        <div class="btn-group " role="group" aria-label="...">
+          <button type="button" class="btn btn-blue " id="archive" data-id="{{eventId}}">Archive</button>
+          <button type="button" class="btn btn-secondary " id="delete" data-id="{{eventId}}">Delete</button>
+          <button type="submit" class="btn" id="update-button">Update</button>
+        </div>
+      </div>
+    </div>
+
+
   </form>
-  <span class="text-secondary pull-right">Preview</span>
-      <span class="member">
-      <h4>
-      {{Member}}
-      <small>({{Party}})  {{State}},   {{District}}
-      </small>
-    </h4>
-    <span class="badge badge-default badge-pill pull-right">  {{meetingType}}</span>
-    </span>
-    <ul class="list-inline list-inline-separated">
-      {{#if Date}}
-      <li>{{Date}}
-      </li>
-      {{/if}}
-      {{#if Time}}
-      <li>{{Time}}{{#if timeZone}}, {{timeZone}}{{/if}}  </li>
-      {{/if}}
-      {{#if Location}}
-      <li>{{Location}}</li>
-      {{/if}}
-      <li>{{address}}</li>
-    </ul>
+  <div class="preview">
+    <span class="text-secondary pull-right">Preview</span>
+        <span class="member">
+        <h4>
+        {{Member}}
+        <small>({{Party}})  {{State}},   {{District}}
+        </small>
+      </h4>
+      <span class="badge badge-default badge-pill pull-right">  {{meetingType}}</span>
+      </span>
+      <ul class="list-inline list-inline-separated">
+        {{#if Date}}
+        <li>{{Date}}
+        </li>
+        {{/if}}
+        {{#if Time}}
+        <li>{{Time}}{{#if timeZone}}, {{timeZone}}{{/if}}  </li>
+        {{/if}}
+        {{#if Location}}
+        <li>{{Location}}</li>
+        {{/if}}
+        <li>{{address}}</li>
+        {{#if phoneNumber}}
+        <li>{{phoneNumber}}</li>
+        {{/if}}
+      </ul>
+  </div>
 </li>

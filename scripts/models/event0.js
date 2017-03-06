@@ -140,7 +140,7 @@
       var month = this.dateObj.getMonth() + 1;
       var month = month.toString().length === 1 ? (0 + month.toString()) :month.toString();
       var day = this.dateObj.getDate();
-      var day  = day.toString().length === 1 ? (0 + day.toString()) :day.toString();
+      day = day.toString().length === 1 ? (0 + day.toString()) :day.toString();
       var yearMonthDay = this.dateObj.getFullYear() + '-' + month + '-'+day ;
       this.timeStart24 = TownHall.toTwentyFour(this.Time);
       // If no ending time, just add 2 hours
@@ -162,7 +162,7 @@
     }
   };
 
-  TownHall.prototype.isInFuture = function (){
+  TownHall.prototype.isInFuture = function () {
     this.dateObj = new Date(this.Date);
     var now = new Date();
     if (now - this.dateObj < 0) {
@@ -170,8 +170,8 @@
     }
   };
 
-  //Handlebars write
-  TownHall.prototype.toHtml= function(templateid){
+  // Handlebars write
+  TownHall.prototype.toHtml = function (templateid){
     var source = $(templateid).html();
     var renderTemplate = Handlebars.compile(source);
     return renderTemplate(this);
@@ -206,7 +206,7 @@ TownHall.cacheGeocode = function(addresskey, lat, lng, address, type) {
             // TownHall.cacheGeocode(addresskey, newTownHall.lat, newTownHall.lng, newTownHall.address, type)
             resolve(newTownHall)
           } else {
-            console.log('error geocoding', newTownHall);
+            reject('error geocoding', newTownHall)
             // firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).set(newTownHall);
           }
         },
@@ -248,7 +248,7 @@ TownHall.cacheGeocode = function(addresskey, lat, lng, address, type) {
     });
   };
 
-  //Gets everything from the google doc and does geo coding in batches
+  // Gets everything from the google doc and does geo coding in batches
   TownHall.fetchAllGoogle = function(next) {
     TownHall.allTownHalls = [];
     url = 'https://sheets.googleapis.com/v4/spreadsheets/1yq1NT9DZ2z3B8ixhid894e77u9rN5XIgOwWtTW72IYA/values/Upcoming%20Events!C:S?key=AIzaSyBw6HZ7Y4J1dATyC4-_mKmt3u0hLRRqthQ';
