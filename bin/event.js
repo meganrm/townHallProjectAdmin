@@ -104,11 +104,11 @@
     var $regExUrl = /(https?:\/\/[^\s]+)/g
    // make the urls hyper links
     if (this.Notes && this.Notes.length > 0) {
-      var withAnchors = this.Notes.replace($regExUrl, '<a href="$1" target="_blank">Link</a>')
+      var withAnchors = this.Notes.replace($regExUrl, '<a href="$1" target="_blank">More Information</a>')
       this.Notes = '<p>' + withAnchors + '</p>'
     }
     if (this.RSVP && this.RSVP.length > 0) {
-      var withAnchors = this.RSVP.replace($regExUrl, '<a href="$1" target="_blank">Link</a>')
+      var withAnchors = this.RSVP.replace($regExUrl, '<a href="$1" target="_blank">RSVP here</a>')
       this.RSVP = '<p>' + withAnchors + '</p>'
     }
   }
@@ -119,7 +119,9 @@
     var ampm = time.split(' ')[1]
     if (ampm === 'PM') {
       var hour = hourmin.split(':')[0]
-      hour = Number(hour) + 12
+      if (Number(hour) !== 12) {
+        hour = Number(hour) + 12
+      }
       hourmin = hour + ':' + hourmin.split(':')[1]
     }
     return hourmin + ':' + '00'
@@ -146,6 +148,7 @@
     this.dateString = this.dateObj.toDateString()
     if (this.dateString !== 'Invalid Date') {
       this.dateValid = true
+      console.log('got date', this.dateString, this.eventId);
       var month = this.dateObj.getMonth() + 1
       month = month.toString().length === 1 ? (0 + month.toString()) : month.toString()
       var day = this.dateObj.getDate()
@@ -162,7 +165,7 @@
       this.yearMonthDay = yearMonthDay
       this.dateObj = this.dateObj.getTime()
     } else {
-      console.log('no date', this.Date + ' ' + time + ' ' + this.timeZone)
+      console.log('no date', this.dateString, this.eventId)
     }
     return this
   }
@@ -305,9 +308,10 @@
         var firebaseUpdate = new Date(snapshot.val().lastUpdated).getTime()
         var googleUpdate = new Date(newTownHall.lastUpdated).getTime()
         // If the google doc timestamp is the same or older, don't update
-        if (firebaseUpdate >= googleUpdate) {
+        if (firebaseUpdate >= googleUpdate || !(googleUpdate)) {
           // console.log('already in database', 'firebase: ', new Date(snapshot.val().lastUpdated),'google: ', new Date(newTownHall.lastUpdated) );
         } else {
+          console.log('already in database, but updated', firebaseUpdate, 'google: ', googleUpdate);
           newTownHall.formattAddressQuery()
         }
       } else if (snapshot.child('lat').exists() === false) {
