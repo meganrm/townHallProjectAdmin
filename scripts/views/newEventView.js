@@ -43,7 +43,8 @@
           break;
         case 'yearMonthDay':
           newObj[cur.id] = $curValue;
-          newObj.Date = new Date($curValue).toDateString();
+          console.log($curValue.replace(/-/g, '/'));
+          newObj.Date = new Date($curValue.replace(/-/g, '/')).toDateString();
         default:
           newObj[cur.id] = $curValue;
       }
