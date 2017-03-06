@@ -84,13 +84,13 @@
     event.preventDefault();
     var $input = $(this);
     var $form = $input.parents('form');
-    var $dateInput = $form.find('.date');
+    var $dateInput = $form.find('.repeating');
     var $checkbox = $form.find('.checkbox-label');
     if (this.checked) {
-      $dateInput.attr('type', 'text').attr('id', 'dateString');
-      $checkbox.text('Click to enter formatted date');
+      $dateInput.show().removeClass('hidden');
     } else {
-      $dateInput.attr('type', 'date').attr('id', 'yearMonthDay');
+      // $dateInput.attr('type', 'date').attr('id', 'yearMonthDay');
+      $dateInput.hide();
       $checkbox.text('Click to enter repeating event description');
     }
   };

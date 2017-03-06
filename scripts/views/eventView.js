@@ -112,7 +112,6 @@
     metaDataObj = new TownHall();
     metaDataObj.topZeroResults = []
     firebase.database().ref('/lastupdated/').on('child_added', function(snapshot){
-      console.log(snapshot);
       metaDataObj.time = new Date(snapshot.val())
       metaDataObj.total = TownHall.allTownHalls.length
         var metaDataTemplate = Handlebars.getTemplate('metaData');
@@ -143,7 +142,7 @@
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
       var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
-      if (ele.timeStart24) {
+      if (ele.timeStart24 && ele.timeEnd24) {
         if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
           console.log(ele.eventId);
         }
