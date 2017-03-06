@@ -6,19 +6,44 @@
 
   var newEventView = {};
 
+  newEventView.humanTime = function(time) {
+    var timeSplit = time.split(':');
+    var hours;
+    var minutes;
+    var meridian;
+    hours = timeSplit[0];
+    minutes = timeSplit[1];
+    if (hours > 12) {
+      meridian = 'PM';
+      hours -= 12;
+    } else if (hours < 12) {
+      meridian = 'AM';
+      if (hours == 0) {
+        hours = 12;
+      }
+    } else {
+      meridian = 'PM';
+    }
+    return hours + ':' + minutes + ' ' + meridian;
+  }
+
   newEventView.updatedView = function updatedView($form, $listgroup) {
     var preview = Handlebars.getTemplate('previewEvent');
     var updated = $form.find('.edited').get();
     var updates = updated.reduce(function (newObj, cur) {
+      var $curValue = $(cur).val()
       switch (cur.id) {
         case 'timeStart24':
-        newObj.timeStart24 = $(cur).val() + ':00';
+        newObj.timeStart24 = $curValue + ':00';
+        newObj.Time = newEventView.humanTime($curValue)
+        console.log(newObj.Time);
           break;
         case 'timeEnd24':
-        newObj.timeEnd24 = $(cur).val() + ':00';
+        newObj.timeEnd24 = $curValue + ':00';
+        newObj.timeEnd = newEventView.humanTime($curValue)
           break;
         default:
-          newObj[cur.id] = $(cur).val();
+          newObj[cur.id] = $curValue;
       }
       return newObj;
     }, {});
@@ -80,12 +105,14 @@
     if (updated.length > 0) {
       var newTownHall = newEventView.updatedView($form, $listgroup);
       newTownHall.lastUpdated = $form.find('#lastUpdated').val();
+      newTownHall.updatedBy = firebase.auth().currentUser.email;
       console.log('writing to database: ', newTownHall);
-      // eventHandler.update(newTownHall , id);
+      newTownHall.updateFB($form.attr('id').split('-')[0]);
+      $form.find('#update-button').addClass('btn-blue');
     }
   };
 
-  $('.events-table').on('submit', 'form', newEventView.submitForm)
+  $('.events-table').on('submit', 'form', newEventView.submitForm);
   $('.events-table').on('keyup', '.form-control', newEventView.formChanged);
   $('.events-table').on('change', '.datetime', newEventView.dateChanged);
   $('.events-table').on('change', '.date-string', newEventView.dateString);

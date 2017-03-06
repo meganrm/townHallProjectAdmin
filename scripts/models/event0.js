@@ -52,14 +52,14 @@
   // writes to townhall, can take a key for update
   TownHall.prototype.updateFB = function (key) {
     var newEvent = this;
-    var metaData = {eventId:newEvent.eventId,lastUpdated:newEvent.lastUpdated }
+    var metaData = {eventId: key, lastUpdated: newEvent.lastUpdated }
     var updates = {};
-    updates['/townHalls/' + key] = newEvent;
+    firebase.database().ref('/townHalls/' + key).update(newEvent);
     updates['/townHallIds/' + key] = metaData;
-    console.log('updates',updates);
+    console.log('updates', updates);
     return firebase.database().ref().update(updates).catch(function(error){
       console.log('could not update', newEvent);
-    });;
+    });
   };
 
   TownHall.saveZipLookup = function (zip) {

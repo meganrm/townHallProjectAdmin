@@ -16,14 +16,27 @@
       {{#if Time}}
       <li>{{Time}}{{#if timeZone}}, {{timeZone}}{{/if}}  </li>
       {{/if}}
-
+      {{#if timeEnd}}
+      <li>- {{timeEnd}}{{#if timeZone}}, {{timeZone}}{{/if}}</li>
+      {{/if}}
       {{#if timeStart24}}
       <li><em>(24 Hour Time: {{timeStart24}}-{{timeEnd24}})</em></li>
       {{/if}}
-
+      {{#if eventName}}
+      <li>{{eventName}}</li>
+      {{/if}}
       {{#if Location}}
       <li>{{Location}}</li>
       {{/if}}
       <li>{{address}}</li>
+      {{#if phoneNumber}}
+      <li>{{phoneNumber}}</li>
+      {{/if}}
+      {{#if RSVP}}
+      <li>{{{RSVP}}}</li>
+      {{/if}}
+      {{#if Notes}}
+      <li>{{{Notes}}}</li>
+      {{/if}}
     </ul>
 </div>

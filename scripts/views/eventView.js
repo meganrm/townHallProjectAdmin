@@ -148,6 +148,19 @@
     })
   }
 
+  eventHandler.checkTime = function (time){
+    var times = time.split(':');
+    var hour = times[0];
+    var min = times[1];
+    if (times[0].length === 1) {
+      hour = '0' + hour;
+    }
+    if (times[1].length === 1) {
+      min = '0' + min;
+    }
+    return hour + ':' + min + ':' + times[2];
+  }
+
   eventHandler.readData = function (){
     firebase.database().ref('/townHalls/').on('child_added', function getSnapShot(snapshot) {
       var ele = new TownHall(snapshot.val());
@@ -157,6 +170,16 @@
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
       var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
+      if (ele.timeStart24) {
+        if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
+          console.log(ele.eventId);
+        }
+        else {
+          ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
+          ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
+        }
+      }
+
       if (ele.yearMonthDay) {
         var month = ele.yearMonthDay.split('-')[1];
         var day = ele.yearMonthDay.split('-')[2];
@@ -170,14 +193,19 @@
       }
 
       var $toAppend = $(tableRowTemplate(ele));
-      switch (ele.meetingType.slice(0,4)) {
-        case 'Tele':
-          $toAppend.find('.location-data').html(teleInputsTemplate(ele));
-          break;
-        case 'Tick':
-          $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
-          break;
+      if (!ele.meetingType) {
+        console.log(ele);
+      } else {
+        switch (ele.meetingType.slice(0,4)) {
+          case 'Tele':
+            $toAppend.find('.location-data').html(teleInputsTemplate(ele));
+            break;
+          case 'Tick':
+            $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
+            break;
+        }
       }
+
 
       if (!ele.lat) {
         $('#location-errors').append($toAppend.clone());
