@@ -38,11 +38,13 @@
     var newEvent = this;
     var metaData = { eventId: key, lastUpdated: newEvent.lastUpdated };
     var updates = {};
-    firebase.database().ref('/townHalls/' + key).update(newEvent);
-    updates['/townHallIds/' + key] = metaData;
-    console.log('updates', updates);
-    return firebase.database().ref().update(updates).catch(function (error) {
-      console.log('could not update', newEvent);
+    return new Promise(function (resolve, reject) {
+      firebase.database().ref('/townHalls/' + key).update(newEvent);
+      updates['/townHallIds/' + key] = metaData;
+      resolve(newEvent);
+      return firebase.database().ref().update(updates).catch(function (error) {
+        reject('could not update', newEvent);
+      });
     });
   };
 

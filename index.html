@@ -66,181 +66,201 @@
         </div>
       </div>
     </nav><!-- end nav -->
-    <div class="tab-content">
-      <div role="tabpanel" class="tab-pane page active" id="home">
-        <section class=" container container-fluid">
-            <h3 class="text-primary table-title text-center">Town Hall Admin Site</h3>
-            <div class="container">
-              <div class="row">
-                <div class="col-md-12">
-                  <p>The Archive and Delete buttons are not active yet. You can update events, they will be saved with a new "last updated" timestamp, and your user email (we could do name instead).</p>
-                  <div class="metadata">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-2">
+        <section class="session-data">
+          <h4>Welcome </h4>
+          <button type="button" name="button" id="scroll-to-top" class="btn btn-white" style="visibility:hidden;"><i class="fa fa-chevron-up fa-4x" aria-hidden="true"></i></button>
+          <span>Edited this session:</span>
+          <ul id="edited" class="list-group events-table">
+
+          </ul><!--end table-->
+        </section>
+      </div>
+      <div class="col-md-10">
+        <div class="tab-content">
+        <div role="tabpanel" class="tab-pane page active" id="home">
+          <section class="">
+              <h3 class="text-primary table-title text-center">Town Hall Admin Site</h3>
+              <div class="">
+                <div class="row">
+                  <div class="col-md-12">
+                    <p>The Archive and Delete buttons are not active yet. You can update events, they will be saved with a new "last updated" timestamp, and your user email (we could do name instead).</p>
+                    <div class="metadata">
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-        </div>
-        <div role="tabpanel" class="tab-pane page" id="new-page">
-          <section class=" container container-fluid">
-            <div class="new-event-form form-horizontal">
-              <form class="" action="index.html" method="post">
-                <div class="form-group">
-                  <label  for="Member" >Member</label>
-                  <input type="text" class="form-control " id="Member" placeholder="Full name" value="">
-                  <span id="helpBlock" class="help-block">Only first name and last name, not titles</span>
-                </div>
-                <div class="form-group">
-                  <label  for="State" >Home State</label>
-                  <input type="text" class="form-control " id="State" placeholder="Home State" value="">
-                </div>
-                <div class="form-group">
-                  <label  for="District">District</label>
-                  <input type="text" class="form-control " id="District" placeholder="District" value="">
-                  <span id="helpBlock" class="help-block">For Senate, write "Senate"; For At-Large, write MT-At-Large; Other examples: OH-08, TX-33, NY-22</span>
-                </div>
-                <div class="form-group">
+            </section>
+          </div>
+
+          <div role="tabpanel" class="tab-pane page" id="new-page">
+            <section class="">
+              <div class="new-event-form form-horizontal">
+                <form class="" action="index.html" method="post">
+                  <div class="form-group">
+                    <label  for="Member" >Member</label>
+                    <input type="text" class="form-control " id="Member" placeholder="Full name" value="">
+                    <span id="helpBlock" class="help-block">Only first name and last name, not titles</span>
+                  </div>
+                  <div class="form-group">
+                    <label  for="State" >Home State</label>
+                    <input type="text" class="form-control " id="State" placeholder="Home State" value="">
+                  </div>
+                  <div class="form-group">
+                    <label  for="District">District</label>
+                    <input type="text" class="form-control " id="District" placeholder="District" value="">
+                    <span id="helpBlock" class="help-block">For Senate, write "Senate"; For At-Large, write MT-At-Large; Other examples: OH-08, TX-33, NY-22</span>
+                  </div>
+                  <div class="form-group">
+                    <div class="input-group">
+                      <input type="text" class="form-control" aria-label="..." id="Party" value="Party" readonly>
+                      <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                          <li><a data-value="Democratic" href="#">Democratic</a></li>
+                          <li><a data-value="Republican" href="#">Republican</a></li>
+                          <li><a data-value="Independent" href="#">Independent</a></li>
+                        </ul>
+                      </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                  </div><!-- /form-group -->
                   <div class="input-group">
-                    <input type="text" class="form-control" aria-label="..." id="Party" value="Party" readonly>
+                    <input type="text" class="form-control" aria-label="..." id="meetingType" value="meeting type" readonly>
                     <div class="input-group-btn">
                       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
                       <ul class="dropdown-menu dropdown-menu-right">
-                        <li><a data-value="Democratic" href="#">Democratic</a></li>
-                        <li><a data-value="Republican" href="#">Republican</a></li>
-                        <li><a data-value="Independent" href="#">Independent</a></li>
+                        <li><a data-value="Town Hall" href="#">Town Hall</a></li>
+                        <li><a data-value="Tele-Town Hall" href="#">Tele-Town Hall</a></li>
+                        <li><a data-value="Ticketed Event" href="#">Ticketed Event</a></li>
+                        <li><a data-value="Empty Chair Town Hall" href="#">Empty Chair Town Hall</a></li>
+                        <li><a data-value="Coffee" href="#">Coffee</a></li>
                       </ul>
                     </div><!-- /btn-group -->
                   </div><!-- /input-group -->
-                </div><!-- /form-group -->
-                <div class="input-group">
-                  <input type="text" class="form-control" aria-label="..." id="meetingType" value="meeting type" readonly>
-                  <div class="input-group-btn">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                      <li><a data-value="Town Hall" href="#">Town Hall</a></li>
-                      <li><a data-value="Tele-Town Hall" href="#">Tele-Town Hall</a></li>
-                      <li><a data-value="Ticketed Event" href="#">Ticketed Event</a></li>
-                      <li><a data-value="Empty Chair Town Hall" href="#">Empty Chair Town Hall</a></li>
-                      <li><a data-value="Coffee" href="#">Coffee</a></li>
-                    </ul>
-                  </div><!-- /btn-group -->
-                </div><!-- /input-group -->
-                <div class="time-data">
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" class="date-string">
-                      <span class="checkbox-label">Click for repeating event (eg. 'First Wed')</span>
-                    </label>
+                  <div class="time-data">
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" class="date-string">
+                        <span class="checkbox-label">Click for repeating event (eg. 'First Wed')</span>
+                      </label>
+                    </div>
+                    <div class="form-group">
+                      <label  for="yearMonthDay" >Date</label>
+                      <input type="date" class="form-control datetime date" id="yearMonthDay" placeholder="Date" value="{{yearMonthDay}}">
+                    </div>
+                    <div class="form-group hidden repeating">
+                      <label  for="repeatingString">Repeating Event</label>
+                      <input type="text" class="form-control" id="repeatingEvent" placeholder="Eg. First Tuesday of the month" value="{{repeatingEvent}}">
+                    </div>
+                    <div class="form-group">
+                      <label for="Time">Start Time (HH:MM AM/PM)</label>
+                      <input type="time" class="form-control datetime" id="timeStart24" placeholder="Start Time" value="{{timeStart24}}">
+                    </div>
+                    <div class="form-group">
+                      <label for="endTime">End Time (HH:MM AM/PM)</label>
+                      <input type="time" class="form-control datetime" id="timeEnd24" placeholder="End Time" value="{{timeEnd24}}">
+                    </div>
                   </div>
-                  <div class="form-group">
-                    <label  for="yearMonthDay" >Date</label>
-                    <input type="date" class="form-control datetime date" id="yearMonthDay" placeholder="Date" value="{{yearMonthDay}}">
-                  </div>
-                  <div class="form-group hidden repeating">
-                    <label  for="repeatingString">Repeating Event</label>
-                    <input type="text" class="form-control" id="repeatingEvent" placeholder="Eg. First Tuesday of the month" value="{{repeatingEvent}}">
-                  </div>
-                  <div class="form-group">
-                    <label for="Time">Start Time (HH:MM AM/PM)</label>
-                    <input type="time" class="form-control datetime" id="timeStart24" placeholder="Start Time" value="{{timeStart24}}">
-                  </div>
-                  <div class="form-group">
-                    <label for="endTime">End Time (HH:MM AM/PM)</label>
-                    <input type="time" class="form-control datetime" id="timeEnd24" placeholder="End Time" value="{{timeEnd24}}">
-                  </div>
+                </form>
+              </div>
+            </section>
+          </div>
+          <div role="tabpanel" class="tab-pane page" id="location-errors-page">
+            <section class="">
+              <h3 class="text-primary table-title text-center">Location Errors</h3>
+              <div class="row">
+                <div class="col-sm-10 col-sm-offset-2">
+                  These had problems with the geocoding.<br>
+                  To update:
+                  <ul>
+                    <li>Enter a new address and click "Geocode!"</li>
+                    <li>Make sure the address is correct in the preview</li>
+                    <li>Click "Update" to save changes to the database</li>
+                  </ul>
+                  If there is no actual address, leave the street address blank.<br>
+                  If there is something like a room number, that might be the problem, maybe put that in the "location" field instead.
                 </div>
-              </form>
-            </div>
-          </section>
-        </div>
+              </div>
+              <div>
+                <ul id="location-errors" class="list-group events-table">
 
-        <div role="tabpanel" class="tab-pane page" id="location-errors-page">
-          <section class="container container-fluid">
-            <h3 class="text-primary table-title text-center">Location Errors</h3>
-            <div class="row">
-              <div class="col-sm-10 col-sm-offset-2">
-                These had problems with the geocoding.<br>
+                </ul><!--end table-->
+              </div>
+            </section>
+          </div>
+            <!-- ALL EVENTS -->
+          <div role="tabpanel" class="tab-pane page" id="all-events-page">
+            <section class="">
+              <h3 class="text-primary table-title text-center">All current public events</h3>
+              <div class="row">
+                <div class="col-sm-10 col-sm-offset-2">
+                  These are the events currently on the public site. <br>
+                  If an event has occurred, click "archive" to remove from the public site (will still be saved in the database).<br>
+                  If an event has been canceled, click "delete" to remove it from the database all together.
+                </div>
+              </div>
+              <div>
+                <ul id="all-events-table" class="list-group events-table">
+
+                </ul><!--end table-->
+              </div>
+            </section>
+          </div>
+          <div role="tabpanel" class="tab-pane page" id="date-errors-page">
+            <section class=" ">
+              <!-- DATE ERRORS -->
+              <h3 class="text-primary table-title text-center">No "add to calendar" possible</h3>
+                These had problems with assiging a date, mostly because they are repeating events.<br>
+                If there is no location, it cannot assign a timezone, which is also needed for the calendar event.<br>
                 To update:
                 <ul>
-                  <li>Enter a new address and click "Geocode!"</li>
-                  <li>Make sure the address is correct in the preview</li>
+                  <li>enter a new Date or Time</li>
+                  <li>Make sure the date and time is correct in the preview</li>
                   <li>Click "Update" to save changes to the database</li>
                 </ul>
-                If there is no actual address, leave the street address blank.<br>
-                If there is something like a room number, that might be the problem, maybe put that in the "location" field instead.
-              </div>
-            </div>
-            <div>
-              <ul id="location-errors" class="list-group events-table">
+                If the date has a '22nd' please change it to 22.<br>
+                If the date looks fine, it may be the time or time zone.
+                <div>
+                  <ul id="date-errors" class="list-group events-table">
 
-              </ul><!--end table-->
+                  </ul><!--end table-->
+                </div>
+              </section>
             </div>
-          </section>
-        </div>
-          <!-- ALL EVENTS -->
-        <div role="tabpanel" class="tab-pane page" id="all-events-page">
-          <section class="container container-fluid">
-            <h3 class="text-primary table-title text-center">All current public events</h3>
-            <div class="row">
-              <div class="col-sm-10 col-sm-offset-2">
-                These are the events currently on the public site. <br>
-                If an event has occurred, click "archive" to remove from the public site (will still be saved in the database).<br>
-                If an event has been canceled, click "delete" to remove it from the database all together.
-              </div>
-            </div>
-            <div>
-              <ul id="all-events-table" class="list-group events-table">
+            <div role="tabpanel" class="tab-pane page" id="for-approval-page">
+              <section class=" container container-fluid">
+                <!-- DATE ERRORS -->
+                <h3 class="text-primary table-title text-center">Events submitted by the public</h3>
+                <div>
+                  <ul id="for-approval" class="list-group events-table">
 
-              </ul><!--end table-->
+                  </ul><!--end table-->
+                </div>
+              </section>
             </div>
-          </section>
-        </div>
-        <div role="tabpanel" class="tab-pane page" id="date-errors-page">
-          <section class=" container container-fluid">
-            <!-- DATE ERRORS -->
-            <h3 class="text-primary table-title text-center">No "add to calendar" possible</h3>
-              These had problems with assiging a date, mostly because they are repeating events.<br>
-              If there is no location, it cannot assign a timezone, which is also needed for the calendar event.<br>
-              To update:
-              <ul>
-                <li>enter a new Date or Time</li>
-                <li>Make sure the date and time is correct in the preview</li>
-                <li>Click "Update" to save changes to the database</li>
-              </ul>
-              If the date has a '22nd' please change it to 22.<br>
-              If the date looks fine, it may be the time or time zone.
-              <div>
-                <ul id="date-errors" class="list-group events-table">
-
-                </ul><!--end table-->
-              </div>
-            </section>
           </div>
-          <div role="tabpanel" class="tab-pane page" id="for-approval-page">
-            <section class=" container container-fluid">
-              <!-- DATE ERRORS -->
-              <h3 class="text-primary table-title text-center">Events submitted by the public</h3>
-              <div>
-                <ul id="for-approval" class="list-group events-table">
 
-                </ul><!--end table-->
-              </div>
-            </section>
+
           </div>
         </div>
-        <footer class="footer">
-          <div class="container text-center">
-            <ul class="list-unstyled">
-              <li><a href="mailto:townhallproject2018@gmail.com" class="text-white"><i class="fa fa-envelope-square fa-3x" aria-hidden="true"></i></a>
-                <a href="https://twitter.com/townhallproject" class="text-white"><i class="fa fa-twitter-square fa-3x" aria-hidden="true"></i></a>
-                <a href="https://www.facebook.com/TownHallProject/" class="text-white"><i class="fa fa-facebook-square fa-3x" aria-hidden="true"></i></a>
-              </li>
-              <li><small>Compiled by Town Hall Project volunteers. </small></li>
-              <li><small>All efforts are made to verify accuracy of events. </small></li>
-              <li><small>Event details can change at short notice, please contact your representative to confirm.</small></li>
-            </ul>
-          </div>
-        </footer>
+      </div>
+
+
+      <footer class="footer">
+        <div class="container text-center">
+          <ul class="list-unstyled">
+            <li><a href="mailto:townhallproject2018@gmail.com" class="text-white"><i class="fa fa-envelope-square fa-3x" aria-hidden="true"></i></a>
+              <a href="https://twitter.com/townhallproject" class="text-white"><i class="fa fa-twitter-square fa-3x" aria-hidden="true"></i></a>
+              <a href="https://www.facebook.com/TownHallProject/" class="text-white"><i class="fa fa-facebook-square fa-3x" aria-hidden="true"></i></a>
+            </li>
+            <li><small>Compiled by Town Hall Project volunteers. </small></li>
+            <li><small>All efforts are made to verify accuracy of events. </small></li>
+            <li><small>Event details can change at short notice, please contact your representative to confirm.</small></li>
+          </ul>
+        </div>
+    </footer>
     <!-- Vendor Files -->
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="/vendor/scripts/bootstrap.min.js"></script>

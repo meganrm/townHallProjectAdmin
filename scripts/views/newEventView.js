@@ -102,6 +102,7 @@
   newEventView.submitForm = function (event) {
     event.preventDefault();
     $form = $(this);
+    var preview = Handlebars.getTemplate('previewEvent');
     var $listgroup = $(this).parents('.list-group-item');
     var updated = $form.find('.edited').get();
     var id = $form.attr('id').split('-')[0];
@@ -134,7 +135,10 @@
           });
         }
       }
-      newTownHall.updateFB(id);
+      newTownHall.updateFB(id).then(function (dataWritten) {
+        dataWritten.writtenId = id;
+        $('#edited').append(preview(dataWritten));
+      });
       console.log('writing to database: ', newTownHall);
       $form.find('#update-button').removeClass('btn-blue');
     }
@@ -192,7 +196,19 @@
   $('.events-table').on('keyup', '.form-control', newEventView.formChanged);
   $('.events-table').on('change', '.datetime', newEventView.dateChanged);
   $('.events-table').on('change', '.date-string', newEventView.dateString);
-
+  $('#scroll-to-top').on('click', function () {
+    $("html, body").animate({ scrollTop: 0 }, "slow");
+  });
+  window.addEventListener('scroll', function () {
+    var y = window.scrollY;
+     if (y >= 800) {
+       if ($('#scroll-to-top').css('visibility') !== 'visible') {
+         $('#scroll-to-top').css('visibility','visible').hide().fadeIn();
+       }
+     } else {
+       $('#scroll-to-top').css('visibility','hidden').show().fadeOut('slow');
+     }
+    })
 
   function writeUserData(userId, name, email) {
     firebase.database().ref('users/' + userId).update({
