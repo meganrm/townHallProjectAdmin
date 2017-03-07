@@ -83,6 +83,74 @@
         </div>
         <div role="tabpanel" class="tab-pane page" id="new-page">
           <section class=" container container-fluid">
+            <div class="new-event-form form-horizontal">
+              <form class="" action="index.html" method="post">
+                <div class="form-group">
+                  <label  for="Member" >Member</label>
+                  <input type="text" class="form-control " id="Member" placeholder="Full name" value="">
+                  <span id="helpBlock" class="help-block">Only first name and last name, not titles</span>
+                </div>
+                <div class="form-group">
+                  <label  for="State" >Home State</label>
+                  <input type="text" class="form-control " id="State" placeholder="Home State" value="">
+                </div>
+                <div class="form-group">
+                  <label  for="District">District</label>
+                  <input type="text" class="form-control " id="District" placeholder="District" value="">
+                  <span id="helpBlock" class="help-block">For Senate, write "Senate"; For At-Large, write MT-At-Large; Other examples: OH-08, TX-33, NY-22</span>
+                </div>
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control" aria-label="..." id="Party" value="Party" readonly>
+                    <div class="input-group-btn">
+                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+                      <ul class="dropdown-menu dropdown-menu-right">
+                        <li><a data-value="Democratic" href="#">Democratic</a></li>
+                        <li><a data-value="Republican" href="#">Republican</a></li>
+                        <li><a data-value="Independent" href="#">Independent</a></li>
+                      </ul>
+                    </div><!-- /btn-group -->
+                  </div><!-- /input-group -->
+                </div><!-- /form-group -->
+                <div class="input-group">
+                  <input type="text" class="form-control" aria-label="..." id="meetingType" value="meeting type" readonly>
+                  <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a data-value="Town Hall" href="#">Town Hall</a></li>
+                      <li><a data-value="Tele-Town Hall" href="#">Tele-Town Hall</a></li>
+                      <li><a data-value="Ticketed Event" href="#">Ticketed Event</a></li>
+                      <li><a data-value="Empty Chair Town Hall" href="#">Empty Chair Town Hall</a></li>
+                      <li><a data-value="Coffee" href="#">Coffee</a></li>
+                    </ul>
+                  </div><!-- /btn-group -->
+                </div><!-- /input-group -->
+                <div class="time-data">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" class="date-string">
+                      <span class="checkbox-label">Click for repeating event (eg. 'First Wed')</span>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label  for="yearMonthDay" >Date</label>
+                    <input type="date" class="form-control datetime date" id="yearMonthDay" placeholder="Date" value="{{yearMonthDay}}">
+                  </div>
+                  <div class="form-group hidden repeating">
+                    <label  for="repeatingString">Repeating Event</label>
+                    <input type="text" class="form-control" id="repeatingEvent" placeholder="Eg. First Tuesday of the month" value="{{repeatingEvent}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="Time">Start Time (HH:MM AM/PM)</label>
+                    <input type="time" class="form-control datetime" id="timeStart24" placeholder="Start Time" value="{{timeStart24}}">
+                  </div>
+                  <div class="form-group">
+                    <label for="endTime">End Time (HH:MM AM/PM)</label>
+                    <input type="time" class="form-control datetime" id="timeEnd24" placeholder="End Time" value="{{timeEnd24}}">
+                  </div>
+                </div>
+              </form>
+            </div>
           </section>
         </div>
 
@@ -130,8 +198,9 @@
         <div role="tabpanel" class="tab-pane page" id="date-errors-page">
           <section class=" container container-fluid">
             <!-- DATE ERRORS -->
-            <h3 class="text-primary table-title text-center">Date errors</h3>
+            <h3 class="text-primary table-title text-center">No "add to calendar" possible</h3>
               These had problems with assiging a date, mostly because they are repeating events.<br>
+              If there is no location, it cannot assign a timezone, which is also needed for the calendar event.<br>
               To update:
               <ul>
                 <li>enter a new Date or Time</li>
@@ -173,7 +242,7 @@
           </div>
         </footer>
     <!-- Vendor Files -->
-    <script src="/vendor/scripts/jquery-2.1.4.js"></script>
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="/vendor/scripts/bootstrap.min.js"></script>
     <script src="/vendor/scripts/tether.js"></script>
     <script src="/node_modules/handlebars/dist/handlebars.js"></script>

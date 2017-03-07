@@ -13,4 +13,8 @@
     <label class="sr-only" for="addressType">Address Type</label>
     <input type="text" class="" id="addressType" placeholder="Address type" value="state" readonly>
   </div>
+  <div class="form-group">
+    <label class="sr-only" for="locationCheck">Location Check</label>
+    <input type="text" class="text-success" id="locationCheck" placeholder="please geocode" {{#if lat}}value="Location is valid"{{/if }} readonly>
+  </div>
 </div>

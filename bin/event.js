@@ -62,6 +62,7 @@
     var loc = newTownHall.lat + ',' + newTownHall.lng
     return new Promise(function (resolve, reject) {
       if (newTownHall.meetingType.slice(0, 4) === 'Tele') {
+        newTownHall.formatDateTime()
         resolve(newTownHall)
       } else {
         var options = {
@@ -139,12 +140,8 @@
     } else {
       time = this.Time
     }
-    if (this.timeZone === 'HAST') {
-      timeZone = 'UTC-1000'
-    } else {
-      timeZone = this.timeZone
-    }
-    this.dateObj = new Date(this.Date + ' ' + time + ' ' + timeZone)
+    timeZone = this.timeZone === 'HAST' ? timeZone = 'UTC-1000':  timeZone = this.timeZone
+    this.dateObj = timeZone ? new Date(this.Date + ' ' + time + ' ' + timeZone): new Date(this.Date + ' ' + time)
     this.dateString = this.dateObj.toDateString()
     if (this.dateString !== 'Invalid Date') {
       this.dateValid = true
