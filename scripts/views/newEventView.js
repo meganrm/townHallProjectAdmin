@@ -199,14 +199,15 @@
   $('#scroll-to-top').on('click', function () {
     $("html, body").animate({ scrollTop: 0 }, "slow");
   });
+
   window.addEventListener('scroll', function () {
     var y = window.scrollY;
      if (y >= 800) {
        if ($('#scroll-to-top').css('visibility') !== 'visible') {
-         $('#scroll-to-top').css('visibility','visible').hide().fadeIn();
+         $('#scroll-to-top').css('visibility', 'visible').hide().fadeIn();
        }
      } else {
-       $('#scroll-to-top').css('visibility','hidden').show().fadeOut('slow');
+       $('#scroll-to-top').css('visibility', 'hidden').show().fadeOut('slow');
      }
     })
 
