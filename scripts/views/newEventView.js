@@ -207,9 +207,11 @@
          $('#scroll-to-top').css('visibility', 'visible').hide().fadeIn();
        }
      } else {
-       $('#scroll-to-top').css('visibility', 'hidden').show().fadeOut('slow');
+       if ($('#scroll-to-top').css('visibility') === 'visible') {
+         $('#scroll-to-top').css('visibility', 'hidden').show().fadeOut('slow');
+       }
      }
-    })
+  });
 
   function writeUserData(userId, name, email) {
     firebase.database().ref('users/' + userId).update({
