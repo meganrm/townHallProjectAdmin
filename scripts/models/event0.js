@@ -179,11 +179,24 @@
   TownHall.prototype.removeOld = function () {
     var ele = this;
     var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId);
-    var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId);
     console.log('removing', ele);
     firebasedb.ref('/townHallsOld/').push(ele);
+    return new Promise(function (resolve, reject) {
+      var removed = oldTownHall.remove();
+      if (removed) {
+        resolve(ele);
+      } else {
+        reject('could not remove');
+      }
+    });
+  };
+
+  TownHall.prototype.delete = function () {
+    var ele = this;
+    var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId);
+    var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId + '/delete').set(true);
+    console.log('deleting', ele);
     oldTownHall.remove();
-    oldTownHallID.remove();
   };
 
   TownHall.allIdsGoogle = [];

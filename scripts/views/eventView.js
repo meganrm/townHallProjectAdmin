@@ -188,6 +188,8 @@
       }
       $('#all-events-table').append($toAppend);
     });
+      $('[data-toggle="tooltip"]').tooltip()
+
   };
 
 

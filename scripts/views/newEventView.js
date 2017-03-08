@@ -191,11 +191,26 @@
 
   newEventView.archiveEvent = function (event) {
     event.preventDefault();
+    var preview = Handlebars.getTemplate('editedResults');
     var id = $(this).attr('data-id');
     var oldTownHall = TownHall.allTownHallsFB[id];
-    oldTownHall.removeOld();
+    oldTownHall.removeOld().then(function (removed) {
+      console.log(removed);
+      print.writtenId = removed.eventId;
+      print.edit = 'archived';
+      print.Date = removed.Date;
+      $('#edited').append(preview(print));
+    });
   };
 
+  newEventView.deleteEvent = function (event) {
+    event.preventDefault();
+    var id = $(this).attr('data-id');
+    var oldTownHall = TownHall.allTownHallsFB[id];
+    oldTownHall.deleteEvent();
+  };
+
+  // event listeners for table interactions
   $('.events-table').on('click', '#geocode-button', newEventView.geoCode);
   $('.events-table').on('click', '.dropdown-menu a', newEventView.changeMeetingType);
   $('.events-table').on('change', '#meetingType', newEventView.meetingTypeChanged);
@@ -204,6 +219,8 @@
   $('.events-table').on('change', '.datetime', newEventView.dateChanged);
   $('.events-table').on('change', '.date-string', newEventView.dateString);
   $('.events-table').on('click', '#archive', newEventView.archiveEvent);
+  $('.events-table').on('click', '#delete', newEventView.deleteEvent);
+
   $('#scroll-to-top').on('click', function () {
     $("html, body").animate({ scrollTop: 0 }, "slow");
   });
