@@ -136,8 +136,10 @@
         }
       }
       newTownHall.updateFB(id).then(function (dataWritten) {
-        dataWritten.writtenId = id;
-        $('#edited').append(preview(dataWritten));
+        var print = dataWritten;
+        print.writtenId = id;
+        print.edit = 'updated';
+        $('#edited').append(preview(print));
       });
       console.log('writing to database: ', newTownHall);
       $form.find('#update-button').removeClass('btn-blue');
@@ -219,7 +221,7 @@
   $('.events-table').on('change', '.datetime', newEventView.dateChanged);
   $('.events-table').on('change', '.date-string', newEventView.dateString);
   $('.events-table').on('click', '#archive', newEventView.archiveEvent);
-  $('.events-table').on('click', '#delete', newEventView.deleteEvent);
+  // $('.events-table').on('click', '#delete', newEventView.deleteEvent);
 
   $('#scroll-to-top').on('click', function () {
     $("html, body").animate({ scrollTop: 0 }, "slow");
