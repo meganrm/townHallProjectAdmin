@@ -176,18 +176,14 @@
     });
   };
 
-  TownHall.removeOld = function () {
-    firebase.database().ref('/townHalls/').on('child_added', function getSnapShot(snapshot) {
-      var ele = new TownHall(snapshot.val());
-      if (TownHall.allIdsGoogle.indexOf(ele.eventId) < 0) {
-        console.log('old', ele);
-        if (snapshot.val().eventId) {
-          var oldTownHall = firebase.database().ref('/townHalls/' + ele.eventId);
-          firebase.database().ref('/townHallsOld/' + ele.eventId).set(ele);
-          oldTownHall.remove();
-        }
-      }
-    });
+  TownHall.prototype.removeOld = function () {
+    var ele = this;
+    var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId);
+    var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId);
+    console.log('removing', ele);
+    firebasedb.ref('/townHallsOld/').push(ele);
+    oldTownHall.remove();
+    oldTownHallID.remove();
   };
 
   TownHall.allIdsGoogle = [];

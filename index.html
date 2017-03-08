@@ -62,6 +62,7 @@
             <li><a class="hash-link" data-toggle="tab" href="#date-errors-page">Date Errors</a></li>
             <li><a class="hash-link" data-toggle="tab" href="#all-events-page">All Public Events</a></li>
             <li><a class="hash-link" data-toggle="tab" href="#for-approval-page">Pending Approval</a></li>
+            <li><a class="hash-link" data-toggle="tab" href="#to-archive-page">Past Events</a></li>
           </ul>
         </div>
       </div>
@@ -231,10 +232,27 @@
             </div>
             <div role="tabpanel" class="tab-pane page" id="for-approval-page">
               <section class=" container container-fluid">
-                <!-- DATE ERRORS -->
                 <h3 class="text-primary table-title text-center">Events submitted by the public</h3>
                 <div>
                   <ul id="for-approval" class="list-group events-table">
+
+                  </ul><!--end table-->
+                </div>
+              </section>
+            </div>
+            <div role="tabpanel" class="tab-pane page" id="to-archive-page">
+              <section class="">
+                <h3 class="text-primary table-title text-center">Events in the past</h3>
+                <div class="row">
+                  <div class="col-sm-10 col-sm-offset-2">
+                    These events have pasted<br>
+                    <ul>
+                      <li>If the event is not a repeating one, click "archive" to remove it from the public site (it will remain in the database)</li>
+                      <li>If the event is repeating in the future, you can update it with the new date and click "update"</li>
+                    </ul>
+                  </div>
+                </div>
+                  <ul id="for-archive" class="list-group events-table">
 
                   </ul><!--end table-->
                 </div>

@@ -189,6 +189,13 @@
     }
   };
 
+  newEventView.archiveEvent = function (event) {
+    event.preventDefault();
+    var id = $(this).attr('data-id');
+    var oldTownHall = TownHall.allTownHallsFB[id];
+    oldTownHall.removeOld();
+  };
+
   $('.events-table').on('click', '#geocode-button', newEventView.geoCode);
   $('.events-table').on('click', '.dropdown-menu a', newEventView.changeMeetingType);
   $('.events-table').on('change', '#meetingType', newEventView.meetingTypeChanged);
@@ -196,6 +203,7 @@
   $('.events-table').on('keyup', '.form-control', newEventView.formChanged);
   $('.events-table').on('change', '.datetime', newEventView.dateChanged);
   $('.events-table').on('change', '.date-string', newEventView.dateString);
+  $('.events-table').on('click', '#archive', newEventView.archiveEvent);
   $('#scroll-to-top').on('click', function () {
     $("html, body").animate({ scrollTop: 0 }, "slow");
   });

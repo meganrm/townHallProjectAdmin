@@ -183,6 +183,9 @@
       if (!ele.dateValid) {
         $('#date-errors').append($toAppend.clone());
       }
+      if (ele.dateObj < Date.now()) {
+        $('#for-archive').append($toAppend.clone());
+      }
       $('#all-events-table').append($toAppend);
     });
   };
