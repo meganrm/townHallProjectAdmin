@@ -5,6 +5,8 @@
   var provider = new firebase.auth.GoogleAuthProvider();
 
   var newEventView = {};
+  TownHall.currentKey;
+  TownHall.currentEvent = new TownHall();
 
   newEventView.humanTime = function (time) {
     var timeSplit = time.split(':');
@@ -31,6 +33,7 @@
     var preview = Handlebars.getTemplate('previewEvent');
     var updated = $form.find('.edited').get();
     var id = $form.attr('id').split('-')[0];
+    var databaseTH = TownHall.allTownHallsFB[id];
     var updates = updated.reduce(function (newObj, cur) {
       var $curValue = $(cur).val();
       switch (cur.id) {
@@ -45,6 +48,7 @@
         case 'yearMonthDay':
           newObj[cur.id] = $curValue;
           newObj.Date = new Date($curValue.replace(/-/g, '/')).toDateString();
+          // newObj.dateObj = new Date($curValue.replace(/-/g, '/')).toDateString();
           break;
         default:
           newObj[cur.id] = $curValue;
@@ -71,6 +75,16 @@
     $form.find('#update-button').addClass('btn-blue');
     $form.find('.timestamp').val(new Date());
     newEventView.updatedView($form, $listgroup);
+  };
+
+  newEventView.addressChanged = function () {
+    var $input = $(this);
+    var $form = $input.parents('form');
+    if (this.id === 'address') {
+      $form.find('#geocode-button').removeClass('disabled');
+      $form.find('#geocode-button').addClass('btn-blue');
+      $form.find('#locationCheck').val('');
+    }
   };
 
   newEventView.dateChanged = function (event) {
@@ -133,6 +147,9 @@
           }).catch(function (error) {
             console.log('could not get timezone', error);
           });
+        } else {
+          newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time).getTime();
+          newTownHall.dateValid = newTownHall.dateObj ? true: false;
         }
       }
       newTownHall.updateFB(id).then(function (dataWritten) {
@@ -151,16 +168,23 @@
     var $form = $(this).parents('form');
     var address = $form.find('#address').val();
     var $listgroup = $(this).parents('.list-group-item');
-    var id = $form.attr('id').split('-')[0];
+    if ($form.attr('id') && $form.attr('id').split('-').length > 1) {
+      var id = $form.attr('id').split('-')[0];
+    }
     newTownHall = new TownHall();
     type = $form.find('#addressType').val();
     newTownHall.getLatandLog(address, type).then(function (geotownHall) {
       console.log('geocoding!', geotownHall);
       $form.find('#locationCheck').val('Location is valid');
       $form.find('#address').val(geotownHall.address);
-      TownHall.allTownHallsFB[id].lat = geotownHall.lat;
-      TownHall.allTownHallsFB[id].lng = geotownHall.lng;
-      newEventView.updatedView($form, $listgroup);
+      if (id) {
+        TownHall.allTownHallsFB[id].lat = geotownHall.lat;
+        TownHall.allTownHallsFB[id].lng = geotownHall.lng;
+        newEventView.updatedView($form, $listgroup);
+      } else {
+        TownHall.currentEvent.lat = geotownHall.lat;
+        TownHall.currentEvent.lng = geotownHall.lng;
+      }
     }).catch(function (error) {
       $form.find('#locationCheck').val('Geocoding failed');
     });
@@ -180,7 +204,11 @@
     var value = $(this).val();
     var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
     var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
-    var thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-')[0]];
+    if ($form.attr('id')) {
+      var thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-')[0]];
+    } else {
+      var thisTownHall = TownHall.currentEvent;
+    }
     switch (value.slice(0, 4)) {
       case 'Tele':
         $form.find('.location-data').html(teleInputsTemplate(thisTownHall));
@@ -212,6 +240,31 @@
     oldTownHall.deleteEvent();
   };
 
+  newEventView.lookupMember = function (event) {
+    var member = $(this).val();
+    $form = $(this).parents('form');
+    TownHall.currentKey = firebase.database().ref('townHallIds').push().key;
+    TownHall.currentEvent['eventId'] = TownHall.currentKey;
+    var District = $form.find('#District');
+    var State = $form.find('#State');
+    var Party = $form.find('#Party');
+    var memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+    console.log(memberKey);
+    firebase.database().ref('MOCs/' + memberKey).once('value').then(function(snapshot){
+      if (snapshot.exists()) {
+        mocdata = snapshot.val();
+        if (mocdata.type === 'sen') {
+          District.val('Senate')
+        }
+        else if (mocdata.type === 'rep'){
+          District.val(mocdata.state + '-' +mocdata.district);
+        }
+      }
+      Party.val(mocdata.party);
+      State.val(statesAb[mocdata.state])
+    });
+  };
+
   // event listeners for table interactions
   $('.events-table').on('click', '#geocode-button', newEventView.geoCode);
   $('.events-table').on('click', '.dropdown-menu a', newEventView.changeMeetingType);
@@ -222,6 +275,14 @@
   $('.events-table').on('change', '.date-string', newEventView.dateString);
   $('.events-table').on('click', '#archive', newEventView.archiveEvent);
   // $('.events-table').on('click', '#delete', newEventView.deleteEvent);
+
+  // event listeners for new form
+  $('.new-event-form').on('change', '#Member', newEventView.lookupMember);
+  $('.new-event-form').on('click', '#geocode-button', newEventView.geoCode);
+  $('.new-event-form').on('click', '.meeting a', newEventView.changeMeetingType);
+  $('.new-event-form').on('change', '#meetingType', newEventView.meetingTypeChanged);
+  $('.new-event-form').on('change', '.date-string', newEventView.dateString);
+  $('.new-event-form').on('keyup', '#address', newEventView.addressChanged);
 
   $('#scroll-to-top').on('click', function () {
     $("html, body").animate({ scrollTop: 0 }, "slow");

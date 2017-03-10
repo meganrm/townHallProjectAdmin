@@ -65,6 +65,7 @@
           newTownHall.zoneString = response.timeZoneId;
           var timezoneAb = response.timeZoneName.split(' ');
           newTownHall.timeZone = timezoneAb[0][0];
+          newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + newTownHall.timeZone).getTime()
           for (var i = 1; i < timezoneAb.length; i++) {
             newTownHall.timeZone = newTownHall.timeZone + timezoneAb[i][0];
           }
