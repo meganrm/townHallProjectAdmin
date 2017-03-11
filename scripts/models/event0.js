@@ -5,7 +5,6 @@
     }
   }
 
-
   // Global data stete
   TownHall.allTownHalls = [];
   TownHall.allTownHallsFB = {};
@@ -48,11 +47,23 @@
     });
   };
 
+  TownHall.prototype.updateUserSubmission = function (key) {
+    var newEvent = this;
+    return new Promise(function (resolve, reject) {
+      firebase.database().ref('/UserSubmission/' + key).update(newEvent);
+      resolve(newEvent);
+    });
+  };
+
   // DATA PROCESSING BEFORE WRITE
   // gets time zone with location and date
   TownHall.prototype.validateZone = function (id) {
     var newTownHall = this;
-    var databaseTH = TownHall.allTownHallsFB[id];
+    if (id) {
+      var databaseTH = TownHall.allTownHallsFB[id];
+    } else {
+      databaseTH = this;
+    }
     var time = Date.parse(newTownHall.Date + ' ' + databaseTH.Time) / 1000;
     var loc = databaseTH.lat + ',' + databaseTH.lng;
     return new Promise(function (resolve, reject) {
@@ -64,11 +75,13 @@
           console.log(response);
           newTownHall.zoneString = response.timeZoneId;
           var timezoneAb = response.timeZoneName.split(' ');
-          newTownHall.timeZone = timezoneAb[0][0];
-          newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + newTownHall.timeZone).getTime()
-          for (var i = 1; i < timezoneAb.length; i++) {
-            newTownHall.timeZone = newTownHall.timeZone + timezoneAb[i][0];
-          }
+          newTownHall.timeZone = timezoneAb.reduce(function (acc, cur) {
+            acc = acc + cur[0];
+            return acc;
+          }, '');
+          console.log(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + newTownHall.timeZone);
+          newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + newTownHall.timeZone).getTime();
+
           resolve(newTownHall);
         }
       });

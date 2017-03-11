@@ -193,5 +193,59 @@
   };
 
 
+  eventHandler.readDataUsers = function (){
+    firebase.database().ref('/UserSubmission/').on('child_added', function getSnapShot(snapshot) {
+      var ele = new TownHall(snapshot.val());
+      var id = ele.eventId;
+      obj = {};
+      TownHall.allTownHallsFB[ele.eventId] = ele;
+      TownHall.allTownHalls.push(ele);
+      var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
+      var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
+      var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
+      if (ele.timeStart24 && ele.timeEnd24) {
+        if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
+          console.log(ele.eventId);
+        }
+        else {
+          ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
+          ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
+        }
+      }
+
+      if (ele.yearMonthDay) {
+        var month = ele.yearMonthDay.split('-')[1];
+        var day = ele.yearMonthDay.split('-')[2];
+        if (month.length === 1) {
+          month = 0 + month;
+        }
+        if (day.length === 1) {
+          day = 0 + day;
+        }
+        ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
+      }
+
+      var $toAppend = $(tableRowTemplate(ele));
+      if (!ele.meetingType) {
+        console.log(ele);
+      } else {
+        switch (ele.meetingType.slice(0,4)) {
+          case 'Tele':
+            $toAppend.find('.location-data').html(teleInputsTemplate(ele));
+            break;
+          case 'Tick':
+            $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
+            break;
+        }
+      }
+      $('#for-approval').append($toAppend.clone());
+
+    });
+      $('[data-toggle="tooltip"]').tooltip()
+
+  };
+
+
+eventHandler.readDataUsers();
   module.eventHandler = eventHandler;
 })(window);

@@ -8,6 +8,9 @@
         {{#if updatedBy}}
         <input type="text" class="pull-left" id="updatedBy" readonly value="{{updatedBy}}">
         {{/if}}
+        {{#if enteredBy}}
+        <input type="text" class="pull-left" id="enteredBy" readonly value="Submitted by: {{enteredBy}}">
+        {{/if}}
       </strong>
     </div>
     <div class="main-data">

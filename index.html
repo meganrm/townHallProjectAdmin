@@ -98,11 +98,13 @@
 
           <div role="tabpanel" class="tab-pane page" id="new-page">
             <section class="row">
-              <div class="new-event-form col-md-6 col-md-offset-1">
-                <form class="" action="index.html" method="post">
-                  <div class="member-info">
+              <div class="new-event-form col-md-7 col-md-offset-1">
+                <form class="">
+                  <section class="member-info text-info">
+                    <h4>Member of Congress Information<br>
+                      <small>Enter their name and we will auto-fill the information</small></h4>
                     <div class="form-group">
-                      <label  for="Member" >Member</label>
+                      <label class="sr-only" for="Member" >Member</label>
                       <input type="text" class="form-control input-underline" id="Member" placeholder="Full name" value="">
                       <span id="helpBlock" class="help-block">Only first name and last name, not titles</span>
                     </div>
@@ -129,8 +131,14 @@
                         </div><!-- /btn-group -->
                       </div><!-- /input-group -->
                     </div><!-- /form-group -->
-                  </div>
-                  <div class="meeting infomation">
+                  </section>
+
+                  <section class="meeting infomation">
+                    <h4 class="text-info">Information about the Event</h4>
+                    <div class="form-group">
+                      <label class="sr-only" for="eventName">Event name</label>
+                      <input type="text" class="form-control input-underline" aria-label="..." id="eventName" value="" placeholder="Name of the event">
+                    </div>
                     <div class="form-group">
                       <label class="sr-only" for="meetingType">Meeting Type</label>
                       <div class="input-group">
@@ -148,36 +156,11 @@
                         </div><!-- /btn-group -->
                       </div><!-- /input-group -->
                     </div><!-- /form-group -->
-
-                  </div>
-                  <div class="time-data">
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" class="date-string">
-                        <span class="checkbox-label">Click for repeating event (eg. 'First Wed')</span>
-                      </label>
-                    </div>
-                    <div class="form-group">
-                      <label  for="yearMonthDay" >Date</label>
-                      <input type="date" class="form-control datetime date " id="yearMonthDay" placeholder="Date">
-                    </div>
-                    <div class="form-group hidden repeating">
-                      <label  for="repeatingString">Repeating Event</label>
-                      <input type="text" class="form-control " id="repeatingEvent" placeholder="Eg. First Tuesday of the month">
-                    </div>
-                    <div class="form-group">
-                      <label for="Time">Start Time (HH:MM AM/PM)</label>
-                      <input type="time" class="form-control datetime " id="timeStart24" placeholder="Start Time">
-                    </div>
-                    <div class="form-group">
-                      <label for="endTime">End Time (HH:MM AM/PM)</label>
-                      <input type="time" class="form-control datetime " id="timeEnd24" placeholder="End Time">
-                    </div>
-                  </div>
-                  <div class="location-data">
+                  </section>
+                  <section class="location-data">
                     <div class="form-group">
                       <label class="sr-only" for="Location">Location</label>
-                      <input type="text" class="form-control input-underline" id="Location" placeholder="Name of location">
+                      <input type="text" class="form-control input-underline" id="Location" placeholder="Name of location (eg. Gary Recreation Center)">
                     </div>
                     <div class="form-group">
                       <div class="input-group">
@@ -189,14 +172,56 @@
                     </div><!-- /form-group -->
                     <div class="form-group">
                       <label class="sr-only" for="addressType">Address Type</label>
-                      <input type="text" class="" id="addressType" placeholder="Address type" value="street" readonly>
+                      <input class="sr-only" type="text" class="" id="addressType" placeholder="Address type" value="street" readonly>
                     </div>
-
                     <div class="form-group">
                       <label class="sr-only" for="locationCheck">Location Check</label>
                       <input type="text" class="text-success" id="locationCheck" placeholder="please geocode" readonly>
                     </div>
-                  </div>
+                  </section>
+                  <section class="time-data">
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" class="date-string">
+                        <span class="checkbox-label">Click for repeating event (eg. 'First Wed')</span>
+                      </label>
+                    </div>
+                    <div class="form-group">
+                      <label  for="yearMonthDay">Date</label>
+                      <input type="date" class="form-control datetime date " id="yearMonthDay" placeholder="Date">
+                    </div>
+                    <div class="form-group hidden repeating">
+                      <label  for="repeatingString">Repeating Event</label>
+                      <input type="text" class="form-control input-underline " id="repeatingEvent" placeholder="Eg. First Tuesday of the month">
+                    </div>
+                    <div class="form-group">
+                      <label for="Time">Start Time (HH:MM AM/PM)</label>
+                      <input type="time" class="form-control datetime " id="timeStart24" placeholder="Start Time">
+                    </div>
+                    <div class="form-group">
+                      <label for="endTime">End Time (HH:MM AM/PM)</label>
+                      <input type="time" class="form-control datetime " id="timeEnd24" placeholder="End Time">
+                    </div>
+                  </section>
+                  <section class="extra-data">
+                    <div class="form-group">
+                      <label for="link">URL related to event (optional)</label>
+                      <input type="url" class="form-control input-underline" id="link" placeholder="Link" value="">
+                    </div>
+                    <div class="form-group">
+                      <label  for="linkName">Link display name (optional)</label>
+                      <input type="text" class="form-control input-underline" id="linkName" placeholder="Link Name" value="">
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <div class="form-group">
+                          <label for="Notes">Notes</label>
+                          <textarea class="form-control" id="Notes" placeholder="Notes about event that cannont be entered anywhere else." rows=3></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <button class="btn btn-default btn-secondary" type="submit" name="button">Submit Event</button>
                 </form>
               </div>
             </section>
@@ -264,7 +289,7 @@
               </section>
             </div>
             <div role="tabpanel" class="tab-pane page" id="for-approval-page">
-              <section class=" container container-fluid">
+              <section >
                 <h3 class="text-primary table-title text-center">Events submitted by the public</h3>
                 <div>
                   <ul id="for-approval" class="list-group events-table">
@@ -324,6 +349,7 @@
     <script src="/scripts/models/event0.js"></script>
     <script src="/scripts/data/states.js"></script>
     <script src="/scripts/views/eventView.js"></script>
+    <script src="/scripts/views/updatingEventsView.js"></script>
     <script src="/scripts/views/newEventView.js"></script>
 
   </body>

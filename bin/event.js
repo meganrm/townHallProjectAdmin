@@ -409,10 +409,5 @@
     })
   }
 
-  TownHall.readGoogle = function readGoogle() {
-    var time = 60 * 60 * 1000
-    setInterval(TownHall.dataProcess, time)
-  }
-
   TownHall.dataProcess()
   module.exports = TownHall

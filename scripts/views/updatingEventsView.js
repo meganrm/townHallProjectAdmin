@@ -8,6 +8,119 @@
   TownHall.currentKey;
   TownHall.currentEvent = new TownHall();
 
+  newEventView.updatedView = function updatedView($form, $listgroup) {
+    var preview = Handlebars.getTemplate('previewEvent');
+    var updated = $form.find('.edited').get();
+    var id = $form.attr('id').split('-')[0];
+    var databaseTH = TownHall.allTownHallsFB[id];
+    var updates = updated.reduce(function (newObj, cur) {
+      var $curValue = $(cur).val();
+      switch (cur.id) {
+        case 'timeStart24':
+          newObj.timeStart24 = $curValue + ':00';
+          newObj.Time = newEventView.humanTime($curValue);
+          break;
+        case 'timeEnd24':
+          newObj.timeEnd24 = $curValue + ':00';
+          newObj.timeEnd = newEventView.humanTime($curValue);
+          break;
+        case 'yearMonthDay':
+          newObj[cur.id] = $curValue;
+          newObj.Date = new Date($curValue.replace(/-/g, '/')).toDateString();
+          break;
+        default:
+          newObj[cur.id] = $curValue;
+      }
+      return newObj;
+    }, {});
+    var currentTH = TownHall.allTownHallsFB[id];
+    var updatedTH = Object.assign(currentTH, updates);
+    TownHall.allTownHallsFB[id] = updatedTH;
+    $listgroup.find('.preview').html(preview(updatedTH));
+    return new TownHall(updates);
+  };
+
+  // ADMIN ONLY METHODS
+  newEventView.archiveEvent = function (event) {
+    event.preventDefault();
+    var preview = Handlebars.getTemplate('editedResults');
+    var id = $(this).attr('data-id');
+    var oldTownHall = TownHall.allTownHallsFB[id];
+    oldTownHall.removeOld().then(function (removed) {
+      console.log(removed);
+      print.writtenId = removed.eventId;
+      print.edit = 'archived';
+      print.Date = removed.Date;
+      $('#edited').append(preview(print));
+    });
+  };
+
+  newEventView.deleteEvent = function (event) {
+    event.preventDefault();
+    var id = $(this).attr('data-id');
+    var oldTownHall = TownHall.allTownHallsFB[id];
+    oldTownHall.deleteEvent();
+  };
+
+  newEventView.validateDate = function (id, databaseTH, newTownHall) {
+    var dateUpdated = newTownHall;
+    if (databaseTH.timeZone || databaseTH.meetingType.slice(0, 4) === 'Tele') {
+      var timeZone = databaseTH.timeZone;
+      dateUpdated.dateObj = timeZone ? new Date(dateUpdated.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + timeZone).getTime() : new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time).getTime();
+      dateUpdated.dateValid = dateUpdated.dateObj ? true : false;
+      return (dateUpdated);
+    } else if (databaseTH.lat) {
+      console.log('getting time zone');
+      dateUpdated.validateZone(id).then(function (returnedTH) {
+        // returnedTH.updateFB(id);
+        console.log('writing to database: ', returnedTH);
+      }).catch(function (error) {
+        console.log('could not get timezone', error);
+      });
+    } else {
+      dateUpdated.dateObj = new Date(dateUpdated.Date.replace(/-/g, '/') + ' ' + databaseTH.Time).getTime();
+      dateUpdated.dateValid = newTownHall.dateObj ? true : false;
+      return (dateUpdated);
+    }
+  };
+
+  newEventView.submitUpdateForm = function (event) {
+    event.preventDefault();
+    $form = $(this);
+    var preview = Handlebars.getTemplate('previewEvent');
+    var $listgroup = $(this).parents('.list-group-item');
+    var updated = $form.find('.edited').get();
+    var id = $form.attr('id').split('-')[0];
+    var databaseTH = TownHall.allTownHallsFB[id];
+    if (updated.length > 0) {
+      var newTownHall = newEventView.updatedView($form, $listgroup);
+      newTownHall.lastUpdated = $form.find('#lastUpdated').val();
+      newTownHall.updatedBy = firebase.auth().currentUser.email;
+      if (newTownHall.address) {
+        if ($form.find('#locationCheck').val() === 'Location is valid') {
+          newTownHall.lat = databaseTH.lat;
+          newTownHall.lng = databaseTH.lng;
+        } else {
+          alert('Please Geocode the address');
+          return false;
+        }
+      }
+      if (newTownHall.Date) {
+        newTownHall = newEventView.validateDate(id, databaseTH, newTownHall)
+      }
+      if (newTownHall) {
+        newTownHall.updateFB(id).then(function (dataWritten) {
+          var print = dataWritten;
+          print.writtenId = id;
+          print.edit = 'updated';
+          $('#edited').append(preview(print));
+        });
+        console.log('writing to database: ', newTownHall);
+        $form.find('#update-button').removeClass('btn-blue');
+      }
+    }
+  };
+
   // METHODS FOR BOTH
 
   newEventView.humanTime = function (time) {
@@ -137,131 +250,18 @@
     }
   };
 
-  // New Event METHODS
-
-  newEventView.updatedNewTownHallObject = function updatedNewTownHallObject($form) {
-    var preview = Handlebars.getTemplate('previewEvent');
-    var updated = $form.find('.edited').get();
-    var databaseTH = TownHall.currentEvent;
-    var updates = updated.reduce(function (newObj, cur) {
-      var $curValue = $(cur).val();
-      switch (cur.id) {
-        case 'timeStart24':
-          newObj.timeStart24 = $curValue + ':00';
-          newObj.Time = newEventView.humanTime($curValue);
-          break;
-        case 'timeEnd24':
-          newObj.timeEnd24 = $curValue + ':00';
-          newObj.timeEnd = newEventView.humanTime($curValue);
-          break;
-        case 'yearMonthDay':
-          newObj[cur.id] = $curValue;
-          newObj.Date = new Date($curValue.replace(/-/g, '/')).toDateString();
-          break;
-        default:
-          newObj[cur.id] = $curValue;
-      }
-      return newObj;
-    }, {});
-    TownHall.currentEvent = Object.assign(databaseTH, updates);
-    console.log(TownHall.currentEvent);
-  };
-
-  newEventView.newformChanged = function () {
-    var $input = $(this);
-    var $form = $input.parents('form');
-    if (this.id === 'address') {
-      $form.find('#geocode-button').removeClass('disabled');
-      $form.find('#geocode-button').addClass('btn-blue');
-      $form.find('#locationCheck').val('');
-    }
-    $input.addClass('edited');
-    newEventView.updatedNewTownHallObject($form);
-  };
-
-  newEventView.lookupMember = function (event) {
-    var member = $(this).val();
-    $form = $(this).parents('form');
-    TownHall.currentKey = firebase.database().ref('townHallIds').push().key;
-    TownHall.currentEvent['eventId'] = TownHall.currentKey;
-    var District = $form.find('#District');
-    var State = $form.find('#State');
-    var Party = $form.find('#Party');
-    var memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
-    console.log(memberKey);
-    firebase.database().ref('MOCs/' + memberKey).once('value').then(function (snapshot) {
-      if (snapshot.exists()) {
-        mocdata = snapshot.val();
-        if (mocdata.type === 'sen') {
-          District.val('Senate').addClass('edited');
-        } else if (mocdata.type === 'rep') {
-          District.val(mocdata.state + '-' + mocdata.district);
-        }
-      }
-      Party.val(mocdata.party).addClass('edited');
-      State.val(statesAb[mocdata.state]).addClass('edited');
-    });
-  };
-
-  newEventView.validateDateNew = function () {
-    var newTownHall = TownHall.currentEvent;
-    if (newTownHall.meetingType.slice(0, 4) === 'Tele') {
-      newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + newTownHall.Time).getTime();
-      newTownHall.dateValid = newTownHall.dateObj ? true : false;
-      return (newTownHall);
-    } else if (newTownHall.lat) {
-      console.log('getting time zone');
-      newTownHall.validateZone().then(function (returnedTH) {
-        returnedTH.updateUserSubmission(TownHall.currentKey);
-        console.log('writing to database: ', returnedTH);
-      }).catch(function (error) {
-        console.log('could not get timezone', error);
-      });
-    } else {
-      newTownHall.dateObj = new Date(dateUpdated.Date.replace(/-/g, '/') + ' ' + newTownHall.Time).getTime();
-      newTownHall.dateValid = newTownHall.dateObj ? true : false;
-      return (newTownHall);
-    }
-  };
-
-  newEventView.submitNewEvent = function (event) {
-    event.preventDefault();
-    $form = $(this);
-    var id = TownHall.currentKey;
-    newEventView.updatedNewTownHallObject($form);
-    var newTownHall = TownHall.currentEvent;
-    if (TownHall.currentEvent.hasOwnProperty('Member')) {
-      newTownHall.lastUpdated = Date.now();
-      newTownHall.enteredBy = firebase.auth().currentUser.email;
-      if ($form.find('#locationCheck').val() !== 'Location is valid') {
-        alert('Please Geocode the address, if there is no address, leave it blank');
-        return false;
-      }
-
-      newTownHall = newEventView.validateDateNew(id, newTownHall)
-      if (newTownHall) {
-        newTownHall.updateUserSubmission(TownHall.currentKey).then(function (dataWritten) {
-          var print = dataWritten;
-          print.writtenId = id;
-          print.edit = 'updated';
-          $('#edited').append(preview(print));
-        });
-        console.log('writing to database: ', newTownHall);
-      }
-    }
-  };
+  // event listeners for table interactions
+  $('.events-table').on('click', '#geocode-button', newEventView.geoCode);
+  $('.events-table').on('click', '.dropdown-menu a', newEventView.changeMeetingType);
+  $('.events-table').on('change', '#meetingType', newEventView.meetingTypeChanged);
+  $('.events-table').on('keyup', '.form-control', newEventView.formChanged);
+  $('.events-table').on('change', '.datetime', newEventView.dateChanged);
+  $('.events-table').on('change', '.date-string', newEventView.dateString);
+  $('.events-table').on('click', '#archive', newEventView.archiveEvent);
+  $('.events-table').on('submit', 'form', newEventView.submitUpdateForm);
 
   // $('.events-table').on('click', '#delete', newEventView.deleteEvent);
 
-  // event listeners for new form
-  $('.new-event-form').on('change', '#Member', newEventView.lookupMember);
-  $('.new-event-form').on('click', '#geocode-button', newEventView.geoCode);
-  $('.new-event-form').on('click', '.meeting a', newEventView.changeMeetingType);
-  $('.new-event-form').on('change', '#meetingType', newEventView.meetingTypeChanged);
-  $('.new-event-form').on('change', '.form-control', newEventView.newformChanged);
-  $('.new-event-form').on('change', '.date-string', newEventView.dateString);
-  $('.new-event-form').on('keyup', '#address', newEventView.addressChanged);
-  $('.new-event-form').on('submit', 'form', newEventView.submitNewEvent);
 
   $('#scroll-to-top').on('click', function () {
     $("html, body").animate({ scrollTop: 0 }, "slow");
