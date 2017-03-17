@@ -4,25 +4,25 @@
 // Not being used yet.
   var provider = new firebase.auth.GoogleAuthProvider();
 
-  var newEventView = {};
+  var updateEventView = {};
   TownHall.currentKey;
   TownHall.currentEvent = new TownHall();
 
-  newEventView.updatedView = function updatedView($form, $listgroup) {
+  updateEventView.updatedView = function updatedView($form, $listgroup) {
     var preview = Handlebars.getTemplate('previewEvent');
     var updated = $form.find('.edited').get();
-    var id = $form.attr('id').split('-')[0];
+    var id = $form.attr('id').split('-form')[0];
     var databaseTH = TownHall.allTownHallsFB[id];
     var updates = updated.reduce(function (newObj, cur) {
       var $curValue = $(cur).val();
       switch (cur.id) {
         case 'timeStart24':
           newObj.timeStart24 = $curValue + ':00';
-          newObj.Time = newEventView.humanTime($curValue);
+          newObj.Time = updateEventView.humanTime($curValue);
           break;
         case 'timeEnd24':
           newObj.timeEnd24 = $curValue + ':00';
-          newObj.timeEnd = newEventView.humanTime($curValue);
+          newObj.timeEnd = updateEventView.humanTime($curValue);
           break;
         case 'yearMonthDay':
           newObj[cur.id] = $curValue;
@@ -41,7 +41,7 @@
   };
 
   // ADMIN ONLY METHODS
-  newEventView.archiveEvent = function (event) {
+  updateEventView.archiveEvent = function (event) {
     event.preventDefault();
     var preview = Handlebars.getTemplate('editedResults');
     var id = $(this).attr('data-id');
@@ -55,14 +55,14 @@
     });
   };
 
-  newEventView.deleteEvent = function (event) {
+  updateEventView.deleteEvent = function (event) {
     event.preventDefault();
     var id = $(this).attr('data-id');
     var oldTownHall = TownHall.allTownHallsFB[id];
     oldTownHall.deleteEvent();
   };
 
-  newEventView.validateDate = function (id, databaseTH, newTownHall) {
+  updateEventView.validateDate = function (id, databaseTH, newTownHall) {
     var dateUpdated = newTownHall;
     if (databaseTH.timeZone || databaseTH.meetingType.slice(0, 4) === 'Tele') {
       var timeZone = databaseTH.timeZone;
@@ -84,16 +84,16 @@
     }
   };
 
-  newEventView.submitUpdateForm = function (event) {
+  updateEventView.submitUpdateForm = function (event) {
     event.preventDefault();
     $form = $(this);
     var preview = Handlebars.getTemplate('previewEvent');
     var $listgroup = $(this).parents('.list-group-item');
     var updated = $form.find('.edited').get();
-    var id = $form.attr('id').split('-')[0];
+    var id = $form.attr('id').split('-form')[0];
     var databaseTH = TownHall.allTownHallsFB[id];
     if (updated.length > 0) {
-      var newTownHall = newEventView.updatedView($form, $listgroup);
+      var newTownHall = updateEventView.updatedView($form, $listgroup);
       newTownHall.lastUpdated = $form.find('#lastUpdated').val();
       newTownHall.updatedBy = firebase.auth().currentUser.email;
       if (newTownHall.address) {
@@ -106,7 +106,7 @@
         }
       }
       if (newTownHall.Date) {
-        newTownHall = newEventView.validateDate(id, databaseTH, newTownHall)
+        newTownHall = updateEventView.validateDate(id, databaseTH, newTownHall)
       }
       if (newTownHall) {
         newTownHall.updateFB(id).then(function (dataWritten) {
@@ -123,7 +123,7 @@
 
   // METHODS FOR BOTH
 
-  newEventView.humanTime = function (time) {
+  updateEventView.humanTime = function (time) {
     var timeSplit = time.split(':');
     var hours;
     var minutes;
@@ -144,7 +144,7 @@
     return hours + ':' + minutes + ' ' + meridian;
   };
 
-  newEventView.formChanged = function () {
+  updateEventView.formChanged = function () {
     var $input = $(this);
     var $form = $input.parents('form');
     var $listgroup = $(this).parents('.list-group-item');
@@ -156,10 +156,10 @@
     $input.addClass('edited');
     $form.find('#update-button').addClass('btn-blue');
     $form.find('.timestamp').val(new Date());
-    newEventView.updatedView($form, $listgroup);
+    updateEventView.updatedView($form, $listgroup);
   };
 
-  newEventView.addressChanged = function () {
+  updateEventView.addressChanged = function () {
     var $input = $(this);
     var $form = $input.parents('form');
     if (this.id === 'address') {
@@ -169,7 +169,7 @@
     }
   };
 
-  newEventView.dateChanged = function (event) {
+  updateEventView.dateChanged = function (event) {
     var $input = $(this);
     var $form = $input.parents('form');
     var $listgroup = $(this).parents('.list-group-item');
@@ -177,10 +177,10 @@
     $input.addClass('edited');
     $form.find('#update-button').addClass('btn-blue');
     $form.find('.timestamp').val(new Date());
-    newEventView.updatedView($form, $listgroup);
+    updateEventView.updatedView($form, $listgroup);
   };
 
-  newEventView.dateString = function (event) {
+  updateEventView.dateString = function (event) {
     event.preventDefault();
     var $input = $(this);
     var $form = $input.parents('form');
@@ -194,12 +194,12 @@
     }
   };
 
-  newEventView.geoCode = function (event) {
+  updateEventView.geoCode = function (event) {
     event.preventDefault();
     var $form = $(this).parents('form');
     var address = $form.find('#address').val();
     var $listgroup = $(this).parents('.list-group-item');
-    if ($form.attr('id') && $form.attr('id').split('-').length > 1) {
+    if ($form.attr('id') && $form.attr('id').split('-form').length > 1) {
       var id = $form.attr('id').split('-')[0];
     }
     newTownHall = new TownHall();
@@ -211,7 +211,7 @@
       if (id) {
         TownHall.allTownHallsFB[id].lat = geotownHall.lat;
         TownHall.allTownHallsFB[id].lng = geotownHall.lng;
-        newEventView.updatedView($form, $listgroup);
+        updateEventView.updatedView($form, $listgroup);
       } else {
         TownHall.currentEvent.lat = geotownHall.lat;
         TownHall.currentEvent.lng = geotownHall.lng;
@@ -221,7 +221,7 @@
     });
   };
 
-  newEventView.changeMeetingType = function (event) {
+  updateEventView.changeMeetingType = function (event) {
     event.preventDefault();
     $form = $(this).parents('form');
     var value = $(this).attr('data-value');
@@ -229,14 +229,14 @@
     $form.find('#meetingType').change();
   };
 
-  newEventView.meetingTypeChanged = function (event) {
+  updateEventView.meetingTypeChanged = function (event) {
     event.preventDefault();
     $form = $(this).parents('form');
     var value = $(this).val();
     var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
     var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
     if ($form.attr('id')) {
-      var thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-')[0]];
+      var thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-form')[0]];
     } else {
       var thisTownHall = TownHall.currentEvent;
     }
@@ -251,16 +251,15 @@
   };
 
   // event listeners for table interactions
-  $('.events-table').on('click', '#geocode-button', newEventView.geoCode);
-  $('.events-table').on('click', '.dropdown-menu a', newEventView.changeMeetingType);
-  $('.events-table').on('change', '#meetingType', newEventView.meetingTypeChanged);
-  $('.events-table').on('keyup', '.form-control', newEventView.formChanged);
-  $('.events-table').on('change', '.datetime', newEventView.dateChanged);
-  $('.events-table').on('change', '.date-string', newEventView.dateString);
-  $('.events-table').on('click', '#archive', newEventView.archiveEvent);
-  $('.events-table').on('submit', 'form', newEventView.submitUpdateForm);
-
-  // $('.events-table').on('click', '#delete', newEventView.deleteEvent);
+  $('.events-table').on('click', '#geocode-button', updateEventView.geoCode);
+  $('.events-table').on('click', '.dropdown-menu a', updateEventView.changeMeetingType);
+  $('.events-table').on('change', '#meetingType', updateEventView.meetingTypeChanged);
+  $('.events-table').on('keyup', '.form-control', updateEventView.formChanged);
+  $('.events-table').on('change', '.datetime', updateEventView.dateChanged);
+  $('.events-table').on('change', '.date-string', updateEventView.dateString);
+  $('.events-table').on('click', '#archive', updateEventView.archiveEvent);
+  $('.events-table').on('submit', 'form', updateEventView.submitUpdateForm);
+  $('.events-table').on('click', '#delete', updateEventView.deleteEvent);
 
 
   $('#scroll-to-top').on('click', function () {
@@ -295,13 +294,13 @@
       eventHandler.metaData();
       writeUserData(user.uid, user.displayName, user.email);
     } else {
-      newEventView.signIn();
+      updateEventView.signIn();
       // No user is signed in.
     }
   });
 
   // Sign in fuction for firebase
-  newEventView.signIn = function signIn() {
+  updateEventView.signIn = function signIn() {
     firebase.auth().signInWithRedirect(provider);
     firebase.auth().getRedirectResult().then(function (result) {
       // This gives you a Google Access Token. You can use it to access the Google API.

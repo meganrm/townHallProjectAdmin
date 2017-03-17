@@ -1,15 +1,24 @@
 <li id="{{eventId}}" class="event-row list-group-item ">
   <span class="text-secondary pull-right">Edit event</span>
   <form class="form-inline " id="{{eventId}}-form">
-    <div class="form-group">
+    <div class="form-group meta-data">
       <strong>
-        <input type="text" class="state-info-text pull-left" readonly value="{{eventId}}">
-        <input type="text" class="timestamp pull-left" id="lastUpdated" readonly value="{{lastUpdated}}">
+        <div class=" col-md-4">
+          <input type="text" class="state-info-text pull-left" readonly value="{{eventId}}">
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="timestamp " id="lastUpdated" readonly {{#if lastUpdatedHuman}} value="{{lastUpdatedHuman}}"{{/if}}{{#unless lastUpdatedHuman}}value="{{lastUpdated}}"{{/unless}}>
+        </div>
         {{#if updatedBy}}
-        <input type="text" class="pull-left" id="updatedBy" readonly value="{{updatedBy}}">
+        <div class="col-md-4">
+          <input type="text" class="" id="updatedBy" readonly value="{{updatedBy}}">
+        </div>
         {{/if}}
         {{#if enteredBy}}
-        <input type="text" class="pull-left" id="enteredBy" readonly value="Submitted by: {{enteredBy}}">
+        <div class="form-group col-md-4">
+          <label for="enteredBy">Submitted By:</label>
+          <input type="text" class="" id="enteredBy" readonly value="{{enteredBy}}">
+        </div>
         {{/if}}
       </strong>
     </div>
@@ -107,15 +116,13 @@
       </div>
     </div>
     <div class="text-center">
-        <div class="btn-group " role="group" aria-label="...">
-          <button type="button" class="btn btn-blue " id="archive" data-id="{{eventId}}" data-toggle="tooltip" data-placement="top" title="For events that occured but are in the past">Archive</button>
-          <button type="button" class="btn btn-secondary " id="delete" data-id="{{eventId}}" data-toggle="tooltip" data-placement="top" title="For events that were canceled or wrong">Delete</button>
-          <button type="submit" class="btn" id="update-button">Update</button>
-        </div>
+      <div class="btn-group " role="group" aria-label="...">
+        <button type="button" class="btn btn-blue " id="archive" data-id="{{eventId}}" data-toggle="tooltip" data-placement="top" title="For events that occured but are in the past">Archive</button>
+        <button type="button" class="btn btn-secondary " id="delete" data-id="{{eventId}}" data-toggle="tooltip" data-placement="top" title="For events that were canceled or wrong">Delete</button>
+        <button type="submit" class="btn" id="update-button">Update</button>
       </div>
     </div>
-
-
+  </div>
   </form>
   <div class="preview">
     <span class="text-secondary pull-right">Preview</span>
