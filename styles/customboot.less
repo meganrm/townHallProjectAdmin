@@ -238,6 +238,17 @@ form{
   position: fixed;
 }
 
+#scroll-to-top{
+  position: fixed;
+  bottom:200px;
+  right:40px;
+  z-index: 999;
+  background: white;
+  border-radius: 50%;
+  border: 0.25px solid @brand-info;
+  padding: 6px;
+}
+
 .list-group-item #address{
   width: 300px;
 }
@@ -260,13 +271,17 @@ form .input-underline{
 .new-event-form input{
   font-size: 1.2em;
 }
+.new-event-form input:focus {
+  outline: none;
+  box-shadow: none;
+}
 
 .new-event-form .form-group{
   margin-top: 1.2em;
 }
 
 .new-event-form section{
-  margin-top: 3em;
+  margin-bottom: 8em;
 }
 
 // add to cal styles
@@ -421,7 +436,7 @@ form .input-underline{
 }
 
 .btn-white{
-  background-color: white;
+  background-color: transparent;
   color: @brand-info;
 }
 

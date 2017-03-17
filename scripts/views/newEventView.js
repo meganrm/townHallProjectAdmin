@@ -140,7 +140,6 @@
   // New Event METHODS
 
   newEventView.updatedNewTownHallObject = function updatedNewTownHallObject($form) {
-    var preview = Handlebars.getTemplate('previewEvent');
     var updated = $form.find('.edited').get();
     var databaseTH = TownHall.currentEvent;
     var updates = updated.reduce(function (newObj, cur) {
@@ -183,7 +182,7 @@
     var member = $(this).val();
     $form = $(this).parents('form');
     TownHall.currentKey = firebase.database().ref('townHallIds').push().key;
-    TownHall.currentEvent['eventId'] = TownHall.currentKey;
+    TownHall.currentEvent.eventId = TownHall.currentKey;
     var District = $form.find('#District');
     var State = $form.find('#State');
     var Party = $form.find('#Party');
