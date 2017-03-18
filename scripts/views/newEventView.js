@@ -74,12 +74,15 @@
   newEventView.geoCode = function ($input) {
     var $form = $($input).parents('form');
     var address = $form.find('#address').val();
-    var $listgroup = $($input).parents('.list-group-item');
     newTownHall = new TownHall();
     type = $form.find('#addressType').val();
+    if (TownHall.currentEvent.lat && TownHall.currentEvent.lng) {
+      delete TownHall.currentEvent.lat;
+      delete TownHall.currentEvent.lng;
+    }
     newTownHall.getLatandLog(address, type).then(function (geotownHall) {
       console.log('geocoding!', geotownHall);
-      var $feedback = $form.find('#location-form-group')
+      var $feedback = $form.find('#location-form-group');
       $feedback.removeClass('has-error');
       $feedback.addClass('has-success');
       $form.find('#address').val(geotownHall.address);
@@ -115,9 +118,11 @@
   newEventView.meetingTypeChanged = function (event) {
     event.preventDefault();
     $form = $(this).parents('form');
+    $location = $form.find('.location-data');
     var value = $(this).val();
     var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
     var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
+    var defaultLocationTemplate = Handlebars.getTemplate('generalinputs');
     if ($form.attr('id')) {
       var thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-form')[0]];
     } else {
@@ -125,11 +130,13 @@
     }
     switch (value.slice(0, 4)) {
       case 'Tele':
-        $form.find('.location-data').html(teleInputsTemplate(thisTownHall));
+        $location.html(teleInputsTemplate(thisTownHall));
         break;
       case 'Tick':
-        $form.find('.location-data').html(ticketInputsTemplate(thisTownHall));
+        $location.html(ticketInputsTemplate(thisTownHall));
         break;
+      default:
+        $location.html(defaultLocationTemplate(thisTownHall));
     }
   };
 

@@ -1,28 +1,26 @@
 <div class="form-group">
   <label class="sr-only" for="Location">Location</label>
-  <input type="text" class="form-control" id="Location" placeholder="Location" value="{{Location}}">
+  <input type="text" class="form-control input-underline" id="Location" placeholder="Name of location (eg. Gary Recreation Center)" value="">
 </div>
-<div class="input-group">
-    <input type="text" class="form-control" placeholder="Address" id="address" value="{{address}}">
-    <span class="input-group-btn">
-      <button class="btn btn-default disabled" type="button" id="geocode-button">GeoCode!</button>
-    </span>
-</div><!-- /input-group -->
+<div class="form-group col-md-12" id=location-form-group>
+    <input type="text" class="form-control" placeholder="Street address" id="address">
+    <span id="address-feedback" class="help-block">Enter a valid street address, if there isn't one, leave this blank</span>
+</div><!-- /form-group -->
 <div class="form-group">
   <label class="sr-only" for="addressType">Address Type</label>
-  <input type="text" class="" id="addressType" placeholder="Address type" value="street" readonly>
+  <input type="text" class="sr-only" id="addressType" placeholder="Address type" value="street" readonly>
 </div>
 
 <div class="form-group">
   <label class="sr-only" for="locationCheck">Location Check</label>
-  <input type="text" class="text-success" id="locationCheck" placeholder="please geocode" {{#if lat}}value="Location is valid"{{/if }} readonly>
+  <input type="text" class="text-success sr-only" id="locationCheck" placeholder="please geocode" {{#if lat}}value="Location is valid"{{/if }} readonly>
 </div>
 <div class=text-info>
-  <div class="form-group">
+  <div class="form-group col-md-12">
     <label  for="RSVP">url for Tickets</label>
     <input type="url" class="form-control" id="RSVP" placeholder="Link" value="{{RSVP}}">
   </div>
-  <div class="form-group">
+  <div class="form-group col-md-12">
     <label  for="rsvpName">Name for link</label>
     <input type="text" class="form-control" id="rsvpName" placeholder="Link Name" value="Get Tickets">
   </div>
