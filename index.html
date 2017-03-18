@@ -161,13 +161,10 @@
                       <label class="sr-only" for="Location">Location</label>
                       <input type="text" class="form-control input-underline" id="Location" placeholder="Name of location (eg. Gary Recreation Center)">
                     </div>
-                    <div class="form-group col-md-12">
-                      <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Address" id="address">
-                        <span class="input-group-btn">
-                          <button class="btn btn-default disabled" type="button" id="geocode-button">GeoCode!</button>
-                        </span>
-                      </div><!-- /input-group -->
+                    <div class="form-group has-feedback" id=location-form-group>
+                        <input type="text" class="form-control" placeholder="Street address" id="address" aria-describedby="inputGroupSuccess1Status">
+                        <span id="helpBlock" class="help-block">Enter a valid street address, if there isn't one, leave this blank</span>
+                        <span class="form-control-feedback hidden" aria-hidden="true"><i class="fa fa-check" aria-hidden="true"></i></span>
                     </div><!-- /form-group -->
                     <div class="form-group col-md-12">
                       <label class="sr-only" for="addressType">Address Type</label>

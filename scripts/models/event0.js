@@ -205,9 +205,9 @@
     });
   };
 
-  TownHall.prototype.delete = function () {
+  TownHall.prototype.delete = function (path) {
     var ele = this;
-    var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId);
+    var oldTownHall = firebasedb.ref(path + ele.eventId);
     var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId + '/delete').set(true);
     console.log('deleting', ele);
     oldTownHall.remove();

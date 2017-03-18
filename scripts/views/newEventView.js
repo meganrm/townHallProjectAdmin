@@ -50,9 +50,10 @@
     var $input = $(this);
     var $form = $input.parents('form');
     if (this.id === 'address') {
-      $form.find('#geocode-button').removeClass('disabled');
-      $form.find('#geocode-button').addClass('btn-blue');
       $form.find('#locationCheck').val('');
+      newEventView.geoCode($input);
+      $form.find('#location-form-group').removeClass('has-success');
+      $form.find('.form-control-feedback').addClass('hidden');
     }
   };
 
@@ -81,30 +82,24 @@
     }
   };
 
-  newEventView.geoCode = function (event) {
-    event.preventDefault();
-    var $form = $(this).parents('form');
+  newEventView.geoCode = function ($input) {
+    var $form = $($input).parents('form');
     var address = $form.find('#address').val();
-    var $listgroup = $(this).parents('.list-group-item');
-    if ($form.attr('id') && $form.attr('id').split('-').length > 1) {
-      var id = $form.attr('id').split('-')[0];
-    }
+    var $listgroup = $($input).parents('.list-group-item');
     newTownHall = new TownHall();
     type = $form.find('#addressType').val();
     newTownHall.getLatandLog(address, type).then(function (geotownHall) {
       console.log('geocoding!', geotownHall);
-      $form.find('#locationCheck').val('Location is valid');
+      var $feedback = $form.find('#location-form-group')
+      $feedback.removeClass('has-error');
+      $feedback.addClass('has-success');
+      $form.find('.form-control-feedback').removeClass('hidden');
       $form.find('#address').val(geotownHall.address);
-      if (id) {
-        TownHall.allTownHallsFB[id].lat = geotownHall.lat;
-        TownHall.allTownHallsFB[id].lng = geotownHall.lng;
-        newEventView.updatedView($form, $listgroup);
-      } else {
         TownHall.currentEvent.lat = geotownHall.lat;
         TownHall.currentEvent.lng = geotownHall.lng;
-      }
     }).catch(function (error) {
-      $form.find('#locationCheck').val('Geocoding failed');
+      $feedback.addClass('has-error');
+      $form.find('#locationCheck').val('Geocoding failed').addClass('has-error');
     });
   };
 
@@ -123,7 +118,7 @@
     var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
     var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
     if ($form.attr('id')) {
-      var thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-')[0]];
+      var thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-form')[0]];
     } else {
       var thisTownHall = TownHall.currentEvent;
     }
@@ -194,7 +189,7 @@
         if (mocdata.type === 'sen') {
           District.val('Senate').addClass('edited');
         } else if (mocdata.type === 'rep') {
-          District.val(mocdata.state + '-' + mocdata.district);
+          District.val(mocdata.state + '-' + mocdata.district).addClass('edited');
         }
       }
       Party.val(mocdata.party).addClass('edited');
@@ -232,7 +227,7 @@
     if (TownHall.currentEvent.hasOwnProperty('Member')) {
       newTownHall.lastUpdated = Date.now();
       newTownHall.enteredBy = firebase.auth().currentUser.email;
-      if ($form.find('#locationCheck').val() !== 'Location is valid') {
+      if (newTownHall.address && $form.find('#locationCheck').val() !== 'Location is valid') {
         alert('Please Geocode the address, if there is no address, leave it blank');
         return false;
       }
@@ -240,12 +235,8 @@
       newTownHall = newEventView.validateDateNew(id, newTownHall)
       if (newTownHall) {
         newTownHall.updateUserSubmission(TownHall.currentKey).then(function (dataWritten) {
-          var print = dataWritten;
-          print.writtenId = id;
-          print.edit = 'updated';
-          $('#edited').append(preview(print));
+          console.log('wrote to database: ', newTownHall);
         });
-        console.log('writing to database: ', newTownHall);
       }
     }
   };
@@ -259,7 +250,7 @@
   $('.new-event-form').on('change', '#meetingType', newEventView.meetingTypeChanged);
   $('.new-event-form').on('change', '.form-control', newEventView.newformChanged);
   $('.new-event-form').on('change', '.date-string', newEventView.dateString);
-  $('.new-event-form').on('keyup', '#address', newEventView.addressChanged);
+  $('.new-event-form').on('change', '#address', newEventView.addressChanged);
   $('.new-event-form').on('submit', 'form', newEventView.submitNewEvent);
 
   $('#scroll-to-top').on('click', function () {

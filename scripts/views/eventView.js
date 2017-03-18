@@ -203,6 +203,8 @@
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
       var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
+      var approveButtons = Handlebars.getTemplate('approveButtons');
+
       if (ele.timeStart24 && ele.timeEnd24) {
         if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
           console.log(ele.eventId);
@@ -224,7 +226,8 @@
         }
         ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
       }
-
+      ele.lastUpdatedHuman = new Date(ele.lastUpdated).toDateString();
+      console.log(ele.lastUpdatedHuman);
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {
         console.log(ele);
@@ -238,7 +241,8 @@
             break;
         }
       }
-      $('#for-approval').append($toAppend.clone());
+      $toAppend.find('.btn-group').html(approveButtons(ele))
+      $('#for-approval').append($toAppend);
 
     });
       $('[data-toggle="tooltip"]').tooltip()
