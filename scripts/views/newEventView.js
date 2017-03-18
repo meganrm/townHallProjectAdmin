@@ -46,17 +46,6 @@
     newEventView.updatedView($form, $listgroup);
   };
 
-  newEventView.addressChanged = function () {
-    var $input = $(this);
-    var $form = $input.parents('form');
-    if (this.id === 'address') {
-      $form.find('#locationCheck').val('');
-      newEventView.geoCode($input);
-      $form.find('#location-form-group').removeClass('has-success');
-      $form.find('.form-control-feedback').addClass('hidden');
-    }
-  };
-
   newEventView.dateChanged = function (event) {
     var $input = $(this);
     var $form = $input.parents('form');
@@ -93,15 +82,26 @@
       var $feedback = $form.find('#location-form-group')
       $feedback.removeClass('has-error');
       $feedback.addClass('has-success');
-      $form.find('.form-control-feedback').removeClass('hidden');
       $form.find('#address').val(geotownHall.address);
       TownHall.currentEvent.lat = geotownHall.lat;
       TownHall.currentEvent.lng = geotownHall.lng;
       $form.find('#locationCheck').val('Location is valid');
+      $form.find('#address-feedback').html(`Location is valid, make sure the address is correct:<br> ${geotownHall.address}`);
     }).catch(function (error) {
       $feedback.addClass('has-error');
       $form.find('#locationCheck').val('Geocoding failed').addClass('has-error');
     });
+  };
+
+  newEventView.addressChanged = function () {
+    var $input = $(this);
+    var $form = $input.parents('form');
+    if (this.id === 'address') {
+      $form.find('#locationCheck').val('');
+      newEventView.geoCode($input);
+      $form.find('#location-form-group').removeClass('has-success');
+      $form.find('#address-feedback').html('Enter a valid street address, if there isn\'t one, leave this blank');
+    }
   };
 
   newEventView.changeMeetingType = function (event) {

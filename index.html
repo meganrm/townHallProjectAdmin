@@ -97,7 +97,7 @@
 
           <div role="tabpanel" class="tab-pane page" id="new-page">
             <section class="row">
-              <div class="new-event-form col-md-8 col-md-offset-3">
+              <div class="new-event-form col-md-9 col-md-offset-3">
                 <form class="">
                   <section class="member-info text-info">
                     <h4>Member of Congress Information<br>
@@ -136,12 +136,12 @@
                     <h4 class="text-info">Information about the Event</h4>
                     <div class="form-group col-md-12">
                       <label class="sr-only" for="eventName">Event name</label>
-                      <input type="text" class="form-control input-underline" aria-label="..." id="eventName" value="" placeholder="Name of the event">
+                      <input type="text" class="form-control input-underline" id="eventName" value="" placeholder="Name of the event">
                     </div>
                     <div class="form-group col-md-12">
                       <label class="sr-only" for="meetingType">Meeting Type</label>
                       <div class="input-group">
-                        <input type="text" class="form-control" aria-label="..." id="meetingType" value="Meeting Type" readonly>
+                        <input type="text" class="form-control" id="meetingType" value="Meeting Type" readonly>
                         <div class="input-group-btn">
                           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
                           <ul class="dropdown-menu dropdown-menu-right">
@@ -159,12 +159,12 @@
                   <section class="location-data">
                     <div class="form-group col-md-12">
                       <label class="sr-only" for="Location">Location</label>
-                      <input type="text" class="form-control input-underline" id="Location" placeholder="Name of location (eg. Gary Recreation Center)">
+                      <input type="text" class="form-control input-underline" id="Location" placeholder="Name of location (eg. Gary Recreation Center)" value="">
                     </div>
-                    <div class="form-group has-feedback" id=location-form-group>
-                        <input type="text" class="form-control" placeholder="Street address" id="address" aria-describedby="inputGroupSuccess1Status">
-                        <span id="helpBlock" class="help-block">Enter a valid street address, if there isn't one, leave this blank</span>
-                        <span class="form-control-feedback hidden" aria-hidden="true"><i class="fa fa-check" aria-hidden="true"></i></span>
+                    <div class="form-group col-md-12" id=location-form-group>
+                        <input type="text" class="form-control" placeholder="Street address" id="address">
+                        <span id="address-feedback" class="help-block">Enter a valid street address, if there isn't one, leave this blank</span>
+
                     </div><!-- /form-group -->
                     <div class="form-group col-md-12">
                       <label class="sr-only" for="addressType">Address Type</label>
