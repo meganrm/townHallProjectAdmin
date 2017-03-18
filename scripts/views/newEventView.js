@@ -213,7 +213,7 @@
         console.log('could not get timezone', error);
       });
     } else {
-      newTownHall.dateObj = new Date(dateUpdated.Date.replace(/-/g, '/') + ' ' + newTownHall.Time).getTime();
+      newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + newTownHall.Time).getTime();
       newTownHall.dateValid = newTownHall.dateObj ? true : false;
       return (newTownHall);
     }
@@ -238,6 +238,7 @@
         newTownHall.updateUserSubmission(TownHall.currentKey).then(function (dataWritten) {
           console.log('wrote to database: ', newTownHall);
         });
+        document.getElementById('new-event-form-element').reset();
       }
     }
   };

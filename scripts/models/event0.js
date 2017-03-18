@@ -208,7 +208,9 @@
   TownHall.prototype.deleteEvent = function (path) {
     var ele = this;
     var oldTownHall = firebasedb.ref(path + '/' + ele.eventId);
-    // var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId + '/delete').set(true);
+    if (path === 'TownHalls') {
+      var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId + '/lastUpdated').set(Date.now());
+    }
     return new Promise(function (resolve, reject) {
       var removed = oldTownHall.remove();
       if (removed) {
