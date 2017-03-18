@@ -95,8 +95,9 @@
       $feedback.addClass('has-success');
       $form.find('.form-control-feedback').removeClass('hidden');
       $form.find('#address').val(geotownHall.address);
-        TownHall.currentEvent.lat = geotownHall.lat;
-        TownHall.currentEvent.lng = geotownHall.lng;
+      TownHall.currentEvent.lat = geotownHall.lat;
+      TownHall.currentEvent.lng = geotownHall.lng;
+      $form.find('#locationCheck').val('Location is valid');
     }).catch(function (error) {
       $feedback.addClass('has-error');
       $form.find('#locationCheck').val('Geocoding failed').addClass('has-error');
