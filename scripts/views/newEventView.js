@@ -192,9 +192,9 @@
         } else if (mocdata.type === 'rep') {
           District.val(mocdata.state + '-' + mocdata.district).addClass('edited');
         }
+        Party.val(mocdata.party).addClass('edited');
+        State.val(statesAb[mocdata.state]).addClass('edited');
       }
-      Party.val(mocdata.party).addClass('edited');
-      State.val(statesAb[mocdata.state]).addClass('edited');
     });
   };
 

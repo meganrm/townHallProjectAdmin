@@ -58,8 +58,12 @@
   updateEventView.deleteEvent = function (event) {
     event.preventDefault();
     var id = $(this).attr('data-id');
+    var path = $(this).attr('data-path');
     var oldTownHall = TownHall.allTownHallsFB[id];
-    oldTownHall.deleteEvent();
+    console.log(id, path, oldTownHall);
+    oldTownHall.deleteEvent(path).then(function(deletedEvent){
+    $(`#${id}`).remove();
+    });
   };
 
   updateEventView.validateDate = function (id, databaseTH, newTownHall) {

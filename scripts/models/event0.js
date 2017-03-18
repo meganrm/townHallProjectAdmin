@@ -205,12 +205,20 @@
     });
   };
 
-  TownHall.prototype.delete = function (path) {
+  TownHall.prototype.deleteEvent = function (path) {
     var ele = this;
-    var oldTownHall = firebasedb.ref(path + ele.eventId);
-    var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId + '/delete').set(true);
-    console.log('deleting', ele);
-    oldTownHall.remove();
+    var oldTownHall = firebasedb.ref(path + '/' + ele.eventId);
+    // var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId + '/delete').set(true);
+    return new Promise(function (resolve, reject) {
+      var removed = oldTownHall.remove();
+      if (removed) {
+        resolve(ele);
+        console.log('deleting', ele);
+      } else {
+        reject('delete');
+      }
+    });
+
   };
 
   TownHall.allIdsGoogle = [];
