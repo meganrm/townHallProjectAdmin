@@ -160,6 +160,27 @@
   };
 
   // New Event METHODS
+  newEventView.validatePhoneNumber = function(phonenumber){
+    var $phoneNumberError = $('#phoneNumber-error');
+    regEx = /^(1\s|1|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/;
+    var testNumber = regEx.test(phonenumber);
+    if (testNumber) {
+      console.log('true', testNumber);
+      $phoneNumberError.addClass('hidden');
+      $phoneNumberError.parent().removeClass('has-error');
+      $phoneNumberError.parent().addClass('has-success');
+      phonenumber = phonenumber.replace(/[^\d]/g, '');
+      if (phonenumber.length === 10) {
+        $('#phoneNumber').val(phonenumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3'));
+      }
+      return null;
+    } else {
+      console.log('false', testNumber);
+      $phoneNumberError.removeClass('hidden');
+      $phoneNumberError.parent().addClass('has-error');
+      $phoneNumberError.parent().removeClass('has-success');
+    }
+  };
 
   newEventView.updatedNewTownHallObject = function updatedNewTownHallObject($form) {
     var updated = $form.find('.edited').get();
@@ -199,6 +220,8 @@
       $form.find('#geocode-button').removeClass('disabled');
       $form.find('#geocode-button').addClass('btn-blue');
       $form.find('#locationCheck').val('');
+    } else if (this.id === 'phoneNumber') {
+      newEventView.validatePhoneNumber($input.val())
     }
     $input.addClass('edited');
     newEventView.updatedNewTownHallObject($form);
@@ -387,5 +410,5 @@
     });
   };
 
-  module.eventHandler = eventHandler;
+  module.newEventView = newEventView;
 })(window);
