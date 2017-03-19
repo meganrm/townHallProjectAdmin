@@ -69,17 +69,22 @@
     </nav><!-- end nav -->
   <div class="container">
     <div class="row">
-      <div class="col-md-2">
+      <div class="col-sm-4">
         <button type="button" name="button" id="scroll-to-top" class="btn btn-white" style="visibility:hidden;"><i class="fa fa-chevron-up fa-4x" aria-hidden="true"></i></button>
         <section class="session-data">
           <h4>Welcome </h4>
           <p>Edited this session:</p>
           <ul id="edited" class="list-group events-table">
           </ul><!--end table-->
+          <div class="hidden" id="list-of-current-pending">
+            <h4>Other people have submitted these events</h4>
+            <p>This member of congress has these events currently under review, please don't submit a duplicate.</p>
+            <ul id="current-pending" class="list-group events-table">
+            </ul><!--end table-->
+          </div>
         </section>
       </div>
-      <div class="col-md-8">
-        <div class="tab-content">
+      <div class="tab-content col-sm-8">
         <div role="tabpanel" class="tab-pane page active" id="home">
           <section class="">
               <h3 class="text-primary table-title text-center">Town Hall Admin Site</h3>
@@ -97,7 +102,7 @@
 
           <div role="tabpanel" class="tab-pane page" id="new-page">
             <section class="row">
-              <div class="new-event-form col-md-9 col-md-offset-3">
+              <div class="new-event-form col-md-9">
                 <form class="" id="new-event-form-element">
                   <section class="member-info text-info">
                     <h4>Member of Congress Information<br>
@@ -314,9 +319,6 @@
                 </div>
               </section>
             </div>
-          </div>
-
-
           </div>
         </div>
       </div>

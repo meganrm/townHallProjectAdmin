@@ -74,7 +74,6 @@
   newEventView.geoCodeOnState = function () {
     var state = TownHall.currentEvent.State;
     newTownHall = new TownHall();
-    console.log(state);
     newTownHall.getLatandLog(state, 'state').then(function (geotownHall) {
       console.log('geocoding!', geotownHall);
       TownHall.currentEvent.address = geotownHall.address;
@@ -165,7 +164,6 @@
     regEx = /^(1\s|1|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/;
     var testNumber = regEx.test(phonenumber);
     if (testNumber) {
-      console.log('true', testNumber);
       $phoneNumberError.addClass('hidden');
       $phoneNumberError.parent().removeClass('has-error');
       $phoneNumberError.parent().addClass('has-success');
@@ -175,7 +173,6 @@
       }
       return null;
     } else {
-      console.log('false', testNumber);
       $phoneNumberError.removeClass('hidden');
       $phoneNumberError.parent().addClass('has-error');
       $phoneNumberError.parent().removeClass('has-success');
@@ -244,6 +241,19 @@
     }
   };
 
+  newEventView.showSubmittedEvents = function (currentEvents) {
+    var $list = $('#edited');
+    $list.empty();
+    var previewEventTemplate = Handlebars.getTemplate('pendingEvents');
+    $('#list-of-current-pending').removeClass('hidden').hide().fadeIn();
+    for (key in currentEvents) {
+      var eventId = currentEvents[key];
+      var ele = TownHall.allTownHallsFB[eventId];
+      $list.append(previewEventTemplate(ele));
+      console.log(TownHall.allTownHallsFB[eventId]);
+    }
+  };
+
   newEventView.lookupMember = function (event) {
     var $memberInput = $(this);
     var member = $memberInput.val();
@@ -271,14 +281,14 @@
           newEventView.updatedNewTownHallObject($form);
           $errorMessage.html('');
           $memberformgroup.removeClass('has-error').addClass('has-success');
+          newEventView.showSubmittedEvents(mocdata.currentEvents);
         } else {
-          console.log('no member', $memberInput.parent());
           $('#member-form-group').addClass('has-error');
           $('.new-event-form #member-help-block').html('That member is not in our database, please check the spelling');
         }
       })
       .catch(function (error) {
-        console.log('no member');
+        console.error(error)
       });
     }
   };
@@ -324,6 +334,10 @@
     return requiredFields;
   };
 
+  newEventView.updateMOCEvents = function () {
+    var memberKey = TownHall.currentEvent.Member.split(' ')[1].toLowerCase() + '_' + TownHall.currentEvent.Member.split(' ')[0].toLowerCase();
+    firebase.database().ref('MOCs/' + memberKey + '/currentEvents').push(TownHall.currentKey);
+  };
   newEventView.submitNewEvent = function (event) {
     event.preventDefault();
     $form = $(this);
@@ -338,6 +352,7 @@
         newTownHall.updateUserSubmission(TownHall.currentKey).then(function (dataWritten) {
           console.log('wrote to database: ', newTownHall);
         });
+        newEventView.updateMOCEvents();
         document.getElementById('new-event-form-element').reset();
       }
     } else {
