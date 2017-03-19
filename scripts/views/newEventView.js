@@ -338,6 +338,7 @@
     var memberKey = TownHall.currentEvent.Member.split(' ')[1].toLowerCase() + '_' + TownHall.currentEvent.Member.split(' ')[0].toLowerCase();
     firebase.database().ref('MOCs/' + memberKey + '/currentEvents').push(TownHall.currentKey);
   };
+
   newEventView.submitNewEvent = function (event) {
     event.preventDefault();
     $form = $(this);
@@ -354,6 +355,8 @@
         });
         newEventView.updateMOCEvents();
         document.getElementById('new-event-form-element').reset();
+        delete TownHall.currentKey;
+        delete TownHall.currentEvent;
       }
     } else {
       console.log('missing fields');

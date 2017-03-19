@@ -90,37 +90,56 @@
 
   updateEventView.submitUpdateForm = function (event) {
     event.preventDefault();
+    console.log('submitting');
     $form = $(this);
+    var listID = $form.closest('.events-table').attr('id');
     var preview = Handlebars.getTemplate('previewEvent');
-    var $listgroup = $(this).parents('.list-group-item');
-    var updated = $form.find('.edited').get();
-    var id = $form.attr('id').split('-form')[0];
-    var databaseTH = TownHall.allTownHallsFB[id];
-    if (updated.length > 0) {
-      var newTownHall = updateEventView.updatedView($form, $listgroup);
-      newTownHall.lastUpdated = $form.find('#lastUpdated').val();
-      newTownHall.updatedBy = firebase.auth().currentUser.email;
-      if (newTownHall.address) {
-        if ($form.find('#locationCheck').val() === 'Location is valid') {
-          newTownHall.lat = databaseTH.lat;
-          newTownHall.lng = databaseTH.lng;
-        } else {
-          alert('Please Geocode the address');
-          return false;
+    console.log(listID);
+    if (listID === 'for-approval') {
+      var key = $form.closest('.list-group-item').attr('id');
+      var approvedTH = TownHall.allTownHallsFB[key];
+      approvedTH.deleteEvent('UserSubmission').then(function(deletedEvent){
+        $(`#for-approval #${key}`).remove();
+      });
+      approvedTH.updateFB(key).then(function (dataWritten) {
+        var print = dataWritten;
+        print.writtenId = key;
+        print.edit = 'updated';
+        $('#edited').append(preview(print));
+      });
+      console.log('writing to database: ', approvedTH);
+      $form.find('#update-button').removeClass('btn-blue');
+    } else {
+      var $listgroup = $(this).parents('.list-group-item');
+      var updated = $form.find('.edited').get();
+      var id = $form.attr('id').split('-form')[0];
+      var databaseTH = TownHall.allTownHallsFB[id];
+      if (updated.length > 0) {
+        var newTownHall = updateEventView.updatedView($form, $listgroup);
+        newTownHall.lastUpdated = $form.find('#lastUpdated').val();
+        newTownHall.updatedBy = firebase.auth().currentUser.email;
+        if (newTownHall.address) {
+          if ($form.find('#locationCheck').val() === 'Location is valid') {
+            newTownHall.lat = databaseTH.lat;
+            newTownHall.lng = databaseTH.lng;
+          } else {
+            alert('Please Geocode the address');
+            return false;
+          }
         }
-      }
-      if (newTownHall.Date) {
-        newTownHall = updateEventView.validateDate(id, databaseTH, newTownHall)
-      }
-      if (newTownHall) {
-        newTownHall.updateFB(id).then(function (dataWritten) {
-          var print = dataWritten;
-          print.writtenId = id;
-          print.edit = 'updated';
-          $('#edited').append(preview(print));
-        });
-        console.log('writing to database: ', newTownHall);
-        $form.find('#update-button').removeClass('btn-blue');
+        if (newTownHall.Date) {
+          newTownHall = updateEventView.validateDate(id, databaseTH, newTownHall)
+        }
+        if (newTownHall) {
+          newTownHall.updateFB(id).then(function (dataWritten) {
+            var print = dataWritten;
+            print.writtenId = id;
+            print.edit = 'updated';
+            $('#edited').append(preview(print));
+          });
+          console.log('writing to database: ', newTownHall);
+          $form.find('#update-button').removeClass('btn-blue');
+        }
       }
     }
   };
