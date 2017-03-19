@@ -71,6 +71,22 @@
     }
   };
 
+  newEventView.geoCodeOnState = function () {
+    var state = TownHall.currentEvent.State;
+    newTownHall = new TownHall();
+    console.log(state);
+    newTownHall.getLatandLog(state, 'state').then(function (geotownHall) {
+      console.log('geocoding!', geotownHall);
+      TownHall.currentEvent.address = geotownHall.address;
+      TownHall.currentEvent.lat = geotownHall.lat;
+      TownHall.currentEvent.lng = geotownHall.lng;
+      $form.find('#locationCheck').val('Location is valid');
+    }).catch(function (error) {
+      $feedback.addClass('has-error');
+      $form.find('#locationCheck').val('Geocoding failed').addClass('has-error');
+    });
+  };
+
   newEventView.geoCode = function ($input) {
     var $form = $($input).parents('form');
     var address = $form.find('#address').val();
@@ -120,6 +136,8 @@
     $form = $(this).parents('form');
     $location = $form.find('.location-data');
     var value = $(this).val();
+    $('#meetingType-error').addClass('hidden');
+    $('#meetingType').parent().removeClass('has-error');
     var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
     var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
     var defaultLocationTemplate = Handlebars.getTemplate('generalinputs');
@@ -131,6 +149,7 @@
     switch (value.slice(0, 4)) {
       case 'Tele':
         $location.html(teleInputsTemplate(thisTownHall));
+        newEventView.geoCodeOnState();
         break;
       case 'Tick':
         $location.html(ticketInputsTemplate(thisTownHall));
@@ -151,6 +170,8 @@
         case 'timeStart24':
           newObj.timeStart24 = $curValue + ':00';
           newObj.Time = newEventView.humanTime($curValue);
+          $('#timeStart24-error').addClass('hidden');
+          $('#timeStart24').parent().removeClass('has-error');
           break;
         case 'timeEnd24':
           newObj.timeEnd24 = $curValue + ':00';
@@ -159,6 +180,8 @@
         case 'yearMonthDay':
           newObj[cur.id] = $curValue;
           newObj.Date = new Date($curValue.replace(/-/g, '/')).toDateString();
+          $('#yearMonthDay-error').addClass('hidden');
+          $('#yearMonthDay').parent().removeClass('has-error');
           break;
         default:
           newObj[cur.id] = $curValue;
@@ -181,28 +204,60 @@
     newEventView.updatedNewTownHallObject($form);
   };
 
+  newEventView.validateMember = function (member) {
+    var $errorMessage = $('.new-event-form #member-help-block');
+    var $memberformgroup = $('#member-form-group');
+    if (member.length < 1) {
+      $errorMessage.html('Please enter a member of congress name');
+      $memberformgroup.addClass('has-error');
+    } else if (parseInt(member)) {
+      $errorMessage.html('Please enter a member of congress name');
+      $memberformgroup.addClass('has-error');
+    } else if (member.split(' ').length === 1) {
+      $errorMessage.html('Please enter both a first and last name');
+      $memberformgroup.addClass('has-error');
+    } else {
+      return true;
+    }
+  };
+
   newEventView.lookupMember = function (event) {
-    var member = $(this).val();
+    var $memberInput = $(this);
+    var member = $memberInput.val();
     $form = $(this).parents('form');
-    TownHall.currentKey = firebase.database().ref('townHallIds').push().key;
-    TownHall.currentEvent.eventId = TownHall.currentKey;
-    var District = $form.find('#District');
-    var State = $form.find('#State');
-    var Party = $form.find('#Party');
-    var memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
-    console.log(memberKey);
-    firebase.database().ref('MOCs/' + memberKey).once('value').then(function (snapshot) {
-      if (snapshot.exists()) {
-        mocdata = snapshot.val();
-        if (mocdata.type === 'sen') {
-          District.val('Senate').addClass('edited');
-        } else if (mocdata.type === 'rep') {
-          District.val(mocdata.state + '-' + mocdata.district).addClass('edited');
+    var $errorMessage = $('.new-event-form #member-help-block');
+    var $memberformgroup = $('#member-form-group');
+    if (newEventView.validateMember(member)) {
+      TownHall.currentKey = firebase.database().ref('townHallIds').push().key;
+      TownHall.currentEvent.eventId = TownHall.currentKey;
+      var District = $form.find('#District');
+      var State = $form.find('#State');
+      var Party = $form.find('#Party');
+      var memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+      console.log(memberKey);
+      firebase.database().ref('MOCs/' + memberKey).once('value').then(function (snapshot) {
+        if (snapshot.exists()) {
+          mocdata = snapshot.val();
+          if (mocdata.type === 'sen') {
+            District.val('Senate').addClass('edited').parent().addClass('has-success');
+          } else if (mocdata.type === 'rep') {
+            District.val(mocdata.state + '-' + mocdata.district).addClass('edited').parent().addClass('has-success');
+          }
+          Party.val(mocdata.party).addClass('edited').parent().addClass('has-success');
+          State.val(statesAb[mocdata.state]).addClass('edited').parent().addClass('has-success');
+          newEventView.updatedNewTownHallObject($form);
+          $errorMessage.html('');
+          $memberformgroup.removeClass('has-error').addClass('has-success');
+        } else {
+          console.log('no member', $memberInput.parent());
+          $('#member-form-group').addClass('has-error');
+          $('.new-event-form #member-help-block').html('That member is not in our database, please check the spelling');
         }
-        Party.val(mocdata.party).addClass('edited');
-        State.val(statesAb[mocdata.state]).addClass('edited');
-      }
-    });
+      })
+      .catch(function (error) {
+        console.log('no member');
+      });
+    }
   };
 
   newEventView.validateDateNew = function () {
@@ -226,27 +281,44 @@
     }
   };
 
+  newEventView.checkForFields = function () {
+    var requiredFields = true;
+    if (!Object.prototype.hasOwnProperty.call(TownHall.currentEvent, 'meetingType')) {
+      $('#meetingType').parent().addClass('has-error');
+      $('#meetingType-error').removeClass('hidden');
+      requiredFields = false;
+    }
+    if (!Object.prototype.hasOwnProperty.call(TownHall.currentEvent, 'yearMonthDay')) {
+      $('#yearMonthDay').parent().addClass('has-error');
+      $('#yearMonthDay-error').removeClass('hidden');
+      requiredFields = false;
+    }
+    if (!Object.prototype.hasOwnProperty.call(TownHall.currentEvent, 'timeStart24')) {
+      $('#timeStart24').parent().addClass('has-error');
+      $('#timeStart24-error').removeClass('hidden');
+      requiredFields = false;
+    }
+    return requiredFields;
+  };
+
   newEventView.submitNewEvent = function (event) {
     event.preventDefault();
     $form = $(this);
     var id = TownHall.currentKey;
     newEventView.updatedNewTownHallObject($form);
     var newTownHall = TownHall.currentEvent;
-    if (TownHall.currentEvent.hasOwnProperty('Member')) {
+    if (newEventView.checkForFields()) {
       newTownHall.lastUpdated = Date.now();
       newTownHall.enteredBy = firebase.auth().currentUser.email;
-      if (newTownHall.address && $form.find('#locationCheck').val() !== 'Location is valid') {
-        alert('Please Geocode the address, if there is no address, leave it blank');
-        return false;
-      }
-
-      newTownHall = newEventView.validateDateNew(id, newTownHall)
+      newTownHall = newEventView.validateDateNew(id, newTownHall);
       if (newTownHall) {
         newTownHall.updateUserSubmission(TownHall.currentKey).then(function (dataWritten) {
           console.log('wrote to database: ', newTownHall);
         });
         document.getElementById('new-event-form-element').reset();
       }
+    } else {
+      console.log('missing fields');
     }
   };
 
@@ -268,15 +340,15 @@
 
   window.addEventListener('scroll', function () {
     var y = window.scrollY;
-     if (y >= 800) {
-       if ($('#scroll-to-top').css('visibility') !== 'visible') {
-         $('#scroll-to-top').css('visibility', 'visible').hide().fadeIn();
-       }
-     } else {
-       if ($('#scroll-to-top').css('visibility') === 'visible') {
-         $('#scroll-to-top').css('visibility', 'hidden').show().fadeOut('slow');
-       }
-     }
+    if (y >= 800) {
+      if ($('#scroll-to-top').css('visibility') !== 'visible') {
+        $('#scroll-to-top').css('visibility', 'visible').hide().fadeIn();
+      }
+    } else {
+    if ($('#scroll-to-top').css('visibility') === 'visible') {
+      $('#scroll-to-top').css('visibility', 'hidden').show().fadeOut('slow');
+    }
+    }
   });
 
   function writeUserData(userId, name, email) {
