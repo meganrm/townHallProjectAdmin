@@ -62,7 +62,7 @@
     var oldTownHall = TownHall.allTownHallsFB[id];
     console.log(id, path, oldTownHall);
     oldTownHall.deleteEvent(path).then(function(deletedEvent){
-    $(`#${id}`).remove();
+      $(`#${id}`).remove();
     });
   };
 

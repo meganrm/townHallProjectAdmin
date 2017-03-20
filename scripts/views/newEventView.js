@@ -363,8 +363,6 @@
     }
   };
 
-  // $('.events-table').on('click', '#delete', newEventView.deleteEvent);
-
   // event listeners for new form
   $('.new-event-form').on('change', '#Member', newEventView.lookupMember);
   $('.new-event-form').on('click', '#geocode-button', newEventView.geoCode);

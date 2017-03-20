@@ -371,14 +371,16 @@
     firebasedb.ref('/townHalls/').once('value').then(function getSnapShot(snapshot) {
       snapshot.forEach(function (townhall) {
         var ele = new TownHall(townhall.val())
-        if (TownHall.allIdsGoogle.indexOf(ele.eventId) < 0) {
-          console.log('old', ele.eventId)
-          if (townhall.val().eventId) {
-            var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId)
-            var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId)
-            firebasedb.ref('/townHallsOld/').push(ele)
-            oldTownHall.remove()
-            oldTownHallID.remove()
+        if (ele.eventId.indexOf('-') === -1) {
+          if (TownHall.allIdsGoogle.indexOf(ele.eventId) < 0) {
+            console.log('old', ele.eventId)
+            if (townhall.val().eventId) {
+              var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId)
+              var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId)
+              firebasedb.ref('/townHallsOld/').push(ele)
+              oldTownHall.remove()
+              oldTownHallID.remove()
+            }
           }
         }
       })
