@@ -39,3 +39,5 @@ jspm_packages
 .env
 townhallproject.json
 .DS_Store
+
+rules.json

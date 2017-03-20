@@ -88,6 +88,16 @@
     }
   };
 
+  updateEventView.CleanTH = function (obj){
+    var cleanTownHall = new TownHall();
+    for (prop in obj) {
+      if (obj.hasOwnProperty(prop)) {
+        cleanTownHall[prop] = obj[prop];
+      }
+    }
+    return cleanTownHall;
+  };
+
   updateEventView.submitUpdateForm = function (event) {
     event.preventDefault();
     console.log('submitting');
@@ -97,15 +107,15 @@
     console.log(listID);
     if (listID === 'for-approval') {
       var key = $form.closest('.list-group-item').attr('id');
-      var approvedTH = TownHall.allTownHallsFB[key];
-      approvedTH.deleteEvent('UserSubmission').then(function(deletedEvent){
-        $(`#for-approval #${key}`).remove();
-      });
+      var approvedTH = updateEventView.CleanTH(TownHall.allTownHallsFB[key]);
       approvedTH.updateFB(key).then(function (dataWritten) {
         var print = dataWritten;
         print.writtenId = key;
         print.edit = 'updated';
         $('#edited').append(preview(print));
+        dataWritten.deleteEvent('UserSubmission').then(function (deletedEvent) {
+          $(`#for-approval #${key}`).remove();
+        });
       });
       console.log('writing to database: ', approvedTH);
       $form.find('#update-button').removeClass('btn-blue');
@@ -128,7 +138,7 @@
           }
         }
         if (newTownHall.Date) {
-          newTownHall = updateEventView.validateDate(id, databaseTH, newTownHall)
+          newTownHall = updateEventView.validateDate(id, databaseTH, newTownHall);
         }
         if (newTownHall) {
           newTownHall.updateFB(id).then(function (dataWritten) {
