@@ -241,16 +241,13 @@
     }
   };
 
-  newEventView.showSubmittedEvents = function (currentEvents) {
-    var $list = $('#current-pending');
-    $list.empty();
+  newEventView.showSubmittedEvents = function (currentEvents, $list) {
     var previewEventTemplate = Handlebars.getTemplate('pendingEvents');
     $('#list-of-current-pending').removeClass('hidden').hide().fadeIn();
     for (key in currentEvents) {
       var eventId = currentEvents[key];
       var ele = TownHall.allTownHallsFB[eventId];
       $list.append(previewEventTemplate(ele));
-      console.log(TownHall.allTownHallsFB[eventId]);
     }
   };
 
@@ -258,6 +255,9 @@
     var $memberInput = $(this);
     var member = $memberInput.val();
     $form = $(this).parents('form');
+    var $list = $('#current-pending');
+    $('#list-of-current-pending').addClass('hidden')
+    $list.empty();
     var $errorMessage = $('.new-event-form #member-help-block');
     var $memberformgroup = $('#member-form-group');
     if (newEventView.validateMember(member)) {
@@ -287,11 +287,11 @@
           $errorMessage.html('');
           $memberformgroup.removeClass('has-error').addClass('has-success');
           if (mocdata.currentEvents) {
-            newEventView.showSubmittedEvents(mocdata.currentEvents);
+            newEventView.showSubmittedEvents(mocdata.currentEvents, $list);
           }
         } else {
           $('#member-form-group').addClass('has-error');
-          $('.new-event-form #member-help-block').html('That member is not in our database, please check the spelling');
+          $('.new-event-form #member-help-block').html('That member is not in our database, please check the spelling, and only use first and last name.');
         }
       })
       .catch(function (error) {
