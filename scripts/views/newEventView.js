@@ -286,7 +286,9 @@
           newEventView.updatedNewTownHallObject($form);
           $errorMessage.html('');
           $memberformgroup.removeClass('has-error').addClass('has-success');
-          newEventView.showSubmittedEvents(mocdata.currentEvents);
+          if (mocdata.currentEvents) {
+            newEventView.showSubmittedEvents(mocdata.currentEvents);
+          }
         } else {
           $('#member-form-group').addClass('has-error');
           $('.new-event-form #member-help-block').html('That member is not in our database, please check the spelling');
