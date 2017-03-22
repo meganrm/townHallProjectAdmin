@@ -88,26 +88,24 @@
     }
   };
 
-  updateEventView.CleanTH = function (obj){
-    var cleanTownHall = new TownHall();
-    for (prop in obj) {
-      if (obj.hasOwnProperty(prop)) {
-        cleanTownHall[prop] = obj[prop];
-      }
-    }
-    return cleanTownHall;
-  };
+  // updateEventView.CleanTH = function (obj){
+  //   var cleanTownHall = new TownHall();
+  //   for (prop in obj) {
+  //     if (obj.hasOwnProperty(prop)) {
+  //       cleanTownHall[prop] = obj[prop];
+  //     }
+  //   }
+  //   return cleanTownHall;
+  // };
 
   updateEventView.submitUpdateForm = function (event) {
     event.preventDefault();
-    console.log('submitting');
     $form = $(this);
     var listID = $form.closest('.events-table').attr('id');
     var preview = Handlebars.getTemplate('previewEvent');
-    console.log(listID);
     if (listID === 'for-approval') {
       var key = $form.closest('.list-group-item').attr('id');
-      var approvedTH = updateEventView.CleanTH(TownHall.allTownHallsFB[key]);
+      var approvedTH = TownHall.allTownHallsFB[key];
       approvedTH.updateFB(key).then(function (dataWritten) {
         var print = dataWritten;
         print.writtenId = key;
@@ -117,7 +115,6 @@
           $(`#for-approval #${key}`).remove();
         });
       });
-      console.log('writing to database: ', approvedTH);
       $form.find('#update-button').removeClass('btn-blue');
     } else {
       var $listgroup = $(this).parents('.list-group-item');
@@ -348,5 +345,5 @@
     });
   };
 
-  module.eventHandler = eventHandler;
+  module.updateEventView = updateEventView;
 })(window);

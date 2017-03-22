@@ -242,7 +242,7 @@
   };
 
   newEventView.showSubmittedEvents = function (currentEvents) {
-    var $list = $('#edited');
+    var $list = $('#current-pending');
     $list.empty();
     var previewEventTemplate = Handlebars.getTemplate('pendingEvents');
     $('#list-of-current-pending').removeClass('hidden').hide().fadeIn();
@@ -266,7 +266,12 @@
       var District = $form.find('#District');
       var State = $form.find('#State');
       var Party = $form.find('#Party');
-      var memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+      var memberKey;
+      if (member.split(' ').length === 3) {
+        memberKey = member.split(' ')[1].toLowerCase() + member.split(' ')[2].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+      } else {
+        memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+      }
       console.log(memberKey);
       firebase.database().ref('MOCs/' + memberKey).once('value').then(function (snapshot) {
         if (snapshot.exists()) {
@@ -302,7 +307,11 @@
     } else if (newTownHall.lat) {
       console.log('getting time zone');
       newTownHall.validateZone().then(function (returnedTH) {
-        returnedTH.updateUserSubmission(TownHall.currentKey);
+        returnedTH.updateUserSubmission(TownHall.currentKey).then(function (writtenTH) {
+          newEventView.resetData();
+          console.log('wrote to database: ', writtenTH);
+        });
+        TownHall.allTownHallsFB[returnedTH.eventId] = returnedTH;
         console.log('writing to database: ', returnedTH);
       }).catch(function (error) {
         console.log('could not get timezone', error);
@@ -336,8 +345,15 @@
 
   newEventView.updateMOCEvents = function () {
     var memberKey = TownHall.currentEvent.Member.split(' ')[1].toLowerCase() + '_' + TownHall.currentEvent.Member.split(' ')[0].toLowerCase();
-    firebase.database().ref('MOCs/' + memberKey + '/currentEvents').push(TownHall.currentKey);
+    firebase.database().ref('MOCs/' + memberKey + '/currentEvents/').push(TownHall.currentKey);
   };
+
+  newEventView.resetData = function () {
+    newEventView.updateMOCEvents();
+    document.getElementById('new-event-form-element').reset();
+    delete TownHall.currentKey;
+    TownHall.currentEvent = new TownHall();
+  }
 
   newEventView.submitNewEvent = function (event) {
     event.preventDefault();
@@ -351,12 +367,10 @@
       newTownHall = newEventView.validateDateNew(id, newTownHall);
       if (newTownHall) {
         newTownHall.updateUserSubmission(TownHall.currentKey).then(function (dataWritten) {
+          TownHall.allTownHallsFB[dataWritten.eventId] = dataWritten;
+          newEventView.resetData();
           console.log('wrote to database: ', newTownHall);
         });
-        newEventView.updateMOCEvents();
-        document.getElementById('new-event-form-element').reset();
-        delete TownHall.currentKey;
-        delete TownHall.currentEvent;
       }
     } else {
       console.log('missing fields');
