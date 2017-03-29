@@ -79,9 +79,12 @@
             acc = acc + cur[0];
             return acc;
           }, '');
-          console.log(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + newTownHall.timeZone);
-          newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + newTownHall.timeZone).getTime();
-
+          if (newTownHall.timeZone === 'HST' | newTownHall.timeZone === 'HAST') {
+            var hawaiiTime = 'UTC-1000'
+          }
+          var zone = hawaiiTime ? hawaiiTime : newTownHall.timeZone;
+          console.log(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone);
+          newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone).getTime();
           resolve(newTownHall);
         }
       });
@@ -194,7 +197,7 @@
     var ele = this;
     var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId);
     console.log('removing', ele);
-    firebasedb.ref('/townHallsOld/').push(ele);
+    firebasedb.ref('/townHallsOld/' + ele.eventId).push(ele);
     return new Promise(function (resolve, reject) {
       var removed = oldTownHall.remove();
       if (removed) {

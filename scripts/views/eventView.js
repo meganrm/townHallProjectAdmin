@@ -144,7 +144,7 @@
       var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
       if (ele.timeStart24 && ele.timeEnd24) {
         if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
-          console.log(ele.eventId);
+          console.log('24 hour time error: ', ele.eventId);
         }
         else {
           ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
@@ -166,7 +166,7 @@
 
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {
-        console.log(ele);
+        console.log('missing meeting type: ', ele.eventId);
       } else {
         switch (ele.meetingType.slice(0,4)) {
           case 'Tele':

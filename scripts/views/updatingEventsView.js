@@ -52,6 +52,8 @@
       print.edit = 'archived';
       print.Date = removed.Date;
       $('#edited').append(preview(print));
+      $(`#for-archive #${id}`).remove();
+      $(`#all-events-table #${id}`).remove();
     });
   };
 
@@ -76,7 +78,7 @@
     } else if (databaseTH.lat) {
       console.log('getting time zone');
       dateUpdated.validateZone(id).then(function (returnedTH) {
-        // returnedTH.updateFB(id);
+        returnedTH.updateFB(id);
         console.log('writing to database: ', returnedTH);
       }).catch(function (error) {
         console.log('could not get timezone', error);
@@ -87,16 +89,6 @@
       return (dateUpdated);
     }
   };
-
-  // updateEventView.CleanTH = function (obj){
-  //   var cleanTownHall = new TownHall();
-  //   for (prop in obj) {
-  //     if (obj.hasOwnProperty(prop)) {
-  //       cleanTownHall[prop] = obj[prop];
-  //     }
-  //   }
-  //   return cleanTownHall;
-  // };
 
   updateEventView.submitUpdateForm = function (event) {
     event.preventDefault();
@@ -193,9 +185,10 @@
     var $input = $(this);
     var $form = $input.parents('form');
     if (this.id === 'address') {
-      $form.find('#geocode-button').removeClass('disabled');
-      $form.find('#geocode-button').addClass('btn-blue');
       $form.find('#locationCheck').val('');
+      updateEventView.geoCode($input);
+      $form.find('#location-form-group').removeClass('has-success');
+      $form.find('#address-feedback').html('Enter a valid street address, if there isn\'t one, leave this blank');
     }
   };
 
@@ -261,10 +254,16 @@
 
   updateEventView.meetingTypeChanged = function (event) {
     event.preventDefault();
-    $form = $(this).parents('form');
-    var value = $(this).val();
+    var $input = $(this);
+    console.log($input);
+    var $form = $input.parents('form');
+    var value = $input.val();
+    var $listgroup = $(this).parents('.list-group-item');
+    var $location = $form.find('.location-data');
+    $input.addClass('edited');
     var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
     var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
+    var defaultLocationTemplate = Handlebars.getTemplate('generalinputs');
     if ($form.attr('id')) {
       var thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-form')[0]];
     } else {
@@ -272,11 +271,16 @@
     }
     switch (value.slice(0, 4)) {
       case 'Tele':
-        $form.find('.location-data').html(teleInputsTemplate(thisTownHall));
+        $location.html(teleInputsTemplate(thisTownHall));
+        updateEventView.updatedView($form, $listgroup);
         break;
       case 'Tick':
-        $form.find('.location-data').html(ticketInputsTemplate(thisTownHall));
+        $location.html(ticketInputsTemplate(thisTownHall));
+        updateEventView.updatedView($form, $listgroup);
         break;
+      default:
+        $location.html(defaultLocationTemplate(thisTownHall));
+        updateEventView.updatedView($form, $listgroup);
     }
   };
 

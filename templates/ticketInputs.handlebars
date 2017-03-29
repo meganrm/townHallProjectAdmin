@@ -3,7 +3,7 @@
   <input type="text" class="form-control input-underline" id="Location" placeholder="Name of location (eg. Gary Recreation Center)" value="">
 </div>
 <div class="form-group col-md-12" id=location-form-group>
-    <input type="text" class="form-control" placeholder="Street address" id="address">
+    <input type="text" class="form-control" placeholder="Street address" id="address" {{#if address}} value="{{address}}" {{/if}}>
     <span id="address-feedback" class="help-block">Enter a valid street address, if there isn't one, leave this blank</span>
 </div><!-- /form-group -->
 <div class="form-group">
