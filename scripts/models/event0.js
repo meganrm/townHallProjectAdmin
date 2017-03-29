@@ -197,7 +197,7 @@
     var ele = this;
     var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId);
     console.log('removing', ele);
-    firebasedb.ref('/townHallsOld/' + ele.eventId).push(ele);
+    firebasedb.ref('/townHallsOld/' + ele.eventId).set(ele);
     return new Promise(function (resolve, reject) {
       var removed = oldTownHall.remove();
       if (removed) {
