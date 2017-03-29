@@ -180,10 +180,10 @@
       if (!ele.lat) {
         $('#location-errors').append($toAppend.clone());
       }
-      if (!ele.dateValid) {
+      if (!ele.zoneString && !ele.repeatingEvent && ele.meetingType !== 'Tele-Town Hall') {
         $('#date-errors').append($toAppend.clone());
       }
-      if (ele.dateObj < Date.now()) {
+      if (ele.dateObj < Date.now() && !ele.repeatingEvent) {
         $('#for-archive').append($toAppend.clone());
       }
       $('#all-events-table').append($toAppend);

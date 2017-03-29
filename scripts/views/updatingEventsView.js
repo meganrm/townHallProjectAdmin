@@ -64,7 +64,8 @@
     var oldTownHall = TownHall.allTownHallsFB[id];
     console.log(id, path, oldTownHall);
     oldTownHall.deleteEvent(path).then(function(deletedEvent){
-      $(`#${id}`).remove();
+      $(`#for-archive #${id}`).remove();
+      $(`#all-events-table #${id}`).remove();
     });
   };
 
