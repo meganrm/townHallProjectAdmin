@@ -280,18 +280,21 @@
       for (var k = 0; k < row.length; k++) {
         rowObj[googlekeys[k]] = row[k]
       }
-      if (parseInt(rowObj.eventId)) {
-        // checks if data is complete
-        if (row.length >= 11) {
-          encodedArray.push(rowObj)
+      console.log();
+      if (rowObj.eventId) {
+        if (parseInt(rowObj.eventId) | rowObj.eventId[0] === 'x') {
+          // checks if data is complete
+          if (row.length >= 11) {
+            encodedArray.push(rowObj)
+          } else {
+            // If incomplete store to seperate table
+            firebasedb.ref('/townHallsErrors/missingRows/' + rowObj.eventId).set(rowObj).catch(function (error) {
+              console.error('couldnt write', rowObj)
+            })
+          }
         } else {
-          // If incomplete store to seperate table
-          firebasedb.ref('/townHallsErrors/missingRows/' + rowObj.eventId).set(rowObj).catch(function (error) {
-            console.error('couldnt write', rowObj)
-          })
+          // console.log('not id', rowObj);
         }
-      } else {
-        // console.log('not id', rowObj);
       }
     }
     return encodedArray
@@ -299,6 +302,7 @@
 
   TownHall.prototype.isInDatabase = function () {
     var newTownHall = this
+    console.log('checking', newTownHall.eventId);
     var ref = firebasedb.ref('/townHallIds/' + newTownHall.eventId)
     ref.once('value', function (snapshot) {
       if (snapshot.exists()) {
