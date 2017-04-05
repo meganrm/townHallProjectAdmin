@@ -63,9 +63,9 @@
     var path = $(this).attr('data-path');
     var oldTownHall = TownHall.allTownHallsFB[id];
     console.log(id, path, oldTownHall);
-    oldTownHall.deleteEvent(path).then(function(deletedEvent){
-      $(`#for-archive #${id}`).remove();
-      $(`#all-events-table #${id}`).remove();
+    oldTownHall.deleteEvent(path).then(function (deletedEvent) {
+      delete TownHall.allTownHallsFB[id];
+      $(`.${id}`).remove();
     });
   };
 
@@ -117,7 +117,7 @@
       if (updated.length > 0) {
         var newTownHall = updateEventView.updatedView($form, $listgroup);
         newTownHall.lastUpdatedHuman = $form.find('#lastUpdated').val()
-        newTownHall.lastUpdated = new Date(lastUpdated).valueOf();
+        newTownHall.lastUpdated = Date.now();
         newTownHall.updatedBy = firebase.auth().currentUser.email;
         if (newTownHall.address) {
           if ($form.find('#locationCheck').val() === 'Location is valid') {
@@ -224,9 +224,7 @@
     var $form = $(this).parents('form');
     var address = $form.find('#address').val();
     var $listgroup = $(this).parents('.list-group-item');
-    if ($form.attr('id') && $form.attr('id').split('-form').length > 1) {
-      var id = $form.attr('id').split('-')[0];
-    }
+    var id = $listgroup.attr('id');
     newTownHall = new TownHall();
     type = $form.find('#addressType').val();
     newTownHall.getLatandLog(address, type).then(function (geotownHall) {
@@ -236,10 +234,10 @@
       if (id) {
         TownHall.allTownHallsFB[id].lat = geotownHall.lat;
         TownHall.allTownHallsFB[id].lng = geotownHall.lng;
+        console.log('updating datbase lat lng', TownHall.allTownHallsFB[id]);
         updateEventView.updatedView($form, $listgroup);
       } else {
-        TownHall.currentEvent.lat = geotownHall.lat;
-        TownHall.currentEvent.lng = geotownHall.lng;
+        console.log('something has gone terribly wrong, email megan');
       }
     }).catch(function (error) {
       $form.find('#locationCheck').val('Geocoding failed');
