@@ -116,7 +116,8 @@
       var databaseTH = TownHall.allTownHallsFB[id];
       if (updated.length > 0) {
         var newTownHall = updateEventView.updatedView($form, $listgroup);
-        newTownHall.lastUpdated = $form.find('#lastUpdated').val();
+        newTownHall.lastUpdatedHuman = $form.find('#lastUpdated').val()
+        newTownHall.lastUpdated = new Date(lastUpdated).valueOf();
         newTownHall.updatedBy = firebase.auth().currentUser.email;
         if (newTownHall.address) {
           if ($form.find('#locationCheck').val() === 'Location is valid') {
@@ -289,7 +290,7 @@
   $('.events-table').on('click', '#geocode-button', updateEventView.geoCode);
   $('.events-table').on('click', '.dropdown-menu a', updateEventView.changeMeetingType);
   $('.events-table').on('change', '#meetingType', updateEventView.meetingTypeChanged);
-  $('.events-table').on('keyup', '.form-control', updateEventView.formChanged);
+  $('.events-table').on('keyup', '.event-input', updateEventView.formChanged);
   $('.events-table').on('change', '.datetime', updateEventView.dateChanged);
   $('.events-table').on('change', '.date-string', updateEventView.dateString);
   $('.events-table').on('click', '#archive', updateEventView.archiveEvent);
@@ -327,6 +328,7 @@
       console.log(user.displayName, ' is signed in');
       eventHandler.readData();
       eventHandler.metaData();
+      eventHandler.readDataUsers();
       writeUserData(user.uid, user.displayName, user.email);
     } else {
       updateEventView.signIn();

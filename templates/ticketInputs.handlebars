@@ -1,9 +1,9 @@
 <div class="form-group">
   <label class="sr-only" for="Location">Location</label>
-  <input type="text" class="form-control input-underline" id="Location" placeholder="Name of location (eg. Gary Recreation Center)" value="">
+  <input type="text" class="form-control event-input input-underline" id="Location" placeholder="Name of location (eg. Gary Recreation Center)" value="">
 </div>
 <div class="form-group col-md-12" id=location-form-group>
-    <input type="text" class="form-control" placeholder="Street address" id="address" {{#if address}} value="{{address}}" {{/if}}>
+    <input type="text" class="form-control event-input" placeholder="Street address" id="address" {{#if address}} value="{{address}}" {{/if}}>
     <span id="address-feedback" class="help-block">Enter a valid street address, if there isn't one, leave this blank</span>
 </div><!-- /form-group -->
 <div class="form-group">
@@ -18,10 +18,10 @@
 <div class=text-info>
   <div class="form-group col-md-12">
     <label  for="RSVP">url for Tickets</label>
-    <input type="url" class="form-control" id="RSVP" placeholder="Link" value="{{RSVP}}">
+    <input type="url" class="form-control event-input" id="RSVP" placeholder="Link" value="{{RSVP}}">
   </div>
   <div class="form-group col-md-12">
     <label  for="rsvpName">Name for link</label>
-    <input type="text" class="form-control" id="rsvpName" placeholder="Link Name" value="Get Tickets">
+    <input type="text" class="form-control event-input" id="rsvpName" placeholder="Link Name" value="Get Tickets">
   </div>
 </div>

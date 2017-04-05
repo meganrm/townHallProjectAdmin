@@ -8,8 +8,12 @@
   // Global data stete
   TownHall.allTownHalls = [];
   TownHall.allTownHallsFB = {};
+  TownHall.allMoCs = [];
+  TownHall.allStates = [];
   TownHall.currentContext = [];
   TownHall.filteredResults = [];
+  TownHall.filters = {};
+  TownHall.sortOn = 'State';
   TownHall.filterIds = {
     meetingType: '',
     Party: '',
@@ -54,6 +58,62 @@
       resolve(newEvent);
     });
   };
+
+  // Takes an array of TownHalls and sorts by sortOn field
+  TownHall.sortFunction = function(a, b) {
+    if (a[TownHall.sortOn] && b[TownHall.sortOn]) {
+      if (parseInt(b[TownHall.sortOn])) {
+        return a[TownHall.sortOn] - b[TownHall.sortOn];
+      } else {
+        return a[TownHall.sortOn].toLowerCase().localeCompare(b[TownHall.sortOn].toLowerCase());
+      }
+    }
+  };
+
+  TownHall.getFilteredResults = function (data) {
+    // Itterate through all active filters and pull out any townhalls that match them
+    // At least one attribute from within each filter group must match
+    return TownHall.filteredResults = Object.keys(TownHall.filters).reduce(function (filteredData, key) {
+      return filteredData.filter(function (townhall) {
+        return TownHall.filters[key].some(function (filter) {
+          return filter.slice(0, 8) === townhall[key].slice(0, 8);
+        });
+      });
+    }, data).sort(TownHall.sortFunction);
+  };
+
+  TownHall.addFilter = function (filter, value) {
+    if (!TownHall.filters.hasOwnProperty(filter)) {
+      TownHall.filters[filter] = [value];
+    } else {
+      TownHall.filters[filter].push(value);
+    }
+  };
+
+  TownHall.removeFilter = function (filter, value) {
+    var index = TownHall.filters[filter].indexOf(value);
+    if (index !== -1) {
+      TownHall.filters[filter].splice(index, 1);
+    }
+    if (TownHall.filters[filter].length === 0) {
+      delete TownHall.filters[filter];
+    }
+  };
+
+  TownHall.resetFilters = function () {
+    Object.keys(TownHall.filters).forEach(function (key) {
+      delete TownHall.filters[key];
+    });
+  };
+
+  TownHall.addFilterIndexes = function(townhall) {
+  if (TownHall.allStates.indexOf(townhall.State) === -1) {
+    TownHall.allStates.push(townhall.State);
+  }
+  if (TownHall.allMoCs.indexOf(townhall.Member) === -1) {
+    TownHall.allMoCs.push(townhall.Member);
+  }
+};
 
   // DATA PROCESSING BEFORE WRITE
   // gets time zone with location and date

@@ -1,74 +1,86 @@
-(function(module) {
-  var firebasedb = firebase.database();
-  var provider = new firebase.auth.GoogleAuthProvider();
-
+(function (module) {
   // object to hold the front end view functions
   var eventHandler = {};
 
+  function setupTypeaheads() {
+    var typeaheadConfig = {
+      fitToElement: true,
+      delay: 250,
+      highlighter: function (item) { return item; }, // Kill ugly highlight
+      updater: function (selection) {
+        eventHandler.addFilter(this.$element.attr('data-filter'), selection);
+        eventHandler.renderTableWithArray(eventHandler.getFilterState());
+      }
+    }
+    $('#stateTypeahead').typeahead($.extend({ source: TownHall.allStates }, typeaheadConfig));
+    $('#memberTypeahead').typeahead($.extend({ source: TownHall.allMoCs }, typeaheadConfig));
+  }
 
   // render table row
   eventHandler.renderTable = function renderTable(townhall, $tableid) {
-    townhall.dist = Math.round(townhall.dist /1609.344);
-    townhall.addressLink = 'https://www.google.com/maps?q=' + escape(townhall.address);
-    $($tableid).append(townhall.toHtml($('#table-template')));
+    var compiledTemplate = Handlebars.getTemplate('eventTableRow');
+    $($tableid).append(compiledTemplate(townhall));
   };
 
-  // takes the current set of data in the table and sorts by date
-  eventHandler.viewByDate = function (e) {
+
+  eventHandler.renderTableWithArray = function (array) {
+    $('#all-events-table .event-row').remove();
+    var $table = $('#all-events-table');
+    var $currentState = $('#current-state');
+    var total = parseInt($currentState.attr('data-total'));
+    // var total = parseInt($currentState.attr('data-total'));
+    var cur = array.length;
+    array.forEach(function (ele) {
+      eventHandler.renderTable(ele, $table);
+    });
+    /* eslint-env es6*/
+    /* eslint quotes: ["error", "single", { "allowTemplateLiterals": true }]*/
+    $currentState.text(`Viewing ${cur} of ${total} total events`);
+  };
+
+  eventHandler.getFilterState = function () {
+    var data = TownHall.isCurrentContext ? TownHall.currentContext : TownHall.allTownHalls;
+    return TownHall.getFilteredResults(data);
+  };
+
+  eventHandler.sortTable = function (e) {
     e.preventDefault();
-    var data = TownHall.isCurrentContext ? TownHall.currentContext:TownHall.allTownHalls;
-    var filtereddata = TownHall.filteredResults.length > 0 ? TownHall.filteredResults: data;
-    TownHall.currentContext = TownHall.sortDate(filtereddata);
-    $table = $('#all-events-table');
-    $table.empty();
-    eventHandler.renderTableWithArray(TownHall.currentContext, $table );
+    TownHall.sortOn = $(this).attr('data-filter');
+    eventHandler.renderTableWithArray(eventHandler.getFilterState());
   };
 
-  // filters the table on click
+  eventHandler.addFilter = function (filter, value) {
+    // Avoid duplicates
+    if (TownHall.filters.hasOwnProperty(filter) && TownHall.filters[filter].indexOf(value) !== -1) {
+      return;
+    }
+
+    TownHall.addFilter(filter, value);
+
+    var button = '<li><button class="btn btn-secondary btn-xs" ' +
+                 'data-filter="' + filter + '" data-value="' + value + '" >' +
+                    value + '<i class="fa fa-times" aria-hidden="true"></i>' +
+                  '</button></li>';
+    $('#filter-info').append(button);
+  };
+
+  eventHandler.removeFilter = function () {
+    var $button = $(this);
+    TownHall.removeFilter($button.attr('data-filter'), $button.attr('data-value'));
+    eventHandler.renderTableWithArray(eventHandler.getFilterState());
+    $button.parent().remove();
+  };
+
+  eventHandler.resetFilters = function () {
+    TownHall.resetFilters();
+    $('#filter-info li button').parent().remove();
+  };
+// filters the table on click
   eventHandler.filterTable = function (e) {
     e.preventDefault();
-    $table = $('#all-events-table');
-    $('#resetTable').show();
-    var filterID = this.id;
-    var filterCol = $(this).attr('data-filter');
-    var inputs = $('input[data-filter]');
-    $table.empty();
-    var data = TownHall.isCurrentContext ? TownHall.currentContext:TownHall.allTownHalls;
-    var data = TownHall.filteredResults.length>0 ? TownHall.filteredResults:data;
-    if (filterID === 'All') {
-      TownHall.filterIds[filterCol] = '';
-      eventHandler.renderTableWithArray(data, $table );
-      // data.forEach(function(ele){
-      //   eventHandler.renderTable(ele, $table);
-      // })
-    }
-    else {
-      TownHall.filterIds[filterCol] = filterID;
-      Object.keys(TownHall.filterIds).forEach(function(key) {
-        if (TownHall.filterIds[key]) {
-          data = TownHall.filterByCol(key, TownHall.filterIds[key], data);
-        }
-      });
-      eventHandler.renderTableWithArray(data, $table );
-    }
-  };
-
-  eventHandler.filterTableByInput = function(e) {
-    e.preventDefault();
-    $('#resetTable').show();
-    $table = $('#all-events-table');
-    var query = $(this).val();
-    var filterCol = $(this).attr('data-filter');
-    $table.empty();
-    var data = TownHall.isCurrentContext ? TownHall.currentContext:TownHall.allTownHalls;
-    var data = TownHall.filteredResults.length>0 ? TownHall.filteredResults:data;
-    Object.keys(TownHall.filterIds).forEach(function(key) {
-      if (TownHall.filterIds[key]) {
-        data = TownHall.filterByCol(key, TownHall.filterIds[key], data);
-      }
-    });
-    TownHall.filteredResults = TownHall.filterColumnByQuery(filterCol, query, data);
-    eventHandler.renderTableWithArray(TownHall.filteredResults, $table);
+    var filter = this.getAttribute('data-filter');
+    eventHandler.addFilter(filter, this.id);
+    eventHandler.renderTableWithArray(eventHandler.getFilterState());
   };
 
   eventHandler.resetTable = function (e) {
@@ -78,23 +90,22 @@
     $('#resetTable').hide();
     TownHall.filterIds = {};
     TownHall.filteredResults = [];
-    var data = TownHall.isCurrentContext ? TownHall.currentContext:TownHall.allTownHalls;
+    var data = TownHall.isCurrentContext ? TownHall.currentContext : TownHall.allTownHalls;
     eventHandler.renderTableWithArray(data, $table);
   };
 
-  // url hash for direct links to subtabs
-  // slightly hacky routing
-  $(document).ready(function(){
-    var filterSelector = $('.filter');
-    $('[data-toggle="popover"]').popover({ html: true });
-    $('#sort-date').on('click', eventHandler.viewByDate);
-    $('#resetTable').hide();
-    filterSelector.on('click', 'a', eventHandler.filterTable);
-    filterSelector.keyup(eventHandler.filterTableByInput);
+// url hash for direct links to subtabs
+// slightly hacky routing
+  $(document).ready(function () {
+    $('.sort').on('click', 'a', eventHandler.sortTable);
+    $('.filter').on('click', 'a', eventHandler.filterTable);
+    $('#filter-info').on('click', 'button.btn', eventHandler.removeFilter);
+    eventHandler.resetFilters();
+    setupTypeaheads();
+
     if (location.hash) {
       $("a[href='" + location.hash + "']").tab('show');
-    }
-    else{
+    } else {
       TownHall.isMap = true;
     }
     $('nav').on('click', '.hash-link', function onClickGethref(event) {
@@ -108,18 +119,18 @@
     });
   });
 
-  eventHandler.metaData = function(){
+  eventHandler.metaData = function () {
     metaDataObj = new TownHall();
-    metaDataObj.topZeroResults = []
-    firebase.database().ref('/lastupdated/').on('child_added', function(snapshot){
-      metaDataObj.time = new Date(snapshot.val())
-      metaDataObj.total = TownHall.allTownHalls.length
-        var metaDataTemplate = Handlebars.getTemplate('metaData');
-        $('.metadata').html(metaDataTemplate(metaDataObj));
+    metaDataObj.topZeroResults = [];
+    firebase.database().ref('/lastupdated/').on('child_added', function (snapshot) {
+      metaDataObj.time = new Date(snapshot.val());
+      metaDataObj.total = TownHall.allTownHalls.length;
+      var metaDataTemplate = Handlebars.getTemplate('metaData');
+      $('.metadata').html(metaDataTemplate(metaDataObj));
     });
   };
 
-  eventHandler.checkTime = function (time){
+  eventHandler.checkTime = function (time) {
     var times = time.split(':');
     var hour = times[0];
     var min = times[1];
@@ -130,23 +141,39 @@
       min = '0' + min;
     }
     return hour + ':' + min + ':' + times[2];
-  }
+  };
 
-  eventHandler.readData = function (){
+  eventHandler.readData = function () {
+    $currentState = $('#current-state');
     firebase.database().ref('/townHalls/').on('child_added', function getSnapShot(snapshot) {
+      var total = parseInt($currentState.attr('data-total')) + 1;
+      $currentState.attr('data-total', total);
       var ele = new TownHall(snapshot.val());
       var id = ele.eventId;
       obj = {};
+      if (!ele.lastUpdatedHuman) {
+        var updatingDate = new TownHall();
+        updatingDate.eventId = ele.eventId;
+        updatingDate.lastUpdated = new Date(ele.lastUpdated).valueOf();
+        updatingDate.lastUpdatedHuman = new Date(ele.lastUpdated);
+        if (!updatingDate.lastUpdated) {
+          updatingDate.lastUpdated = Date.now();
+          updatingDate.lastUpdatedHuman = updatingDate.lastUpdated.toString();
+        }
+        updatingDate.updateFB(ele.eventId).then(function (dataWritten) {
+          console.log(dataWritten);
+        });
+      }
       TownHall.allTownHallsFB[ele.eventId] = ele;
       TownHall.allTownHalls.push(ele);
+      TownHall.addFilterIndexes(ele);
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
       var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
       if (ele.timeStart24 && ele.timeEnd24) {
         if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
           console.log('24 hour time error: ', ele.eventId);
-        }
-        else {
+        } else {
           ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
           ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
         }
@@ -168,7 +195,7 @@
       if (!ele.meetingType) {
         console.log('missing meeting type: ', ele.eventId);
       } else {
-        switch (ele.meetingType.slice(0,4)) {
+        switch (ele.meetingType.slice(0, 4)) {
           case 'Tele':
             $toAppend.find('.location-data').html(teleInputsTemplate(ele));
             break;
@@ -188,18 +215,16 @@
       }
       $('#all-events-table').append($toAppend);
     });
-      $('[data-toggle="tooltip"]').tooltip()
-
+    $('[data-toggle="tooltip"]').tooltip();
   };
 
 
-  eventHandler.readDataUsers = function (){
+  eventHandler.readDataUsers = function () {
     firebase.database().ref('/UserSubmission/').on('child_added', function getSnapShot(snapshot) {
       var ele = new TownHall(snapshot.val());
       var id = ele.eventId;
       obj = {};
       TownHall.allTownHallsFB[ele.eventId] = ele;
-      TownHall.allTownHalls.push(ele);
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
       var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
@@ -208,8 +233,7 @@
       if (ele.timeStart24 && ele.timeEnd24) {
         if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
           console.log(ele.eventId);
-        }
-        else {
+        } else {
           ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
           ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
         }
@@ -218,21 +242,20 @@
       if (ele.yearMonthDay) {
         var month = ele.yearMonthDay.split('-')[1];
         var day = ele.yearMonthDay.split('-')[2];
-        if (month.length === 1) {
+        if (month && month.length === 1) {
           month = 0 + month;
         }
-        if (day.length === 1) {
+        if (day && day.length === 1) {
           day = 0 + day;
         }
         ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
       }
       ele.lastUpdatedHuman = new Date(ele.lastUpdated).toDateString();
-      console.log(ele.lastUpdatedHuman);
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {
-        console.log(ele);
+        console.log('no meeting type', ele);
       } else {
-        switch (ele.meetingType.slice(0,4)) {
+        switch (ele.meetingType.slice(0, 4)) {
           case 'Tele':
             $toAppend.find('.location-data').html(teleInputsTemplate(ele));
             break;
@@ -241,15 +264,11 @@
             break;
         }
       }
-      $toAppend.find('.btn-group').html(approveButtons(ele))
+      $toAppend.find('.btn-group').html(approveButtons(ele));
       $('#for-approval').append($toAppend);
-
     });
-      $('[data-toggle="tooltip"]').tooltip()
-
+    $('[data-toggle="tooltip"]').tooltip();
   };
 
-
-eventHandler.readDataUsers();
   module.eventHandler = eventHandler;
 })(window);

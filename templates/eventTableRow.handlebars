@@ -25,14 +25,14 @@
     <div class="main-data">
       <div class="form-group">
         <label class="sr-only" for="Member">Member</label>
-        <input type="text" class="form-control" id="Member" placeholder="Member" value="{{Member}}">
+        <input type="text" class="form-control event-input" id="Member" placeholder="Member" value="{{Member}}">
       </div>
       <div class="form-group">
         <label class="sr-only" for="District">District</label>
-        <input type="text" class="form-control" id="District" placeholder="District (eg OH-08)" value="{{District}}">
+        <input type="text" class="form-control event-input" id="District" placeholder="District (eg OH-08)" value="{{District}}">
       </div>
       <div class="input-group">
-        <input type="text" class="form-control" aria-label="..." id="meetingType" value="{{meetingType}}" readonly>
+        <input type="text" class="form-control event-input" aria-label="..." id="meetingType" value="{{meetingType}}" readonly>
         <div class="input-group-btn">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
           <ul class="dropdown-menu dropdown-menu-right">
@@ -50,10 +50,10 @@
     <div class="location-data">
       <div class="form-group">
         <label class="sr-only" for="Location">Location</label>
-        <input type="text" class="form-control" id="Location" placeholder="Location" value="{{Location}}">
+        <input type="text" class="form-control event-input" id="Location" placeholder="Location" value="{{Location}}">
       </div>
       <div class="input-group">
-          <input type="text" class="form-control" placeholder="Address" id="address" value="{{address}}">
+          <input type="text" class="form-control event-input" placeholder="Address" id="address" value="{{address}}">
           <span class="input-group-btn">
             <button class="btn btn-default disabled" type="button" id="geocode-button">GeoCode!</button>
           </span>
@@ -77,33 +77,33 @@
       </div>
       <div class="form-group">
         <label class="sr-only" for="yearMonthDay">Date</label>
-        <input type="date" class="form-control datetime date" id="yearMonthDay" placeholder="Date" value="{{yearMonthDay}}">
+        <input type="date" class="form-control datetime date event-input" id="yearMonthDay" placeholder="Date" value="{{yearMonthDay}}">
       </div>
       <div class="form-group {{#unless repeatingEvent}}hidden{{/unless}} repeating">
         <label class="sr-only" for="repeatingString">Repeating Event</label>
-        <input type="text" class="form-control" id="repeatingEvent" placeholder="Eg. First Tuesday of the month" value="{{repeatingEvent}}">
+        <input type="text" class="form-control event-input" id="repeatingEvent" placeholder="Eg. First Tuesday of the month" value="{{repeatingEvent}}">
       </div>
       <div class="form-group">
         <label for="Time">Start Time (HH:MM AM/PM)</label>
-        <input type="time" class="form-control datetime" id="timeStart24" placeholder="Start Time" value="{{timeStart24}}">
+        <input type="time" class="form-control event-input datetime" id="timeStart24" placeholder="Start Time" value="{{timeStart24}}">
       </div>
       <div class="form-group">
         <label for="endTime">End Time (HH:MM AM/PM)</label>
-        <input type="time" class="form-control datetime" id="timeEnd24" placeholder="End Time" value="{{timeEnd24}}">
+        <input type="time" class="form-control event-input datetime" id="timeEnd24" placeholder="End Time" value="{{timeEnd24}}">
       </div>
       <div class="form-group">
         <label class="sr-only" for="dateChanged">Date Changed Flag</label>
-        <input type="hidden" class="form-control" id="dateChanged" placeholder="" value="true" readonly>
+        <input type="hidden" class="form-control event-input" id="dateChanged" placeholder="" value="true" readonly>
       </div>
     </div>
     <div class="extra-data">
       <div class="form-group">
         <label for="link">URL related to event (optional)</label>
-        <input type="url" class="form-control" id="link" placeholder="Link" value="{{link}}">
+        <input type="url" class="form-control event-input" id="link" placeholder="Link" value="{{link}}">
       </div>
       <div class="form-group">
         <label  for="linkName">Link name (optional)</label>
-        <input type="text" class="form-control" id="linkName" placeholder="Link Name" value="{{linkName}}">
+        <input type="text" class="form-control event-input" id="linkName" placeholder="Link Name" value="{{linkName}}">
       </div>
     </div>
     <div class="notes-data">
@@ -111,7 +111,7 @@
         <div class="col-md-8">
           <div class="form-group">
             <label for="Notes">Notes</label>
-            <textarea class="form-control" id="Notes" placeholder="Notes about event that cannot be entered anywhere else." rows=3>{{Notes}}</textarea>
+            <textarea class="form-control event-input" id="Notes" placeholder="Notes about event that cannot be entered anywhere else." rows=3>{{Notes}}</textarea>
           </div>
         </div>
       </div>

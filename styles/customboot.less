@@ -217,6 +217,18 @@ article{
   padding:10px;
 }
 
+.list-group-heading{
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+  .navbar-right {
+     margin-right: 0;
+  }
+  .navbar-nav{
+    margin-left: 0;
+  }
+}
+
 form{
   border-bottom: 1.5px solid @brand-gray;
   border-bottom-style: dotted;
@@ -378,6 +390,21 @@ form .input-underline{
 
 .noninteractive-header {
   padding: 6px;
+}
+#filter-info {
+  max-width: 50%;
+  margin: 20px 0 0px 20px;
+  li {
+    margin-bottom: 10px;
+    margin-right: 10px;
+    button:hover {
+      color: #fff;
+    }
+    button i.fa-times {
+      margin-left: 0.5em;
+      font-size: 0.8em;
+    }
+  }
 }
 
 // Results

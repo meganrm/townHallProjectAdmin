@@ -91,7 +91,7 @@
               <div class="">
                 <div class="row">
                   <div class="col-md-12">
-                    <p>The Archive and Delete buttons are not active yet. You can update events, they will be saved with a new "last updated" timestamp, and your user email (we could do name instead).</p>
+                
                     <div class="metadata">
                     </div>
                   </div>
@@ -265,7 +265,40 @@
               </div>
               <div>
                 <ul id="all-events-table" class="list-group events-table">
-
+                  <li class="list-group-item list-group-heading">
+                    <nav class="navbar navbar-default navbar-static-top ">
+                      <ul class="nav navbar-nav navbar-left" id="filter-info">
+                        <li><span id="current-state" data-current=0 data-total=0></span></li>
+                      </ul>
+                      <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Member <span class="caret"></span></a>
+                          <ul class="dropdown-menu">
+                            <li class="downdown-title">Search by member of Congress</li>
+                            <li role="separator" class="divider"></li>
+                            <li><input id="memberTypeahead" type="text" class="form-control dropdown-item filter" data-provide="typeahead" placeholder="Search by member" data-filter="Member" autocomplete="off"></li>
+                          </ul>
+                        </li>
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">State <span class="caret"></span></a>
+                          <ul class="dropdown-menu">
+                            <li class="downdown-title">Search by State</li>
+                            <li role="separator" class="divider"></li>
+                            <li><input id="stateTypeahead" type="text" class="form-control dropdown-item filter" data-provide="typeahead" placeholder="Search by state" data-filter="State" autocomplete="off"></li>
+                          </ul>
+                        </li>
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort <span class="caret"></span></a>
+                          <ul class="dropdown-menu sort">
+                            <li class="downdown-title">Sort Table</li>
+                            <li role="separator" class="divider"></li>
+                            <li><a data-filter="dateObj" id="byDate" class="dropdown-item" href="#">By Date</a></li>
+                            <li><a data-filter="State" id="byState" class="dropdown-item" href="#">By State</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </nav>
+                  </li> <!-- end header-->
                 </ul><!--end table-->
               </div>
             </section>
@@ -293,7 +326,7 @@
             </div>
             <div role="tabpanel" class="tab-pane page" id="for-approval-page">
               <section >
-                <h3 class="text-primary table-title text-center">Events submitted by the public</h3>
+                <h3 class="text-primary table-title text-center">Events submitted for review</h3>
                 <div>
                   <ul id="for-approval" class="list-group events-table">
 
@@ -340,6 +373,7 @@
     <!-- Vendor Files -->
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="/vendor/scripts/bootstrap.min.js"></script>
+    <script src="/vendor/scripts/bootstrap3-typeahead.min.js"></script>
     <script src="/vendor/scripts/tether.js"></script>
     <script src="/node_modules/handlebars/dist/handlebars.js"></script>
 
