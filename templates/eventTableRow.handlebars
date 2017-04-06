@@ -7,7 +7,7 @@
           <input type="text" class="state-info-text pull-left" readonly value="{{eventId}}">
         </div>
         <div class="col-md-4">
-          <input type="text" class="timestamp " id="lastUpdated" readonly {{#if lastUpdatedHuman}} value="{{lastUpdatedHuman}}"{{/if}}{{#unless lastUpdatedHuman}}value="{{lastUpdated}}"{{/unless}}>
+          <input type="text" class="timestamp " id="lastUpdatedHuman" readonly {{#if lastUpdatedHuman}} value="{{lastUpdatedHuman}}"{{/if}}{{#unless lastUpdatedHuman}}value="{{lastUpdated}}"{{/unless}}>
         </div>
         {{#if updatedBy}}
         <div class="col-md-4">

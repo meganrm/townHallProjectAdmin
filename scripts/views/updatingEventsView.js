@@ -116,7 +116,7 @@
       var databaseTH = TownHall.allTownHallsFB[id];
       if (updated.length > 0) {
         var newTownHall = updateEventView.updatedView($form, $listgroup);
-        newTownHall.lastUpdatedHuman = $form.find('#lastUpdated').val()
+        newTownHall.lastUpdatedHuman = $form.find('#lastUpdatedHuman').val()
         newTownHall.lastUpdated = Date.now();
         newTownHall.updatedBy = firebase.auth().currentUser.email;
         if (newTownHall.address) {
