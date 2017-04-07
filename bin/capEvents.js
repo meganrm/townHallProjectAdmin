@@ -51,29 +51,7 @@
       console.log('could not update', newEvent.eventId)
     })
   }
-
-  TownHall.prototype.findLinks = function () {
-    var $regExUrl = /(https?:\/\/[^\s]+)/g
-   // make the urls hyper links
-    if (this.Notes && this.Notes.length > 0) {
-      var withAnchors = this.Notes.replace($regExUrl, '<a href="$1" target="_blank">More Information</a>')
-      this.Notes = '<p>' + withAnchors + '</p>'
-    }
-    if (this.RSVP && this.RSVP.length > 0) {
-      var withAnchors = this.RSVP.replace($regExUrl, '<a href="$1" target="_blank">RSVP here</a>')
-      this.RSVP = '<p>' + withAnchors + '</p>'
-    }
-  }
-
-
-  TownHall.prototype.isInFuture = function () {
-    this.dateObj = new Date(this.Date)
-    var now = new Date()
-    if (now - this.dateObj < 0) {
-      return true
-    }
-  }
-
+  
   TownHall.prototype.isInDatabase = function () {
     var newCapEvent = this
     var ref = firebasedb.ref('/townHallIds/' + newCapEvent.eventId)
