@@ -355,7 +355,7 @@
     document.getElementById('new-event-form-element').reset();
     delete TownHall.currentKey;
     TownHall.currentEvent = new TownHall();
-  }
+  };
 
   newEventView.submitNewEvent = function (event) {
     event.preventDefault();
@@ -375,6 +375,9 @@
         });
       }
     } else {
+      $('html, body').animate({
+        scrollTop: $('.has-error').offset().top
+      }, 'slow');
       console.log('missing fields');
     }
   };
