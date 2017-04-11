@@ -122,12 +122,9 @@
   eventHandler.metaData = function () {
     metaDataObj = new TownHall();
     metaDataObj.topZeroResults = [];
-    firebase.database().ref('/lastupdated/').on('child_added', function (snapshot) {
-      metaDataObj.time = new Date(snapshot.val());
-      metaDataObj.total = TownHall.allTownHalls.length;
-      var metaDataTemplate = Handlebars.getTemplate('metaData');
-      $('.metadata').html(metaDataTemplate(metaDataObj));
-    });
+    metaDataObj.total = TownHall.allTownHalls.length;
+    var metaDataTemplate = Handlebars.getTemplate('metaData');
+    $('.metadata').html(metaDataTemplate(metaDataObj));
   };
 
   eventHandler.checkTime = function (time) {
@@ -182,13 +179,17 @@
       if (ele.yearMonthDay) {
         var month = ele.yearMonthDay.split('-')[1];
         var day = ele.yearMonthDay.split('-')[2];
-        if (month.length === 1) {
-          month = 0 + month;
+        if (!month || !day) {
+          console.log('date error', ele.eventId);
+        } else {
+          if (month.length === 1) {
+            month = 0 + month;
+          }
+          if (day.length === 1) {
+            day = 0 + day;
+          }
+          ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
         }
-        if (day.length === 1) {
-          day = 0 + day;
-        }
-        ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
       }
 
       var $toAppend = $(tableRowTemplate(ele));
