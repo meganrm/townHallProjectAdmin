@@ -284,6 +284,10 @@
     }
   };
 
+  updateEventView.loadOldEvents = function() {
+    
+  }
+
   // event listeners for table interactions
   $('.events-table').on('click', '#geocode-button', updateEventView.geoCode);
   $('.events-table').on('click', '.dropdown-menu a', updateEventView.changeMeetingType);
@@ -294,7 +298,7 @@
   $('.events-table').on('click', '#archive', updateEventView.archiveEvent);
   $('.events-table').on('submit', 'form', updateEventView.submitUpdateForm);
   $('.events-table').on('click', '#delete', updateEventView.deleteEvent);
-
+  $('#archived').on('click', updateEventView.loadOldEvents)
 
   $('#scroll-to-top').on('click', function () {
     $("html, body").animate({ scrollTop: 0 }, "slow");
@@ -324,7 +328,7 @@
     if (user) {
     // User is signed in.
       console.log(user.displayName, ' is signed in');
-      eventHandler.readData();
+      eventHandler.readData('/townHalls/');
       eventHandler.metaData();
       eventHandler.readDataUsers();
       writeUserData(user.uid, user.displayName, user.email);

@@ -143,9 +143,9 @@
     return hour + ':' + min + ':' + times[2];
   };
 
-  eventHandler.readData = function () {
+  eventHandler.readData = function (path) {
     $currentState = $('#current-state');
-    firebase.database().ref('/townHalls/').on('child_added', function getSnapShot(snapshot) {
+    firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;
       $currentState.attr('data-total', total);
       var ele = new TownHall(snapshot.val());
