@@ -415,5 +415,4 @@
     })
   }
   TownHall.removeOld()
-  // TownHall.dataProcess()
   module.exports = TownHall
