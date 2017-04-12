@@ -1,10 +1,9 @@
 # townHallProjectAdmin
 
 ## Current features: 
-- Back end: bin/event.js runs every hour on heroku, it reads the google doc and writes to the firebase using the admin signin
+- Back end: bin/capEvents.js runs every hour on heroku
 - Front end: view for researchers to see what events current have issues
+- Front end: Admin can edit and approve events. 
 
 ## Future:
 - Back end: may be where our email automation lives.
-- Front end: enter and edit new events. 
- * Levels of auth determines if an event gets put in "pending approval" or main database. 
