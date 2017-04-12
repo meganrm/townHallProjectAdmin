@@ -6,7 +6,7 @@ var express = require('express'),
 
 var https = require('https');
 
-// var TownHall = require('./bin/capEvents.js')
+var TownHall = require('./bin/event.js')
 app.use(express.static('./'));
 
 app.get('*', function(request, response) {

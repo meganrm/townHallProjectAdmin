@@ -5,7 +5,7 @@
   var provider = new firebase.auth.GoogleAuthProvider();
 
   var updateEventView = {};
-  TownHall.currentKey;
+  TownHall.currentKey =  null;
   TownHall.currentEvent = new TownHall();
 
   updateEventView.updatedView = function updatedView($form, $listgroup) {
@@ -116,7 +116,7 @@
       var databaseTH = TownHall.allTownHallsFB[id];
       if (updated.length > 0) {
         var newTownHall = updateEventView.updatedView($form, $listgroup);
-        newTownHall.lastUpdatedHuman = $form.find('#lastUpdatedHuman').val()
+        newTownHall.lastUpdatedHuman = $form.find('#lastUpdatedHuman').val();
         newTownHall.lastUpdated = Date.now();
         newTownHall.updatedBy = firebase.auth().currentUser.email;
         if (newTownHall.address) {
@@ -254,6 +254,7 @@
 
   updateEventView.meetingTypeChanged = function (event) {
     event.preventDefault();
+    var thisTownHall;
     var $input = $(this);
     console.log($input);
     var $form = $input.parents('form');
@@ -265,9 +266,9 @@
     var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
     var defaultLocationTemplate = Handlebars.getTemplate('generalinputs');
     if ($form.attr('id')) {
-      var thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-form')[0]];
+      thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-form')[0]];
     } else {
-      var thisTownHall = TownHall.currentEvent;
+      thisTownHall = TownHall.currentEvent;
     }
     switch (value.slice(0, 4)) {
       case 'Tele':
@@ -325,12 +326,13 @@
   }
 
   firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
+    if (user.uid !== TownHall.currentUser) {
     // User is signed in.
       console.log(user.displayName, ' is signed in');
       eventHandler.readData('/townHalls/');
       eventHandler.metaData();
       eventHandler.readDataUsers();
+      TownHall.currentUser = user.uid;
       writeUserData(user.uid, user.displayName, user.email);
     } else {
       updateEventView.signIn();
