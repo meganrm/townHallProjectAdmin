@@ -8,6 +8,7 @@
   // Global data stete
   TownHall.allTownHalls = [];
   TownHall.allTownHallsFB = {};
+  TownHall.currentUser = null;
   TownHall.allMoCs = [];
   TownHall.allStates = [];
   TownHall.currentContext = [];
@@ -283,7 +284,6 @@
         reject('delete');
       }
     });
-
   };
 
   TownHall.allIdsGoogle = [];
