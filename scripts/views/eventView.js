@@ -155,10 +155,23 @@
       });
     }
   };
-  eventHandler.checkTime = function (ele) {
-    var regEx = /\b((1[0-2]|0?[1-9]):([0-5][0-9]) ([AaPp][Mm]))/g;
-    if (ele.Time && !ele.Time.match(regEx)) {
-      console.log('time is not formatted');
+  eventHandler.checkTimeFormat = function (ele) {
+    // var regEx = /\b((1[0-2]|0?[1-9]):([0-5][0-9]) ([AaPp][Mm]))/g;
+    var regEx = /\b(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))/g;
+    if (ele.timeEnd24 && !ele.timeEnd24.match(regEx)) {
+      console.log('time is not formatted', ele.timeEnd24);
+      var updatingDate = new TownHall();
+      updatingDate.eventId = ele.eventId;
+      updatingDate.timeEnd = '';
+      var hours = parseInt(ele.timeStart24.split(':')[0]);
+      var mins = ele.timeStart24.split(':')[1];
+      var newhours = hours + 2 <= 24 ? hours + 2 : hours - 22
+      updatingDate.timeEnd24 = `${newhours}:${mins}:00`;
+      updatingDate.lastUpdated = new Date(ele.lastUpdated).valueOf();
+      console.log('wrting' , updatingDate);
+      updatingDate.updateFB(updatingDate.eventId).then(function (dataWritten) {
+        console.log(dataWritten);
+      });
     }
   }
 
@@ -168,7 +181,7 @@
       updatingDate.eventId = ele.eventId;
       updatingDate.timeEnd = '';
       var hours = parseInt(ele.timeStart24.split(':')[0]);
-      var mins = parseInt(ele.timeStart24.split(':')[1]);
+      var mins = ele.timeStart24.split(':')[1];
       var newhours = hours + 2 <= 24 ? hours + 2 : hours - 22
       updatingDate.timeEnd24 = `${newhours}:${mins}:00`;
       updatingDate.lastUpdated = new Date(ele.lastUpdated).valueOf();
@@ -194,7 +207,7 @@
       TownHall.allTownHallsFB[ele.eventId] = ele;
       TownHall.allTownHalls.push(ele);
       TownHall.addFilterIndexes(ele);
-      eventHandler.checkTime(ele);
+      eventHandler.checkTimeFormat(ele);
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
       var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
