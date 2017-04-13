@@ -100,13 +100,18 @@
       var key = $form.closest('.list-group-item').attr('id');
       var approvedTH = TownHall.allTownHallsFB[key];
       approvedTH.updateFB(key).then(function (dataWritten) {
-        var print = dataWritten;
-        print.writtenId = key;
-        print.edit = 'updated';
-        $('#edited').append(preview(print));
-        dataWritten.deleteEvent('UserSubmission').then(function (deletedEvent) {
-          $(`#for-approval #${key}`).remove();
-        });
+        if (dataWritten.eventId) {
+          var print = dataWritten;
+          print.writtenId = key;
+          print.edit = 'updated';
+          $('#edited').append(preview(print));
+          dataWritten.deleteEvent('UserSubmission').then(function (deletedEvent) {
+            $(`#for-approval #${key}`).remove();
+          });
+        }
+      }).catch(function(error){
+        $form.find('.write-error').removeClass('hidden');
+        console.log(error);
       });
       $form.find('#update-button').removeClass('btn-blue');
     } else {
@@ -286,7 +291,7 @@
   };
 
   updateEventView.loadOldEvents = function() {
-    
+
   }
 
   // event listeners for table interactions
@@ -326,14 +331,20 @@
   }
 
   firebase.auth().onAuthStateChanged(function (user) {
-    if (user.uid !== TownHall.currentUser) {
+    if (user) {
     // User is signed in.
-      console.log(user.displayName, ' is signed in');
-      eventHandler.readData('/townHalls/');
-      eventHandler.metaData();
-      eventHandler.readDataUsers();
-      TownHall.currentUser = user.uid;
-      writeUserData(user.uid, user.displayName, user.email);
+      if (user.uid !== TownHall.currentUser) {
+        console.log(user.displayName, ' is signed in');
+        TownHall.currentUser = user.uid;
+        eventHandler.readData('/townHalls/');
+        eventHandler.metaData();
+        eventHandler.readDataUsers();
+        $('.write-error').removeClass('hidden');
+        writeUserData(user.uid, user.displayName, user.email);
+      } else {
+        console.log(user.displayName, ' is still signed in');
+      }
+
     } else {
       updateEventView.signIn();
       // No user is signed in.
@@ -348,6 +359,7 @@
       var token = result.credential.accessToken;
       // The signed-in user info.
       var user = result.user;
+
     }).catch(function (error) {
       // Handle Errors here.
       var errorCode = error.code;
