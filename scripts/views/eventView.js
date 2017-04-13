@@ -140,6 +140,47 @@
     return hour + ':' + min + ':' + times[2];
   };
 
+  eventHandler.checkLastUpdated = function (ele) {
+    if (!ele.lastUpdatedHuman) {
+      var updatingDate = new TownHall();
+      updatingDate.eventId = ele.eventId;
+      updatingDate.lastUpdated = new Date(ele.lastUpdated).valueOf();
+      updatingDate.lastUpdatedHuman = new Date(ele.lastUpdated);
+      if (!updatingDate.lastUpdated) {
+        updatingDate.lastUpdated = Date.now();
+        updatingDate.lastUpdatedHuman = updatingDate.lastUpdated.toString();
+      }
+      updatingDate.updateFB(ele.eventId).then(function (dataWritten) {
+        console.log(dataWritten);
+      });
+    }
+  };
+  eventHandler.checkTime = function (ele) {
+    var regEx = /\b((1[0-2]|0?[1-9]):([0-5][0-9]) ([AaPp][Mm]))/g;
+    if (ele.Time && !ele.Time.match(regEx)) {
+      console.log('time is not formatted');
+    }
+  }
+
+  eventHandler.checkEndTime = function (ele) {
+    if (!ele.timeEnd24 && ele.timeStart24) {
+      var updatingDate = new TownHall();
+      updatingDate.eventId = ele.eventId;
+      updatingDate.timeEnd = '';
+      var hours = parseInt(ele.timeStart24.split(':')[0]);
+      var mins = parseInt(ele.timeStart24.split(':')[1]);
+      var newhours = hours + 2 <= 24 ? hours + 2 : hours - 22
+      updatingDate.timeEnd24 = `${newhours}:${mins}:00`;
+      updatingDate.lastUpdated = new Date(ele.lastUpdated).valueOf();
+      console.log('wrting' , updatingDate);
+      updatingDate.updateFB(updatingDate.eventId).then(function (dataWritten) {
+        console.log(dataWritten);
+      });
+    } else if (!ele.timeStart24) {
+      console.log('no start time', ele.eventId);
+    }
+  }
+
   eventHandler.readData = function (path) {
     $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
@@ -148,22 +189,12 @@
       var ele = new TownHall(snapshot.val());
       var id = ele.eventId;
       obj = {};
-      if (!ele.lastUpdatedHuman) {
-        var updatingDate = new TownHall();
-        updatingDate.eventId = ele.eventId;
-        updatingDate.lastUpdated = new Date(ele.lastUpdated).valueOf();
-        updatingDate.lastUpdatedHuman = new Date(ele.lastUpdated);
-        if (!updatingDate.lastUpdated) {
-          updatingDate.lastUpdated = Date.now();
-          updatingDate.lastUpdatedHuman = updatingDate.lastUpdated.toString();
-        }
-        updatingDate.updateFB(ele.eventId).then(function (dataWritten) {
-          console.log(dataWritten);
-        });
-      }
+      eventHandler.checkLastUpdated(ele);
+      eventHandler.checkEndTime(ele);
       TownHall.allTownHallsFB[ele.eventId] = ele;
       TownHall.allTownHalls.push(ele);
       TownHall.addFilterIndexes(ele);
+      eventHandler.checkTime(ele);
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
       var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
@@ -175,7 +206,6 @@
           ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
         }
       }
-
       if (ele.yearMonthDay) {
         var month = ele.yearMonthDay.split('-')[1];
         var day = ele.yearMonthDay.split('-')[2];
