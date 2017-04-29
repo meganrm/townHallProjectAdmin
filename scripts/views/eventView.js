@@ -2,6 +2,18 @@
   // object to hold the front end view functions
   var eventHandler = {};
 
+  // firebase.database().ref('MOCs').once('value').then(function (snapshot) {
+  //   snapshot.forEach(function(ele){
+  //     var mocData = ele.val()
+  //     if (mocData['govtrack_id']) {
+  //       var updates = {};
+  //       updates['/mocID/' + ele.key] = mocData['govtrack_id'];
+  //       updates['/mocData/' + mocData['govtrack_id']] = mocData;
+  //       firebase.database().ref().update(updates);
+  //     } else {
+  //     }
+  //   })
+  // })
   function setupTypeaheads() {
     var typeaheadConfig = {
       fitToElement: true,
@@ -11,7 +23,7 @@
         eventHandler.addFilter(this.$element.attr('data-filter'), selection);
         eventHandler.renderTableWithArray(eventHandler.getFilterState());
       }
-    }
+    };
     $('#stateTypeahead').typeahead($.extend({ source: TownHall.allStates }, typeaheadConfig));
     $('#memberTypeahead').typeahead($.extend({ source: TownHall.allMoCs }, typeaheadConfig));
   }
@@ -21,7 +33,6 @@
     var compiledTemplate = Handlebars.getTemplate('eventTableRow');
     $($tableid).append(compiledTemplate(townhall));
   };
-
 
   eventHandler.renderTableWithArray = function (array) {
     $('#all-events-table .event-row').remove();
