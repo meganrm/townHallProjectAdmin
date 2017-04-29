@@ -7,7 +7,7 @@ var express = require('express'),
 var https = require('https');
 
 // var TownHall = require('./bin/event.js')
-var Users = require('./bin/emailAutomation.js')
+var Users = require('./bin/emailAutomation_events.js')
 
 app.use(express.static('./'));
 

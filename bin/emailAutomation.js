@@ -23,19 +23,19 @@
     process.env.SENDGRID_PASSWORD
   )
   // Initialize the app with a custom auth variable, limiting the server's access
-  // var firebasekey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n')
+  var firebasekey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n')
 
-  // admin.initializeApp({
-  //   credential: admin.credential.cert({
-  //     projectId: 'townhallproject-86312',
-  //     clientEmail: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
-  //     privateKey: firebasekey
-  //   }),
-  //   databaseURL: 'https://townhallproject-86312.firebaseio.com'
-  // });
-  //
-  // var firebasedb = admin.database()
-  // // admin.database.enableLogging(true)
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: 'townhallproject-86312',
+      clientEmail: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
+      privateKey: firebasekey
+    }),
+    databaseURL: 'https://townhallproject-86312.firebaseio.com'
+  });
+
+  var firebasedb = admin.database()
+  // admin.database.enableLogging(true)
 
 
   User.getUsers = function () {
@@ -67,21 +67,6 @@
     })
   }
 
-  // TownHall.dataProcess = function dataProcess() {
-  //   firebasedb.ref('/lastupdated/time').set(Date.now())
-  //   console.log('time', new Date())
-  //   TownHall.fetchAllGoogle().then(function (result) {
-  //     var results = result
-  //     TownHall.lengthOfGoogle = results.length
-  //     results.forEach(function (ele) {
-  //       TownHall.allIdsGoogle.push(ele.eventId)
-  //     })
-  //     TownHall.batchCalls(results)
-  //     TownHall.removeOld()
-  //   }, function (err) {
-  //     console.error(err)
-  //   })
-  // }
 
 User.getUsers().then(function( returnedData) {
   var people = returnedData['_embedded']['osdi:people']
@@ -97,12 +82,6 @@ User.getUsers().then(function( returnedData) {
 }).catch(function(error){
   console.log(error);
 });
-  //  TownHall.getCapData().then(function (returnedData) {
-  //    for (const key of Object.keys(returnedData)) {
-  //      newCapEvent = new TownHall(returnedData[key])
-  //      TownHall.allIdsCap.push(newCapEvent.eventId)
-  //      newCapEvent.isInDatabase()
-  //    }
-  //  }).then(TownHall.removeOld)
+
 
   module.exports = User
