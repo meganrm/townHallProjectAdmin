@@ -304,7 +304,7 @@
   $('.events-table').on('click', '#archive', updateEventView.archiveEvent);
   $('.events-table').on('submit', 'form', updateEventView.submitUpdateForm);
   $('.events-table').on('click', '#delete', updateEventView.deleteEvent);
-  $('#archived').on('click', updateEventView.loadOldEvents)
+  $('#archived-lookup').on('submit', updateEventView.loadOldEvents);
 
   $('#scroll-to-top').on('click', function () {
     $("html, body").animate({ scrollTop: 0 }, "slow");
@@ -356,10 +356,9 @@
     firebase.auth().signInWithRedirect(provider);
     firebase.auth().getRedirectResult().then(function (result) {
       // This gives you a Google Access Token. You can use it to access the Google API.
-      var token = result.credential.accessToken;
+      // var token = result.credential.accessToken;
       // The signed-in user info.
-      var user = result.user;
-
+      // var user = result.user;
     }).catch(function (error) {
       // Handle Errors here.
       var errorCode = error.code;

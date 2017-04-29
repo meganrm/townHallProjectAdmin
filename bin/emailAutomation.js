@@ -1,12 +1,18 @@
 #!/usr/bin/env node
-
   function User(opts) {
     for (keys in opts) {
       this[keys] = opts[keys]
     }
   }
 
+  function Address(opts) {
+    for (keys in opts) {
+      this[keys] = opts[keys]
+    }
+  }
+
   // Global data state
+  User.allUsers = []
 
   var https = require('https')
   var admin = require('firebase-admin')
@@ -17,38 +23,41 @@
     process.env.SENDGRID_PASSWORD
   )
   // Initialize the app with a custom auth variable, limiting the server's access
-  var firebasekey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n')
+  // var firebasekey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n')
 
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: 'townhallproject-86312',
-      clientEmail: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
-      privateKey: firebasekey
-    }),
-    databaseURL: 'https://townhallproject-86312.firebaseio.com'
-  });
-
-  var firebasedb = admin.database()
-  // admin.database.enableLogging(true)
+  // admin.initializeApp({
+  //   credential: admin.credential.cert({
+  //     projectId: 'townhallproject-86312',
+  //     clientEmail: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
+  //     privateKey: firebasekey
+  //   }),
+  //   databaseURL: 'https://townhallproject-86312.firebaseio.com'
+  // });
+  //
+  // var firebasedb = admin.database()
+  // // admin.database.enableLogging(true)
 
 
   User.getUsers = function () {
     return new Promise(function (resolve, reject) {
         var options = {
-          hostname: 'https://actionnetwork.org',
-          path: `/api/${process.env.ACTION_NETWORK_KEY}/people`,
+          hostname: 'actionnetwork.org',
+          path: '/api/v2/people',
           method: 'GET',
+          headers: {
+            'OSDI-API-Token': process.env.ACTION_NETWORK_KEY,
+            'Content-Type': 'application/json' }
         }
         var str = ''
         var req = https.request(options, (res) => {
           res.setEncoding('utf8')
           res.on('data', (chunk) => {
             str += chunk
+            // console.log(chunk);
           })
           res.on('end', () => {
             var r = JSON.parse(str)
-            console.log(r);
-            // resolve(r)
+            resolve(r)
           })
       })
       req.on('error', (e) => {
@@ -58,23 +67,36 @@
     })
   }
 
-  TownHall.dataProcess = function dataProcess() {
-    firebasedb.ref('/lastupdated/time').set(Date.now())
-    console.log('time', new Date())
-    TownHall.fetchAllGoogle().then(function (result) {
-      var results = result
-      TownHall.lengthOfGoogle = results.length
-      results.forEach(function (ele) {
-        TownHall.allIdsGoogle.push(ele.eventId)
-      })
-      TownHall.batchCalls(results)
-      TownHall.removeOld()
-    }, function (err) {
-      console.error(err)
-    })
-  }
+  // TownHall.dataProcess = function dataProcess() {
+  //   firebasedb.ref('/lastupdated/time').set(Date.now())
+  //   console.log('time', new Date())
+  //   TownHall.fetchAllGoogle().then(function (result) {
+  //     var results = result
+  //     TownHall.lengthOfGoogle = results.length
+  //     results.forEach(function (ele) {
+  //       TownHall.allIdsGoogle.push(ele.eventId)
+  //     })
+  //     TownHall.batchCalls(results)
+  //     TownHall.removeOld()
+  //   }, function (err) {
+  //     console.error(err)
+  //   })
+  // }
 
-User.getUsers();
+User.getUsers().then(function( returnedData) {
+  var people = returnedData['_embedded']['osdi:people']
+
+  for (const key of Object.keys(people)) {
+    var user = new User(people[key])
+    console.log(user);
+    // if (user.postal_addresses[0].hasOwnProperty(address_lines)) {
+    //   console.log(user.postal_addresses.address_lines);
+    // }
+    User.allUsers.push(user)
+   }
+}).catch(function(error){
+  console.log(error);
+});
   //  TownHall.getCapData().then(function (returnedData) {
   //    for (const key of Object.keys(returnedData)) {
   //      newCapEvent = new TownHall(returnedData[key])
@@ -83,4 +105,4 @@ User.getUsers();
   //    }
   //  }).then(TownHall.removeOld)
 
-  module.exports = TownHall
+  module.exports = User
