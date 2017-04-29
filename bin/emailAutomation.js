@@ -12,29 +12,34 @@
   }
 
   // Global data state
+  User.usersByDistrict = []
   User.allUsers = []
 
   var https = require('https')
   var admin = require('firebase-admin')
   var google = require('googleapis')
 
+
   var sendgrid = require('sendgrid')(
     process.env.SENDGRID_USERNAME,
     process.env.SENDGRID_PASSWORD
   )
   // Initialize the app with a custom auth variable, limiting the server's access
-  // var firebasekey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n')
+  var firebasekey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n')
 
-  // admin.initializeApp({
-  //   credential: admin.credential.cert({
-  //     projectId: 'townhallproject-86312',
-  //     clientEmail: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
-  //     privateKey: firebasekey
-  //   }),
-  //   databaseURL: 'https://townhallproject-86312.firebaseio.com'
-  // });
-  //
-  // var firebasedb = admin.database()
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: 'townhallproject-86312',
+      clientEmail: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
+      privateKey: firebasekey,
+      databaseAuthVariableOverride: {
+        uid: "read-only"
+      }
+    }),
+    databaseURL: 'https://townhallproject-86312.firebaseio.com'
+  });
+  
+  var firebasedb = admin.database()
   // // admin.database.enableLogging(true)
 
 
@@ -67,42 +72,57 @@
     })
   }
 
-  // TownHall.dataProcess = function dataProcess() {
-  //   firebasedb.ref('/lastupdated/time').set(Date.now())
-  //   console.log('time', new Date())
-  //   TownHall.fetchAllGoogle().then(function (result) {
-  //     var results = result
-  //     TownHall.lengthOfGoogle = results.length
-  //     results.forEach(function (ele) {
-  //       TownHall.allIdsGoogle.push(ele.eventId)
-  //     })
-  //     TownHall.batchCalls(results)
-  //     TownHall.removeOld()
-  //   }, function (err) {
-  //     console.error(err)
-  //   })
-  // }
+
+
+function UserDistricts(users) {
+  // console.log(users)
+  users.forEach(function(user) {
+    var zip = user.postal_addresses[0].postal_code
+    firebasedb.ref('zipToDistrict/' + zip).once('value')
+    .then(function(snapshot){
+      snapshot.forEach(function(ele){
+      var currentUser = user;
+      var district = ele.val()['abr'] + '-' + ele.val()['dis']
+
+      if (!User.usersByDistrict[district]) {
+        User.usersByDistrict[district] = []
+      }
+      User.usersByDistrict[district].push(user)
+      console.log(User.usersByDistrict)
+    })
+  })
+
+  })
+  console.log(User.usersByDistrict)
+
+}
+
 
 User.getUsers().then(function( returnedData) {
   var people = returnedData['_embedded']['osdi:people']
-
   for (const key of Object.keys(people)) {
     var user = new User(people[key])
-    console.log(user);
+    User.allUsers.push(user)
+
+    }
+    }).then(function(){
+        UserDistricts(User.allUsers)
+      // console.log(User.usersByDistrict)
+      // console.log(User.userByDistrict[0])
+    })
+
+
     // if (user.postal_addresses[0].hasOwnProperty(address_lines)) {
     //   console.log(user.postal_addresses.address_lines);
     // }
-    User.allUsers.push(user)
-   }
-}).catch(function(error){
+   .catch(function(error){
   console.log(error);
 });
-  //  TownHall.getCapData().then(function (returnedData) {
-  //    for (const key of Object.keys(returnedData)) {
-  //      newCapEvent = new TownHall(returnedData[key])
-  //      TownHall.allIdsCap.push(newCapEvent.eventId)
-  //      newCapEvent.isInDatabase()
-  //    }
-  //  }).then(TownHall.removeOld)
+
+// firebasedb.ref('zipToDistrict/98122').once('value', function(snapshot){snapshot.forEach(function(ele){
+// console.log(ele.val())
+// var district = ele.val()['abr'] + '-' + ele.val()['dis']
+//       console.log(district)
+// })})
 
   module.exports = User
