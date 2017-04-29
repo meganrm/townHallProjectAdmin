@@ -1,4 +1,5 @@
 (function (module) {
+
   function TownHall(opts) {
     for (keys in opts) {
       this[keys] = opts[keys];
