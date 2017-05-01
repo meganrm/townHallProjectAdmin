@@ -6,18 +6,19 @@
   }
 
   // Global data state
-  TownHall.townHallbyDistrict = []
+  TownHall.townHallbyDistrict = {}
+  TownHall.senateEvents = {}
+
 
   var https = require('https')
   var google = require('googleapis')
   var admin = require('firebase-admin')
-
-  var sendgrid = require('sendgrid')(
-    process.env.SENDGRID_USERNAME,
-    process.env.SENDGRID_PASSWORD
-  )
+  var statesAb = require('../scripts/data/states.js')
 
   var firebasekey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n')
+  var api_key = 'key-736af2349a81df7c92ef91cf2a89eb0a';
+  var domain = 'updates.townhallproject.com';
+  var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
 
   admin.initializeApp({
     credential: admin.credential.cert({
@@ -30,37 +31,117 @@
 
   var firebasedb = admin.database()
 
-
-  var api_key = 'key-736af2349a81df7c92ef91cf2a89eb0a';
-  var domain = 'sandbox030fd45a82d8484db05cf333ea740ce0.mailgun.org';
-  var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
-
-  var data = {
-    from: 'Excited User <me@sandbox030fd45a82d8484db05cf333ea740ce0.mailgun.org>',
-    to: 'meganrm@gmail.com',
-    subject: 'Hello',
-    text: 'Testing some Mailgun awesomness!'
-  };
-
-  mailgun.messages().send(data, function (error, body) {
-    console.log('email', body, error);
-});
-
-
-  firebasedb.ref('townHalls').once('value').then(function (snapshot) {
-    snapshot.forEach(function(ele) {
-      var townhall = ele.val()
-      if (townhall.District) {
-        if (!TownHall.townHallbyDistrict[townhall.District]) {
-          TownHall.townHallbyDistrict[townhall.District] = []
-        }
-          TownHall.townHallbyDistrict[townhall.District].push(townhall)
+  TownHall.prototype.inNextWeek = function(){
+    var townhall = this;
+    var milsecToDays = (1000 * 60 * 60 * 24)
+    if (townhall.dateObj) {
+      var townhallDay = new Date(townhall.dateObj)
+      if ((townhallDay - Date.now())/milsecToDays < 8 ) {
+        return true
       }
-    })
-  }).then(function(){
-    // console.log(TownHall.townHallbyDistrict);
-  }).catch(function (error) {
-    console.log(error);
-  });
+      else {
+        return false
+      }
+    }
+  }
+
+  TownHall.prototype.include = function(){
+    var townhall = this;
+    var include
+    switch (townhall.meetingType) {
+      case 'Town Hall':
+        include = true;
+        break;
+      case 'Empty Chair Town Hall':
+        include = true;
+        break;
+      case 'Tele-Town Hall':
+        include = true;
+        break;
+      case 'Other':
+        include = true;
+        break;
+      default:
+        include = false;
+    }
+    return include
+  }
+
+
+TownHall.prototype.emailText = function(){
+  var date
+  var location
+  var time
+  var notes
+  if (this.repeatingEvent) {
+    date = this.repeatingEvent
+  } else {
+    date = this.Date
+  }
+  if (this.meetingType === 'Tele-Town Hall') {
+    location = this.phoneNumber
+    time = this.Time
+  } else if (this.timeZone) {
+    location = this.Location
+    time = `${this.Time}, ${this.timeZone}`
+  } else {
+    location = this.Location
+    time = this.Time
+  }
+  if (this.Notes) {
+    notes = `<i>${this.Notes}</i></br>`
+  } else {
+    notes = ''
+  }
+  var eventTemplate =
+  `<strong style="color:#0d4668">${this.Member}, ${this.meetingType}</strong>
+    <section style="margin-left:10px; margin-bottom: 20px; line-height: 20px">
+      ${date}</br>
+      ${time}</br>
+      ${location}</br>
+      ${this.address}</br>
+      <a href="https://townhallproject.com/?eventId=${this.eventId}">Link on townhallproject site</a></br>
+      ${notes}
+    </section>`
+  return eventTemplate
+}
+
+  TownHall.prototype.addToEventList = function(eventList, key){
+    var townhall = this;
+    if (!eventList[key]) {
+      eventList[key] = []
+    }
+      eventList[key].push(townhall)
+  }
+
+  TownHall.getAll = function(){
+    firebasedb.ref('townHalls').once('value').then(function (snapshot) {
+      snapshot.forEach(function(ele) {
+        var townhall = new TownHall(ele.val())
+        if (townhall.District && townhall.inNextWeek() && townhall.include()) {
+          if (townhall.District === 'Senate') {
+            for (const key of Object.keys(statesAb)) {
+              if (statesAb[key] === townhall.State) {
+                var state = key
+              }
+            }
+            townhall.addToEventList(TownHall.senateEvents, state)
+          } else {
+            townhall.addToEventList(TownHall.townHallbyDistrict, townhall.District)
+          }
+        }
+      })
+    }).then(function(){
+      console.log('got all events!', TownHall.senateEvents);
+      for (const key of Object.keys(TownHall.townHallbyDistrict)) {
+        // TownHall.composeEmail(key, TownHall.townHallbyDistrict[key])
+      }
+      // console.log(TownHall.townHallbyDistrict);
+    }).catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  TownHall.getAll()
 
   module.exports = TownHall

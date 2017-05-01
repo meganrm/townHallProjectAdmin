@@ -59,3 +59,4 @@ WV: "West Virginia",
 WI: "Wisconsin",
 WY: "Wyoming"
 }
+module.exports = statesAb
