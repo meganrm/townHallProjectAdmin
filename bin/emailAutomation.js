@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+
+// unpacks data from action network
   function User(opts) {
     if (opts.given_name && opts.family_name) {
       this.fullname = `${opts.given_name} ${opts.family_name}`
@@ -16,12 +18,6 @@
     this.sendEmail = sendEmail
   }
 
-  function Address(opts) {
-    for (keys in opts) {
-      this[keys] = opts[keys]
-    }
-  }
-
   // Global data state
   User.usersByDistrict = {}
   User.allUsers = []
@@ -32,7 +28,7 @@
   var TownHall = require('../bin/emailAutomation_events.js')
   var Distance = require('geo-distance')
 
-
+// settings for mailgun
   var mailgun_api_key = process.env.MAILGUN_API_KEY2;
   var domain = 'updates.townhallproject.com';
   var mailgun = require('mailgun-js')({apiKey: mailgun_api_key, domain: domain});
@@ -40,7 +36,7 @@
 
   // admin.database.enableLogging(true)
 
-
+// gets users 25 people at a time
   User.getUsers = function (path) {
     return new Promise(function (resolve, reject) {
         var options = {
@@ -70,13 +66,16 @@
     })
   }
 
+// get senate events given we already know the district of a user
   User.prototype.getSenateEvents = function(district) {
     var state = district.split('-')[0]
     var user = this
     if (TownHall.senateEvents[state]) {
       var senateEvents = TownHall.senateEvents[state].reduce(function(acc, cur){
+        // if it's a senate phone call, everyone in the state should get the notification
         if (cur.meetingType === 'Tele-Town Hall') {
           acc.push(cur)
+        // otherwise only add the event if it's within 50 miles of the person's zip
         } else {
           var dist = Distance.between({ lat: user.lat, lon: user.long }, { lat: cur.lat, lon: cur.long })
           console.log(dist.human_readable())
@@ -85,17 +84,19 @@
           }
         }
         return acc;
-      },[])
+      }, [])
       return senateEvents
     }
   }
 
+  // sends email
   User.sendEmail = function(data){
     mailgun.messages().send(data, function (error, body) {
       console.log('email', body, error);
     });
   }
 
+  // composes email using the list of events
   User.prototype.composeEmail = function(district, events, senateEvents){
     var username
     if (this.fullname) {
@@ -152,36 +153,31 @@
     User.sendEmail(data)
   }
 
-
-  User.addToMailList = function(district, members){
-    // console.log(district, members);
-    //   mailgun.lists().members().add({ members: members, subscribed: true }, function (err, body) {
-    //     console.log(body);
-    // });
-  }
-
+  // saves chunk of data, resolves when all the people in the list have been assigned a district
   User.makeListbyDistrict = function(peopleList) {
-      return new Promise(function(resolve, reject){
-        peopleList.forEach(function(ele){
-          ele.getDistricts(User.usersByDistrict).then(function(){
-            if (peopleList.indexOf(ele) + 1 === peopleList.length) {
-              resolve(true)
-            }
-          }).catch(function(error){
-            console.log('zip was wrong', error);
-          })
+    return new Promise(function(resolve, reject){
+      peopleList.forEach(function(ele){
+        ele.getDistricts(User.usersByDistrict).then(function(){
+          if (peopleList.indexOf(ele) + 1 === peopleList.length) {
+            resolve(true)
+          }
+        }).catch(function(error){
+          console.log('zip was wrong', error);
         })
       })
+    })
   }
 
   User.getAllUsers = function(page){
+    // first time call page will not be defined
     var basepath = '/api/v2/people'
     var path
     if (page) {
-       path = basepath + page
+      path = basepath + page
     } else {
       path = basepath
     }
+    // get 25 users, then add them to the object under their district
     User.getUsers(path).then(function(returnedData) {
       var people = returnedData['_embedded']['osdi:people']
       var peopleList = []
@@ -210,15 +206,17 @@
             User.getAllUsers(nextPage)
           }
         }
+        // TODO: actually load all data when done testing
+        // else {
+        //   console.log('got all data');
+        //   User.makeListbyDistrict()
+        // }
       })
-
-      // else {
-      //   console.log('got all data');
-      //   User.makeListbyDistrict()
-      // }
     })
   }
 
+  // look up a district based on zip
+  // rejects zips that aren't 5 digits
   User.prototype.getDistricts = function(acc){
     var user = this;
     var zip = user.zip;
@@ -242,6 +240,5 @@
     })
   }
 
-
-User.getAllUsers()
+  User.getAllUsers()
   module.exports = User
