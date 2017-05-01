@@ -39,25 +39,25 @@
 // gets users 25 people at a time
   User.getUsers = function (path) {
     return new Promise(function (resolve, reject) {
-        var options = {
-          hostname: 'actionnetwork.org',
-          path: path,
-          method: 'GET',
-          headers: {
-            'OSDI-API-Token': process.env.ACTION_NETWORK_KEY,
-            'Content-Type': 'application/json' }
-        }
-        var str = ''
-        var req = https.request(options, (res) => {
-          res.setEncoding('utf8')
-          res.on('data', (chunk) => {
-            str += chunk
-            // console.log(chunk);
-          })
-          res.on('end', () => {
-            var r = JSON.parse(str)
-            resolve(r)
-          })
+      var options = {
+        hostname: 'actionnetwork.org',
+        path: path,
+        method: 'GET',
+        headers: {
+          'OSDI-API-Token': process.env.ACTION_NETWORK_KEY,
+          'Content-Type': 'application/json' }
+      }
+      var str = ''
+      var req = https.request(options, (res) => {
+        res.setEncoding('utf8')
+        res.on('data', (chunk) => {
+          str += chunk
+          // console.log(chunk);
+        })
+        res.on('end', () => {
+          var r = JSON.parse(str)
+          resolve(r)
+        })
       })
       req.on('error', (e) => {
         console.error('error requests', e)
@@ -78,7 +78,6 @@
         // otherwise only add the event if it's within 50 miles of the person's zip
         } else {
           var dist = Distance.between({ lat: user.lat, lon: user.long }, { lat: cur.lat, lon: cur.long })
-          console.log(dist.human_readable())
           if (dist < Distance('80 km')) {
             acc.push(cur)
           }
@@ -90,17 +89,20 @@
   }
 
   // sends email
-  User.sendEmail = function(data){
+  User.sendEmail = function(user, data){
     mailgun.messages().send(data, function (error, body) {
-      console.log('email', body, error);
-    });
+      User.usersByDistrict[user.district] = User.usersByDistrict[user.district].filter(function(ele){
+        return ele.fullname !== user.fullname
+      })
+    })
   }
 
   // composes email using the list of events
   User.prototype.composeEmail = function(district, events, senateEvents){
     var username
-    if (this.fullname) {
-      username = this.fullname
+    var user = this;
+    if (user.fullname) {
+      username = user.fullname
     } else {
       username = 'Friend'
     }
@@ -150,7 +152,7 @@
       subject: `${district} Town Hall events this week`,
       html: htmltext
     };
-    User.sendEmail(data)
+    User.sendEmail(user, data)
   }
 
   // saves chunk of data, resolves when all the people in the list have been assigned a district
@@ -193,6 +195,8 @@
           var nextPage = returnedData['_links']['next']['href'].split('people')[1]
           console.log(nextPage);
           if (nextPage === '?page=2') {
+            // go through all district grouping of events, and send emails
+            // TODO: go through all senate events too.
               for (const key of Object.keys(TownHall.townHallbyDistrict)) {
                 if (User.usersByDistrict[key]) {
                   User.usersByDistrict[key].forEach(function(user){
@@ -228,6 +232,7 @@
       .then(function (snapshot) {
         snapshot.forEach(function (ele) {
           var district = ele.val()['abr'] + '-' + parseInt(ele.val()['dis']);
+          user.district = district
           if (!acc[district]) {
             acc[district] = []
           }
