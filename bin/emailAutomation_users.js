@@ -22,11 +22,13 @@
   // Global data state
   User.usersByDistrict = {}
   User.allUsers = []
+  User.sentEmails = []
 
   var https = require('https')
   var admin = require('firebase-admin')
   var TownHall = require('../bin/emailAutomation_events.js')
   var Distance = require('geo-distance')
+
 
 // settings for mailgun
   var mailgun_api_key = process.env.MAILGUN_API_KEY2;
@@ -36,14 +38,19 @@
 
   // admin.database.enableLogging(true)
 
+  User.prototype.removeUser = function(){
+    var user = this
+    user.districts.forEach(function(district){
+      User.usersByDistrict[district] = User.usersByDistrict[district]
+      .filter(function(ele){
+        return ele.sendEmail !== user.sendEmail
+      })
+    })
+  }
+
   // sends email, removes user from group
   User.sendEmail = function(user, data){
     mailgun.messages().send(data, function (error, body) {
-      user.districts.forEach(function(district){
-        User.usersByDistrict[district] = User.usersByDistrict[district].filter(function(ele){
-          return ele.sendEmail !== user.sendEmail
-        })
-      })
     })
   }
 
@@ -96,25 +103,40 @@
       subject: `Town Hall events this week near you`,
       html: htmltext
     };
+    User.sentEmails.push(user.sendEmail)
+    user.removeUser()
     // User.sendEmail(user, data)
   }
 
-  User.prototype.getOtherDistrictEvents = function(district) {
-    if (this.districts.length > 1) {
-      var index = this.districts.indexOf(district) === 0?1:0
-      if (TownHall.townHallbyDistrict[this.districts[index]]) {
-        console.log('got another district', this.districts);
-        return TownHall.townHallbyDistrict[this.districts[index]]
-      }
+  User.prototype.checkOtherDistrictEvents = function(district) {
+    var allOtherEvents = []
+    var user = this
+    var districts = user.districts
+    districts.splice(user.districts.indexOf(district), 1)
+    if (districts.length > 0) {
+      districts.forEach(function(otherDistrict){
+        if (TownHall.townHallbyDistrict[otherDistrict]) {
+          allOtherEvents = allOtherEvents.concat(TownHall.townHallbyDistrict[otherDistrict])
+        }
+      })
     }
+    console.log('number other district events', allOtherEvents.length, user.sendEmail);
+    return allOtherEvents
   }
 
   // get senate events given we already know the district of a user
-  User.prototype.getSenateEvents = function(district) {
-    var state = district.split('-')[0]
+  User.prototype.getSenateEvents = function() {
     var user = this
+    var state
+    if (user.state) {
+      state = user.state
+    } else if (user.districts[0]) {
+      state = user.districts[0].split('-')[0]
+    }
+    var state = user.state
+    var senateEvents = []
     if (TownHall.senateEvents[state]) {
-      var senateEvents = TownHall.senateEvents[state].reduce(function(acc, cur){
+      senateEvents = TownHall.senateEvents[state].reduce(function(acc, cur){
         // if it's a senate phone call, everyone in the state should get the notification
         if (cur.meetingType === 'Tele-Town Hall') {
           acc.push(cur)
@@ -127,11 +149,9 @@
         }
         return acc;
       }, [])
-      if (senateEvents.length > 0) {
-        console.log('got senate events');
-        return senateEvents
-      }
+      console.log('number of senate events', senateEvents.length, this.sendEmail);
     }
+    return senateEvents
   }
 
   User.getDataForUsers = function() {
@@ -141,12 +161,18 @@
     for (const key of Object.keys(TownHall.townHallbyDistrict)) {
       if (User.usersByDistrict[key]) {
         User.usersByDistrict[key].forEach(function(user){
-          var senateEvents = user.getSenateEvents(key)
-          var otherDistrict = user.getOtherDistrictEvents(key)
-          var allevents = otherDistrict? TownHall.townHallbyDistrict[key].concat(otherDistrict): TownHall.townHallbyDistrict[key]
-          allevents = senateEvents? allevents: TownHall.townHallbyDistrict[key]
-          console.log('has district event', user.sendEmail);
-          user.composeEmail(key, allevents)
+          if (User.sentEmails.indexOf(user.sendEmail) > 0) {
+              console.log('user already got email', user.sendEmail);
+          } else {
+            var allevents = TownHall.townHallbyDistrict[key]
+            console.log('starting', user.sendEmail, key, allevents.length);
+            var otherDistrict = user.checkOtherDistrictEvents(key)
+            var senateEvents = user.getSenateEvents()
+            allevents = otherDistrict.length > 0? allevents.concat(otherDistrict): allevents
+            allevents = senateEvents.length > 0 ? allevents.concat(senateEvents): allevents
+            console.log('final length', allevents.length);
+            user.composeEmail(key, allevents)
+          }
         })
       }
     }
@@ -155,15 +181,21 @@
       var usersInState = []
       for (const district of Object.keys(User.usersByDistrict)) {
         if (district.split('-')[0] === state) {
-          usersInState.concat(User.usersByDistrict[district])
+          usersInState = usersInState.concat(User.usersByDistrict[district])
         }
       }
       usersInState.forEach(function(user){
-        var senateEvents = user.getSenateEvents(user.districts[0])
-        if (senateEvents.length > 0) {
+        if ( User.sentEmails.indexOf(user.sendEmail) === -1 ) {
           console.log('has only senate events', state, user.sendEmail);
-          user.composeEmail(state, senateEvents)
+          var senateEvents = user.getSenateEvents()
+            if (senateEvents.length > 0) {
+              user.composeEmail(state, senateEvents)
+            }
+        } else {
+          // TODO: this check shouldn't be needed.
+          console.log('user already had a email sent',  user.sendEmail);
         }
+
       })
     }
   }
@@ -257,7 +289,7 @@
       User.makeListbyDistrict(peopleList).then(function(done){
         console.log('done', done);
         // if no more new pages, or we set a break point for testing
-        if (!returnedData['_links']['next'] || returnedData['_links']['next']['href'].split('people')[1] === '?page=88') {
+        if (!returnedData['_links']['next'] || returnedData['_links']['next']['href'].split('people')[1] === '?page=50') {
           console.log('got all data');
           User.getDataForUsers()
         }  else {
@@ -270,5 +302,4 @@
   }
 
   User.getAllUsers()
-
   module.exports = User

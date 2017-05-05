@@ -9,6 +9,8 @@
 
   var admin = require('firebase-admin')
   var TownHall = require('../bin/emailAutomation_events.js')
+  var Users = require('../bin/emailAutomation_users.js')
+
 
 // settings for mailgun
   var mailgun_api_key = process.env.MAILGUN_API_KEY2;
@@ -28,8 +30,13 @@
     '<p>It looks like there\'s one or more Town Hall events coming up near you! We hope you can attend the event below and bring as many of your community members as possible to amplify your voice. </p>' +
     '<p>There is no better way to influence your representatives than in-person conversations. Town halls are a longstanding American tradition--where our elected representatives must listen and respond to the concerns of their constituents. <strong>Remember: you are their boss.</strong></p>'
     events.forEach(function(townhall){
-      var townhallHtml = townhall.emailText()
-      htmltext = htmltext + townhallHtml
+      if (!townhall.emailText()) {
+        console.log(townhall);
+      } else {
+        var townhallHtml = townhall.emailText()
+        htmltext = htmltext + townhallHtml
+      }
+
     })
 
     htmltext = htmltext + `<p>Quick notes:</p>
@@ -70,6 +77,7 @@
   }
 
   TownHall.getAll().then(function(){
+    console.log('got events');
     for (const key of Object.keys(TownHall.townHallbyDistrict)) {
       var thispartnerEmail = new PartnerEmail()
       // thispartnerEmail.composeEmail(key, TownHall.townHallbyDistrict[key])
