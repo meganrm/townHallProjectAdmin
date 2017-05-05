@@ -63,6 +63,14 @@
     });
   };
 
+  TownHall.prototype.eventApproved = function (key) {
+    var newEvent = this;
+    return new Promise(function (resolve, reject) {
+      firebase.database().ref('/UserSubmission/' + key).update(newEvent);
+      resolve(newEvent);
+    });
+  };
+
   // Takes an array of TownHalls and sorts by sortOn field
   TownHall.sortFunction = function(a, b) {
     if (a[TownHall.sortOn] && b[TownHall.sortOn]) {

@@ -17,7 +17,10 @@
     credential: admin.credential.cert({
       projectId: 'townhallproject-86312',
       clientEmail: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
-      privateKey: firebasekey
+      privateKey: firebasekey,
+      databaseAuthVariableOverride: {
+       uid: "read-only"
+      }
     }),
     databaseURL: 'https://townhallproject-86312.firebaseio.com'
   });
@@ -86,7 +89,7 @@
       notes = ''
     }
     var eventTemplate =
-    `<strong style="color:#0d4668">${this.Member}, ${this.meetingType}</strong>
+    `<strong style="color:#0d4668">${this.Member} (${this.District}), ${this.meetingType}</strong>
       <section style="margin-left:10px; margin-bottom: 20px; line-height: 20px">
         ${date}</br>
         ${time}</br>
@@ -107,30 +110,31 @@
   }
 
   TownHall.getAll = function(){
-    firebasedb.ref('townHalls').once('value').then(function (snapshot) {
-      snapshot.forEach(function(ele) {
-        var townhall = new TownHall(ele.val())
-        if (townhall.District && townhall.inNextWeek() && townhall.include()) {
-          if (townhall.District === 'Senate') {
-            // get state two letter code
-            for (const key of Object.keys(statesAb)) {
-              if (statesAb[key] === townhall.State) {
-                var state = key
+    return new Promise(function (resolve, reject) {
+      firebasedb.ref('townHalls').once('value').then(function (snapshot) {
+        snapshot.forEach(function(ele) {
+          var townhall = new TownHall(ele.val())
+          if (townhall.District && townhall.inNextWeek() && townhall.include()) {
+            if (townhall.District === 'Senate') {
+              // get state two letter code
+              for (const key of Object.keys(statesAb)) {
+                if (statesAb[key] === townhall.State) {
+                  var state = key
+                }
               }
+              townhall.addToEventList(TownHall.senateEvents, state)
+            } else {
+              townhall.addToEventList(TownHall.townHallbyDistrict, townhall.District)
             }
-            townhall.addToEventList(TownHall.senateEvents, state)
-          } else {
-            townhall.addToEventList(TownHall.townHallbyDistrict, townhall.District)
           }
-        }
-      })
-    }).then(function(){
-      console.log('got all events!');
-    }).catch(function (error) {
-      console.log(error);
-    });
+        })
+      }).then(function(){
+        resolve()
+      }).catch(function (error) {
+        reject(error)
+      });
+    })
   }
   // will always finish before the users are done downloading
-  TownHall.getAll()
 
   module.exports = TownHall
