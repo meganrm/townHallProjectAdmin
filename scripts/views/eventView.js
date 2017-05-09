@@ -196,7 +196,7 @@
       var newhours = hours + 2 <= 24 ? hours + 2 : hours - 22
       updatingDate.timeEnd24 = `${newhours}:${mins}:00`;
       updatingDate.lastUpdated = new Date(ele.lastUpdated).valueOf();
-      console.log('wrting' , updatingDate);
+      console.log('wrting', updatingDate);
       updatingDate.updateFB(updatingDate.eventId).then(function (dataWritten) {
         console.log(dataWritten);
       });
@@ -324,6 +324,8 @@
     });
     $('[data-toggle="tooltip"]').tooltip();
   };
+
+  $('')
 
   module.eventHandler = eventHandler;
 })(window);
