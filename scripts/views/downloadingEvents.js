@@ -13,7 +13,7 @@
       addList.splice(addList.length - 2, 2)
       address = addList.join(', ')
     }
-    this.Title = cur.Member + ' (' + cur.District + ')';
+    this.Title = cur.Member + ' (' + cur.District + ') ' + cur.meetingType;
     this.Date = cur.Date;
     this.Time = cur.Time;
     this.Venue = cur.Location;
