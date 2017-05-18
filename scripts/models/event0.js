@@ -127,6 +127,73 @@
   }
 };
 
+
+  TownHall.lookupMoreZips = function(zip){
+    $.get('https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyAcogkW06HYmZnbEttHs9xcs_vOqMjzBzE&includeOffices=false&roles=legislatorLowerBody&address=' + zip, function(response){
+      if (response.divisions) {
+          var r = Object.keys(response.divisions)[0].split('/')
+          if (r[2] === 'district:dc') {
+            var obj = {}
+            obj.abr = 'DC'
+            obj.dis = '00'
+            obj.zip = zip
+          }
+          else if (r.length === 4) {
+            var obj = {}
+            obj.abr = r[2].split(':')[1].toUpperCase()
+            obj.dis = r[3].split(':')[1]
+            obj.zip = zip
+
+          } else {
+            var aka = response.divisions[Object.keys(response.divisions)[0]].alsoKnownAs[0]
+            var ls = aka.split('/')
+            if (ls.length === 4 ) {
+              var obj = {}
+              obj.abr = ls[2].split(':')[1].toUpperCase()
+              obj.dis = ls[3].split(':')[1]
+              obj.zip = zip
+            }
+
+          }
+
+          var dup = false;
+          if (obj) {
+            firebase.database().ref('zipToDistrict/' + zip).once('value').then(function(snapshot){
+              snapshot.forEach(function(ele){
+                if (ele.val().abr === obj.abr && ele.val().dis === obj.dis) {
+                  dup = true;
+                }
+              })
+              if (!dup) {
+                firebase.database().ref('zipToDistrict/' + zip).push(obj).then(function(){
+                  console.log('wrote', obj);
+                })
+              } else {
+                console.log('already there');
+              }
+            })
+          } else {
+            console.log('couldnt make obj', response.divisions);
+        }
+      }
+    })
+  }
+//   firebase.database().ref('zipToDistrict/').once('value').then(function(snapshot){
+//     snapshot.forEach(function(zip){
+//       if (zip.numChildren() > 1) {
+//         var acc = {}
+//         zip.forEach(function(cur){
+//           var district = cur.val().abr + cur.val().dis
+//           acc[district] = cur.key
+//         });
+//         if (Object.keys(acc).length !== zip.numChildren()) {
+//           console.log(Object.keys(acc).length, zip.numChildren(), acc, zip.val());
+//
+//         }
+//       }
+//     })
+// })
+
   // DATA PROCESSING BEFORE WRITE
   // gets time zone with location and date
   TownHall.prototype.validateZone = function (id) {

@@ -67,7 +67,7 @@
 
     var data = {
       from: 'Town Hall Updates <update@updates.townhallproject.com>',
-      to: 'meganrm@gmail.com',
+      to: 'meganrm@townhallproject.com',
       // to: 'nwilliams@townhallproject.com',
       // cc: 'patriotnewstracking@gmail.com'
       subject: `${district} Town Hall events this week`,

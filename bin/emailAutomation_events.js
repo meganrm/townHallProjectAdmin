@@ -91,12 +91,14 @@
     var eventTemplate =
     `<strong style="color:#0d4668">${this.Member} (${this.District}), ${this.meetingType}</strong>
       <section style="margin-left:10px; margin-bottom: 20px; line-height: 20px">
-        ${date}</br>
-        ${time}</br>
-        ${location}</br>
-        ${this.address}</br>
-        <a href="https://townhallproject.com/?eventId=${this.eventId}">Link on townhallproject site</a></br>
-        ${notes}
+      <ul>
+        <li>${date}</li>
+        <li>${time}</li>
+        <li>${location}</li>
+        <li>${this.address}</li>
+        <li><a href="https://townhallproject.com/?eventId=${this.eventId}">Link on townhallproject site</a></br>
+        <p>${notes}</p>
+      </ul>
       </section>`
     return eventTemplate
   }
