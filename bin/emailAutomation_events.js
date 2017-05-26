@@ -27,16 +27,38 @@
 
   var firebasedb = admin.database()
 
-  TownHall.prototype.inNextWeek = function(){
+  TownHall.setLastEamilTime = function() {
+    var today = new Date().getDay()
+    var now = Date.now()
+    console.log(now);
+    if (today === 3) {
+      console.log('wed');
+      firebasedb.ref('emailLastSent/weekly').set(now)
+    }
+    console.log('setting daily');
+    firebasedb.ref('emailLastSent/daily').set(now)
+  }
+
+  TownHall.prototype.inNextWeek = function(lastEmailed){
     var townhall = this;
+    var lastweekly = lastEmailed.weekly
+    var lastDaily = lastEmailed.daily
     var milsecToDays = (1000 * 60 * 60 * 24)
+    var today = new Date().getDay()
+    var townhallDay = new Date(townhall.dateObj)
     if (townhall.dateObj) {
-      var townhallDay = new Date(townhall.dateObj)
-      if ((townhallDay - Date.now())/milsecToDays < 8 ) {
-        return true
-      } else {
+      if ((townhallDay - lastweekly)/milsecToDays > 8 ) {
+        // not in the next week
         return false
       }
+      // if Wednesday
+      if (today === 3) {
+        return true
+      // if not wednesday, is the event new since last emailed?
+      } else if (townhall.lastUpdated > lastDaily){
+        return true
+      }
+      return false
     }
   }
 
@@ -68,6 +90,8 @@
     var location
     var time
     var notes
+    var address
+    var updated
     if (this.repeatingEvent) {
       date = this.repeatingEvent
     } else {
@@ -83,19 +107,40 @@
       location = this.Location
       time = this.Time
     }
+    if (time) {
+      time = `<li>${time}</li>`
+    } else {
+      time = ''
+    }
+    if (location) {
+      location = `<li>${location}</li>`
+    } else {
+      location = ''
+    }
     if (this.Notes) {
       notes = `<i>${this.Notes}</i></br>`
     } else {
       notes = ''
     }
+    if (this.address) {
+      address = `<li>${this.address}</li>`
+    } else {
+      address = ''
+    }
+    if (this.updatedBy) {
+      updated = '*The details of this event were changed recently'
+    } else {
+      updated = ''
+    }
     var eventTemplate =
-    `<strong style="color:#0d4668">${this.Member} (${this.District}), ${this.meetingType}</strong>
+    `<strong style="color:#0d4668">${this.Member} (${this.District}), <span style="color:#ff4741">${this.meetingType}</span></strong>
+    <small><em>${updated}</em></small>
       <section style="margin-left:10px; margin-bottom: 20px; line-height: 20px">
       <ul>
         <li>${date}</li>
-        <li>${time}</li>
-        <li>${location}</li>
-        <li>${this.address}</li>
+        ${time}
+        ${location}
+        ${address}
         <li><a href="https://townhallproject.com/?eventId=${this.eventId}">Link on townhallproject site</a></br>
         <p>${notes}</p>
       </ul>
@@ -111,12 +156,12 @@
     eventList[key].push(townhall)
   }
 
-  TownHall.getAll = function(){
+  TownHall.getAll = function(lastUpdated){
     return new Promise(function (resolve, reject) {
       firebasedb.ref('townHalls').once('value').then(function (snapshot) {
         snapshot.forEach(function(ele) {
           var townhall = new TownHall(ele.val())
-          if (townhall.District && townhall.inNextWeek() && townhall.include()) {
+          if (townhall.District && townhall.inNextWeek(lastUpdated) && townhall.include()) {
             if (townhall.District === 'Senate') {
               // get state two letter code
               for (const key of Object.keys(statesAb)) {
@@ -135,6 +180,19 @@
       }).catch(function (error) {
         reject(error)
       });
+    })
+  }
+
+  TownHall.getLastSent = function() {
+    return new Promise(function (resolve, reject) {
+      firebasedb.ref('emailLastSent/').once('value').then(function (snapshot) {
+        if (snapshot.val()) {
+          console.log(snapshot.val());
+          resolve(snapshot.val())
+        } else {
+          reject ('no last date')
+        }
+      })
     })
   }
   // will always finish before the users are done downloading

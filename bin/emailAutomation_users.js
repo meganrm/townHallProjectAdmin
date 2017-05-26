@@ -1,21 +1,27 @@
 #!/usr/bin/env node
 
 String.prototype.toProperCase = function () {
-    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  return this.replace(/\w\S*/g, function(txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
 };
 // unpacks data from action network
 function User(opts) {
-  this.fullname = false;
+  this.firstname = false;
+  this.lastname = false;
   this.zip = false
   this.state = false
   this.lat = false
   this.lng = false
   this.primaryEmail = false
   if (opts.given_name) {
-    this.fullname = opts.given_name.trim().toProperCase()
+    this.firstname = opts.given_name.trim().toProperCase()
+  }
+  if (opts.family_name) {
+    this.lastname = opts.family_name.trim().toProperCase()
   }
   if (opts.postal_addresses[0].postal_code) {
-    this.zip = opts.postal_addresses[0].postal_code;
+    this.zip = opts.postal_addresses[0].postal_code.toString();
   }
   if (opts.postal_addresses[0].region) {
     this.state = opts.postal_addresses[0].region;
@@ -46,7 +52,6 @@ User.sentEmails = []
 User.zipErrors = []
 User.zipsNotInDatabase = []
 
-
 var https = require('https')
 var admin = require('firebase-admin')
 var TownHall = require('../bin/emailAutomation_events.js')
@@ -74,13 +79,14 @@ User.prototype.removeUser = function(){
 // sends email, removes user from group
 User.sendEmail = function(user, data){
   mailgun.messages().send(data, function (error, body) {
+    console.log('sent');
   })
 }
 
 User.prototype.userReport =function(){
   var user = this;
   var userTemplate =
-  `<div>${user.fullname}, ${user.primaryEmail}, ${user.zip} </div>`
+  `<div>${user.firstname}, ${user.primaryEmail}, ${user.zip} </div>`
   return userTemplate
 }
 
@@ -98,14 +104,15 @@ User.composeSummary = function(user) {
   })
   badZipsReport = badZipsReport + 'Zips not in database: '
   User.zipsNotInDatabase.forEach(function(zip){
-    badZipsReport = badZipsReport + `<span>${zip}, </span>`
+    badZipsReport = badZipsReport + `<span>'${zip}', </span>`
   })
 
   var data = {
     from: 'Town Hall Updates <update@updates.townhallproject.com>',
-    to: 'meganrm@townhallproject.com',
+    to: 'meganrm@gmail.com',
+    cc: 'nwilliams@townhallproject.com',
     subject: 'Sent town hall update emails',
-    html: `<p>Sent emails to:${User.sentEmails.length} people</p> <p>${districtreport}</p> <p>${badZipsReport}</p>`
+    html: `<p>Sent emails to: ${User.sentEmails.length} people</p> <p>${districtreport}</p> <p>${badZipsReport}</p>`
   };
   User.sendEmail(user, data)
 }
@@ -123,12 +130,20 @@ User.composeErrorEmail = function(user, error) {
 // composes email using the list of events
 User.prototype.composeEmail = function(district, allevents, index){
   var username
+  var fullname
   var user = this;
-  if (user.fullname) {
-    username = user.fullname
+  if (user.firstname) {
+    username = user.firstname
+    if (user.lastname) {
+      fullname = `${user.firstname} ${user.lastname}`
+    } else {
+      fullname = `${user.firstname}`
+    }
   } else {
     username = 'Friend'
+    fullname = ''
   }
+
   var htmltext = `<body style="color:#1E2528; font-size:14px; line-height: 27px;">Hi ${username} - ` +
   '<p>It looks like there\'s one or more Town Hall events coming up near you! We hope you can attend the event below and bring as many of your community members as possible to amplify your voice. </p>' +
   '<p>There is no better way to influence your representatives than in-person conversations. Town halls are a longstanding American tradition--where our elected representatives must listen and respond to the concerns of their constituents. <strong>Remember: you are their boss.</strong></p>'
@@ -136,24 +151,31 @@ User.prototype.composeEmail = function(district, allevents, index){
     var townhallHtml = townhall.emailText()
     htmltext = htmltext + townhallHtml
   })
+  htmltext = htmltext + `<small>
+                  <div><span style="color:#ff4741">Town Hall</span><span> - A forum where members of Congress give updates on the current affairs of Congress and answer questions from constituents.</span></div>
+                  <div><span style="color:#ff4741">Empty Chair Town Hall</span><span> - A citizen-organized town hall held with or without the invited lawmaker.</span></div>
+                  <div><span style="color:#ff4741">Office Hours </span><span> - Serves the same purpose as a Town Hall, however Elected Officials are not always expected to attend.</span></div>
+                  <div><span style="color:#ff4741">Ticketed Event</span><span> - Oftentimes county party events, local fundraisers, or campaign functions. There may be a fee for admission.</span></div>
+                  <div><span style="color:#ff4741">Tele-Town Hall Meeting </span><span> - A town hall conducted by conference call.</span></div>
+              </small>`
 
   htmltext = htmltext + `<p>Quick notes:</p>
-    <ul>
+  <ul>
     <li>Not sure what to do at a town hall meeting? Our friends at Indivisible have written a terrific guide which we highly recommend: https://www.indivisibleguide.com/
     </li>
     <li>Bring your friends with you. Forward this email to them and ask them to attend.</li>
     <li>Share your <a href="https://goo.gl/forms/JS1mkhMwgPutm5Fh2">Town Hall Stories</a> with us!</li>
-    <li>And if you attend, tweet us pictures at @townhallproject or email them to info@townhallproject.com. We’d love to see and hear how it went.</li>
-    <li>If you aren’t sure if this is your member of Congress, visit http://www.house.gov/representatives/find/ and enter your address to confirm.</li>
+    <li>And if you attend, tweet us pictures at @townhallproject or email them to info@townhallproject.com. We'd love to see and hear how it went.</li>
+    <li>If you aren't sure if this is your member of Congress, visit http://www.house.gov/representatives/find/ and enter your address to confirm.</li>
   </ul>
   <p>Thank you for your support. <strong>Stand up. Speak out.</strong></p>
 
   <p>Nathan</p>
   <section style="line-height: 16px; margin-bottom:25px;">
-  Nathan Williams<br>
-  Managing Director<br>
-  Town Hall Project<br>
-  townhallproject.com<br>
+    Nathan Williams<br>
+    Managing Director<br>
+    Town Hall Project<br>
+    townhallproject.com<br>
   </section>
   <p style="text-align:center"><a href="https://secure.actblue.com/contribute/page/townhallprojectemail">Donate here</a></p>
   <footer style="line-height:14px; font-size: 12px;">
@@ -163,18 +185,28 @@ User.prototype.composeEmail = function(district, allevents, index){
 
   </body>`
 
+  var subject
+  var today = new Date().getDay()
+  if (today === 3) {
+    subject = `Upcoming Town Hall events near you`
+  } else {
+    subject = `Recently added or updated Town Hall events near you`
+  }
+
   var data = {
     from: 'Town Hall Updates <update@updates.townhallproject.com>',
-    to: 'meganrm@townhallproject.com',
-    subject: `${user.primaryEmail} Town Hall events this week near you`,
+    to: `${fullname} <${user.primaryEmail}>`,
+    // to: 'Megan Riel-Mehan <meganrm@townhallproject.com>',
+    subject: subject,
     html: htmltext
   };
   data['h:Reply-To']="TownHall Project <info@townhallproject.com>"
   User.sentEmails.push(user.primaryEmail)
   user.removeUser()
   setTimeout(function () {
+    console.log('queuing', user.primaryEmail);
     User.sendEmail(user, data)
-  }, 100000 * index);
+  }, 1000 * (User.sentEmails.length));
 }
 
 User.prototype.checkOtherDistrictEvents = function(district) {
@@ -229,7 +261,7 @@ User.getDataForUsers = function() {
     if (User.usersByDistrict[key]) {
       console.log('sending district emails', key, User.usersByDistrict[key].length);
       User.usersByDistrict[key].forEach(function(user, index){
-        if (User.sentEmails.indexOf(user.primaryEmail) > 0) {
+        if (User.sentEmails.indexOf(user.primaryEmail) > 0 ) {
           console.warn('user already got email', user.primaryEmail);
         } else {
           var allevents = TownHall.townHallbyDistrict[key]
@@ -264,6 +296,7 @@ User.getDataForUsers = function() {
 
     })
   }
+  TownHall.setLastEamilTime()
   User.composeSummary()
 }
 
@@ -322,20 +355,22 @@ User.prototype.getDistricts = function(acc, index){
         } else {
           user.districts = []
           snapshot.forEach(function (ele) {
-            if (ele.val()['abr'] && parseInt(ele.val()['dis']) ) {
+            if (parseInt(ele.val()['dis']) || parseInt(ele.val()['dis']) === 0 ) {
               var district = ele.val()['abr'] + '-' + parseInt(ele.val()['dis']);
               user.districts.push(district)
-              if (!acc[district]) {
-                acc[district] = []
-              }
-              user.checkForDup(acc[district])
-              // acc[district].push(user)
             } else {
+              console.log(ele.val())
               if (User.zipsNotInDatabase.indexOf(zip) < 0) {
                 User.zipsNotInDatabase.push(zip)
               }
             }
           });
+          user.districts.forEach(function(district){
+            if (!acc[district]) {
+              acc[district] = []
+            }
+            user.checkForDup(acc[district])
+          })
           resolve(index)
         }
       }).catch(function(error){
@@ -433,7 +468,7 @@ User.getAllUsers = function(page){
       }  else {
         var nextPage = returnedData['_links']['next']['href'].split('people')[1]
         console.log(nextPage);
-          User.getAllUsers(nextPage)
+        User.getAllUsers(nextPage)
       }
     }).catch(function(error){
       console.error(error);
@@ -444,6 +479,14 @@ User.getAllUsers = function(page){
     User.sendEmail('get users error', error);
   })
 }
-// enter '?page=200' if you want to start at specific page
-User.getAllUsers()
+
+
+TownHall.getLastSent().then(function(lastUpdated){
+  TownHall.getAll(lastUpdated).then(function(){
+    console.log('got events');
+    // enter '?page=200' if you want to start at specific page
+    User.getAllUsers()
+  })
+})
+
 module.exports = User

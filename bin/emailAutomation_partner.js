@@ -9,7 +9,6 @@
 
   var admin = require('firebase-admin')
   var TownHall = require('../bin/emailAutomation_events.js')
-  var Users = require('../bin/emailAutomation_users.js')
 
 
 // settings for mailgun
@@ -24,7 +23,7 @@
   }
   // composes email using the list of events
   PartnerEmail.prototype.composeEmail = function(district, events){
-    var username = 'First Name'
+    var username = ''
     var partner = this
     var htmltext = `<body style="color:#1E2528; font-size:14px; line-height: 27px;">Hi ${username} - ` +
     '<p>It looks like there\'s one or more Town Hall events coming up near you! We hope you can attend the event below and bring as many of your community members as possible to amplify your voice. </p>' +
@@ -38,6 +37,13 @@
       }
 
     })
+    htmltext = htmltext + `<small>
+                    <div><span style="color:#ff4741">Town Hall</span><span> - A forum where members of Congress give updates on the current affairs of Congress and answer questions from constituents.</span></div>
+                    <div><span style="color:#ff4741">Empty Chair Town Hall</span><span> - A citizen-organized town hall held with or without the invited lawmaker.</span></div>
+                    <div><span style="color:#ff4741">Office Hours </span><span> - Serves the same purpose as a Town Hall, however Elected Officials are not always expected to attend.</span></div>
+                    <div><span style="color:#ff4741">Ticketed Event</span><span> - Oftentimes county party events, local fundraisers, or campaign functions. There may be a fee for admission.</span></div>
+                    <div><span style="color:#ff4741">Tele-Town Hall Meeting </span><span> - A town hall conducted by conference call.</span></div>
+                </small>`
 
     htmltext = htmltext + `<p>Quick notes:</p>
       <ul>
@@ -64,28 +70,35 @@
     </footer>
 
     </body>`
-
+    var subject
+    var today = new Date().getDay()
+    if (today === 3) {
+      subject = `${district} Town Hall events this week`
+    } else {
+      subject = `Recently added or updated Town Hall events in ${district}`
+    }
     var data = {
       from: 'Town Hall Updates <update@updates.townhallproject.com>',
-      to: 'meganrm@townhallproject.com',
-      // to: 'nwilliams@townhallproject.com',
-      // cc: 'patriotnewstracking@gmail.com'
-      subject: `${district} Town Hall events this week`,
+      to: 'Megan Riel-Mehan <meganrm@townhallproject.com>',
+      cc: 'Nathan Williams <nwilliams@townhallproject.com> , <patriotnewstracking@gmail.com>',
+      subject: subject,
       html: htmltext
     };
     PartnerEmail.sendEmail(partner, data)
   }
 
-  TownHall.getAll().then(function(){
-    console.log('got events');
-    for (const key of Object.keys(TownHall.townHallbyDistrict)) {
-      var thispartnerEmail = new PartnerEmail()
-      // thispartnerEmail.composeEmail(key, TownHall.townHallbyDistrict[key])
-    }
+  TownHall.getLastSent().then(function(lastUpdated){
+    TownHall.getAll(lastUpdated).then(function(){
+      console.log('got events');
+      for (const key of Object.keys(TownHall.townHallbyDistrict)) {
+        var thispartnerEmail = new PartnerEmail()
+        thispartnerEmail.composeEmail(key, TownHall.townHallbyDistrict[key])
+      }
       for (const key of Object.keys(TownHall.senateEvents)) {
         var newuser = new PartnerEmail()
-        // thispartnerEmail.composeEmail(key, TownHall.senateEvents[key])
+        newuser.composeEmail(key, TownHall.senateEvents[key])
       }
+    })
   })
 
   module.exports = PartnerEmail
