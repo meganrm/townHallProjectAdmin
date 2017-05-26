@@ -17,7 +17,7 @@
 
   var https = require('https')
   var admin = require('firebase-admin')
-  var google = require('googleapis')
+  var google = require('googleapis');
 
   var sendgrid = require('sendgrid')(
     process.env.SENDGRID_USERNAME,
@@ -50,7 +50,7 @@
     updates['/townHallIds/' + key] = metaData
     console.log(`writing ${newEvent.eventId}`);
     return firebasedb.ref().update(updates).catch(function (error) {
-      console.log('could not update', newEvent.eventId)
+      console.log('could not update', newEvent.eventId, error)
     })
   }
 
