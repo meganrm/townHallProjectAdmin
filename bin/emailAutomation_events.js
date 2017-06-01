@@ -75,9 +75,6 @@
     case 'Tele-Town Hall':
       include = true;
       break;
-    case 'Other':
-      include = true;
-      break;
     default:
       include = false;
     }
