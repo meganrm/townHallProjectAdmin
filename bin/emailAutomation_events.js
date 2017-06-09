@@ -47,6 +47,10 @@
     var today = new Date().getDay()
     var townhallDay = new Date(townhall.dateObj)
     if (townhall.dateObj) {
+      if (townhall.dateObj < Date.now()) {
+        // in past
+        return false
+      }
       if ((townhallDay - lastweekly)/milsecToDays > 8 ) {
         // not in the next week
         return false
@@ -193,5 +197,4 @@
     })
   }
   // will always finish before the users are done downloading
-
   module.exports = TownHall
