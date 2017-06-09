@@ -371,6 +371,38 @@
   // });
   // }
 
+  TownHall.fixOldDB = function fixOldDB() {
+    firebasedb.ref('/townHallsOld/').once('value').then(function getSnapShot(snapshot) {
+      snapshot.forEach(function (townhall) {
+        var key = townhall.key
+        var ele = new TownHall(townhall.val())
+        if (ele.dateObj) {
+          if (townhall.val().eventId) {
+            var year = new Date(ele.dateObj).getFullYear()
+            var month = new Date(ele.dateObj).getMonth()
+            var dateKey = year + '-' + month
+            console.log(dateKey);
+            firebasedb.ref('/townHallsOld/' + dateKey + '/' + ele.eventId).update(ele).then(function(){
+              var oldTownHall = firebasedb.ref('/townHallsOld/' + key)
+              console.log('removing',  oldTownHall);
+              oldTownHall.remove()
+            })
+          }
+        } else {
+          if (townhall.val().eventId) {
+            dateKey = 'noDate'
+            console.log(dateKey);
+            firebasedb.ref('/townHallsOld/' + dateKey + '/' + ele.eventId).update(ele).then(function(){
+              var oldTownHall = firebasedb.ref('/townHallsOld/' + key)
+              console.log('removing',  oldTownHall);
+              oldTownHall.remove()
+            })
+          }
+        }
+      })
+    })
+  }
+
   TownHall.removeOld = function removeOld() {
     var time = Date.now()
     firebasedb.ref('/townHalls/').once('value').then(function getSnapShot(snapshot) {
@@ -379,14 +411,16 @@
         if (ele.dateObj && ele.dateObj < time && !ele.repeatingEvent) {
           console.log('old', ele.eventId)
           if (townhall.val().eventId) {
+            var year = new Date(ele.dateObj).getFullYear()
+            var month = new Date(ele.dateObj).getMonth()
+            var dateKey = year + '-' + month
             var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId)
             var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId)
-            firebasedb.ref('/townHallsOld/').push(ele)
+            firebasedb.ref('/townHallsOld/' + dateKey + '/' + ele.eventId).update(ele)
             oldTownHall.remove()
             oldTownHallID.remove()
-            }
           }
-
+        }
       })
     })
   }

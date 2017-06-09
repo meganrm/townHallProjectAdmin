@@ -127,7 +127,6 @@
   }
 };
 
-
   TownHall.lookupMoreZips = function(zip){
     $.get('https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyAcogkW06HYmZnbEttHs9xcs_vOqMjzBzE&includeOffices=false&roles=legislatorLowerBody&address=' + zip, function(response){
       if (response.divisions) {
@@ -135,8 +134,8 @@
           if (r[2] === 'district:dc') {
             var obj = {}
             obj.abr = 'DC'
-            obj.dis = '00'
-            obj.zip = zip
+            obj.dis = '0'
+            obj.zip = zip.toString()
           }
           else if (r.length === 4) {
             var obj = {}
@@ -160,7 +159,7 @@
           if (obj) {
             firebase.database().ref('zipToDistrict/' + zip).once('value').then(function(snapshot){
               snapshot.forEach(function(ele){
-                if (ele.val().abr === obj.abr && ele.val().dis === obj.dis) {
+                if (ele.val().abr === obj.abr && parseInt(ele.val().dis) === parseInt(obj.dis)) {
                   dup = true;
                 }
               })
@@ -169,7 +168,7 @@
                   console.log('wrote', obj);
                 })
               } else {
-                console.log('already there');
+                console.log('already there', zip);
               }
             })
           } else {
