@@ -48,18 +48,22 @@
     var townhallDay = new Date(townhall.dateObj)
     if (townhall.dateObj) {
       if (townhall.dateObj < Date.now()) {
+        // console.log('in past', townhall.Date );
         // in past
         return false
       }
       if ((townhallDay - lastweekly)/milsecToDays > 8 ) {
+        // console.log('not in next week', townhall.Date,  (townhallDay - lastweekly)/milsecToDays);
         // not in the next week
         return false
       }
       // if Wednesday
       if (today === 3) {
+        // console.log('wednesday', townhall.Date );
         return true
       // if not wednesday, is the event new since last emailed?
       } else if (townhall.lastUpdated > lastDaily){
+        // console.log('updated recently', townhall.Date );
         return true
       }
       return false

@@ -334,11 +334,19 @@
   TownHall.prototype.removeOld = function () {
     var ele = this;
     var oldTownHall = firebasedb.ref('/townHalls/' + ele.eventId);
+    var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId)
+    var dateKey = 'noDate'
     console.log('removing', ele);
-    firebasedb.ref('/townHallsOld/' + ele.eventId).set(ele);
+    if (ele.dateObj) {
+      var year = new Date(ele.dateObj).getFullYear()
+      var month = new Date(ele.dateObj).getMonth()
+      dateKey = year + '-' + month
+    }
+    firebasedb.ref('/townHallsOld/' + dateKey + '/' + ele.eventId).update(ele)
     return new Promise(function (resolve, reject) {
       var removed = oldTownHall.remove();
       if (removed) {
+        oldTownHallID.remove()
         resolve(ele);
       } else {
         reject('could not remove');
