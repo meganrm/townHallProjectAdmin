@@ -97,6 +97,7 @@
     var notes
     var address
     var updated
+    var title
     if (this.repeatingEvent) {
       date = this.repeatingEvent
     } else {
@@ -122,6 +123,12 @@
     } else {
       location = ''
     }
+    if (this.eventName) {
+      title = `<li>${this.eventName}</li>`
+    } else {
+      title = ''
+    }
+
     if (this.Notes) {
       notes = `<i>${this.Notes}</i></br>`
     } else {
@@ -142,6 +149,7 @@
     <small><em>${updated}</em></small>
       <section style="margin-left:10px; margin-bottom: 20px; line-height: 20px">
       <ul>
+        ${title}
         <li>${date}</li>
         ${time}
         ${location}
