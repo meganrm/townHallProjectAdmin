@@ -145,18 +145,18 @@ User.prototype.composeEmail = function(district, allevents, index){
   }
 
   var htmltext = `<body style="color:#1E2528; font-size:14px; line-height: 27px;">Hi ${username} - ` +
-  '<p>It looks like there\'s one or more Town Hall events coming up near you! We hope you can attend the event below and bring as many of your community members as possible to amplify your voice. </p>' +
-  '<p>There is no better way to influence your representatives than in-person conversations. Town halls are a longstanding American tradition--where our elected representatives must listen and respond to the concerns of their constituents. <strong>Remember: you are their boss.</strong></p>'
+  '<p>It looks like there is one or more events coming up near you! We hope you can attend the event below and bring as many of your community members as possible to amplify your voice.</p>' +
+  '<p><strong>Please read the event details<strong> carefully. Note that not all events feature in-person members of Congress.</p>'
   allevents.forEach(function(townhall){
     var townhallHtml = townhall.emailText()
     htmltext = htmltext + townhallHtml
   })
-  htmltext = htmltext + `<small>
+  htmltext = htmltext +
+              `<small>
                   <div><span style="color:#ff4741">Town Hall</span><span> - A forum where members of Congress give updates on the current affairs of Congress and answer questions from constituents.</span></div>
                   <div><span style="color:#ff4741">Empty Chair Town Hall</span><span> - A citizen-organized town hall held with or without the invited lawmaker.</span></div>
-                  <div><span style="color:#ff4741">Office Hours </span><span> - Serves the same purpose as a Town Hall, however Elected Officials are not always expected to attend.</span></div>
-                  <div><span style="color:#ff4741">Ticketed Event</span><span> - Oftentimes county party events, local fundraisers, or campaign functions. There may be a fee for admission.</span></div>
-                  <div><span style="color:#ff4741">Tele-Town Hall Meeting </span><span> - A town hall conducted by conference call.</span></div>
+                  <div><span style="color:#ff4741">Tele-Town Hall Meeting</span><span> - A town hall conducted by conference call.</span></div>
+                  <div><span style="color:#ff4741">Other</span><span> - Other opportunities to engage with members of Congress or their staff. Please read details carefully—events in this category can vary.</span></div>
               </small>`
 
   htmltext = htmltext + `<p>Quick notes:</p>
