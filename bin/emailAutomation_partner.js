@@ -27,7 +27,7 @@
     var partner = this
     var htmltext = `<body style="color:#1E2528; font-size:14px; line-height: 27px;">Hi ${username} - ` +
     '<p>It looks like there\'s one or more events coming up near you! We hope you can attend the event below and bring as many of your community members as possible to amplify your voice.</p>' +
-    '<p><strong>Please read the event details<strong> carefully. Note that not all events feature in-person members of Congress.</p>'
+    '<p><span style="text-decoration: underline;">Please read the event details</span> carefully. Note that not all events feature in-person members of Congress.</p>'
     events.forEach(function(townhall){
       if (!townhall.emailText()) {
         console.log(townhall);
