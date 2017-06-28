@@ -79,7 +79,7 @@
     var data = {
       from: 'Town Hall Updates <update@updates.townhallproject.com>',
       to: 'Megan Riel-Mehan <meganrm@townhallproject.com>',
-      cc: 'Nathan Williams <nwilliams@townhallproject.com> , <patriotnewstracking@gmail.com>',
+      // cc: 'Nathan Williams <nwilliams@townhallproject.com> , <patriotnewstracking@gmail.com>',
       subject: subject,
       html: htmltext
     };
