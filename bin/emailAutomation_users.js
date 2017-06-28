@@ -145,8 +145,8 @@ User.prototype.composeEmail = function(district, allevents, index){
   }
 
   var htmltext = `<body style="color:#1E2528; font-size:14px; line-height: 27px;">Hi ${username} - ` +
-  '<p>It looks like there is one or more events coming up near you! We hope you can attend the event below and bring as many of your community members as possible to amplify your voice.</p>' +
-  '<p><strong>Please read the event details<strong> carefully. Note that not all events feature in-person members of Congress.</p>'
+  '<p>It looks like there\'s one or more events coming up near you! We hope you can attend the event below and bring as many of your community members as possible to amplify your voice.</p>' +
+  '<p><span style="text-decoration: underline;">Please read the event details</span> carefully. Note that not all events feature in-person members of Congress.</p>'
   allevents.forEach(function(townhall){
     var townhallHtml = townhall.emailText()
     htmltext = htmltext + townhallHtml
@@ -155,7 +155,7 @@ User.prototype.composeEmail = function(district, allevents, index){
               `<small>
                   <div><span style="color:#ff4741">Town Hall</span><span> - A forum where members of Congress give updates on the current affairs of Congress and answer questions from constituents.</span></div>
                   <div><span style="color:#ff4741">Empty Chair Town Hall</span><span> - A citizen-organized town hall held with or without the invited lawmaker.</span></div>
-                  <div><span style="color:#ff4741">Tele-Town Hall Meeting</span><span> - A town hall conducted by conference call.</span></div>
+                  <div><span style="color:#ff4741">Tele-Town Hall Meeting</span><span> - A town hall conducted by conference call or online.</span></div>
                   <div><span style="color:#ff4741">Other</span><span> - Other opportunities to engage with members of Congress or their staff. Please read details carefully—events in this category can vary.</span></div>
               </small>`
 

@@ -40,7 +40,7 @@
     htmltext = htmltext + `<small>
                     <div><span style="color:#ff4741">Town Hall</span><span> - A forum where members of Congress give updates on the current affairs of Congress and answer questions from constituents.</span></div>
                     <div><span style="color:#ff4741">Empty Chair Town Hall</span><span> - A citizen-organized town hall held with or without the invited lawmaker.</span></div>
-                    <div><span style="color:#ff4741">Tele-Town Hall Meeting</span><span> - A town hall conducted by conference call.</span></div>
+                    <div><span style="color:#ff4741">Tele-Town Hall Meeting</span><span> - A town hall conducted by conference call or online.</span></div>
                     <div><span style="color:#ff4741">Other</span><span> - Other opportunities to engage with members of Congress or their staff. Please read details carefully—events in this category can vary.</span></div>
                 </small>`
 
@@ -79,7 +79,7 @@
     var data = {
       from: 'Town Hall Updates <update@updates.townhallproject.com>',
       to: 'Megan Riel-Mehan <meganrm@townhallproject.com>',
-      // cc: 'Nathan Williams <nwilliams@townhallproject.com> , <patriotnewstracking@gmail.com>',
+      cc: 'Nathan Williams <nwilliams@townhallproject.com> , <patriotnewstracking@gmail.com>',
       subject: subject,
       html: htmltext
     };
