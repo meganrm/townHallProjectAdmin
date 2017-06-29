@@ -1,7 +1,6 @@
 
 (function (module) {
 // For handling user submitted events.
-// Not being used yet.
   var provider = new firebase.auth.GoogleAuthProvider();
 
   var updateEventView = {};

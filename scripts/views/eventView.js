@@ -115,11 +115,11 @@
     setupTypeaheads();
 
     if (location.hash) {
-      $("a[href='" + location.hash + "']").tab('show');
+      $('a[href=\'' + location.hash + '\']').tab('show');
     } else {
       TownHall.isMap = true;
     }
-    $('nav').on('click', '.hash-link', function onClickGethref(event) {
+    $('nav').on('click', '.hash-link', function onClickGethref() {
       var hashid = this.getAttribute('href');
       if (hashid === '#home' && TownHall.isMap === true) {
         history.replaceState({}, document.title, '.');
@@ -176,7 +176,7 @@
       updatingDate.timeEnd = '';
       var hours = parseInt(ele.timeStart24.split(':')[0]);
       var mins = ele.timeStart24.split(':')[1];
-      var newhours = hours + 2 <= 24 ? hours + 2 : hours - 22
+      var newhours = hours + 2 <= 24 ? hours + 2 : hours - 22;
       updatingDate.timeEnd24 = `${newhours}:${mins}:00`;
       updatingDate.lastUpdated = new Date(ele.lastUpdated).valueOf();
       console.log('wrting' , updatingDate);
@@ -184,7 +184,7 @@
         console.log(dataWritten);
       });
     }
-  }
+  };
 
   eventHandler.checkEndTime = function (ele) {
     if (!ele.timeEnd24 && ele.timeStart24) {
@@ -193,7 +193,7 @@
       updatingDate.timeEnd = '';
       var hours = parseInt(ele.timeStart24.split(':')[0]);
       var mins = ele.timeStart24.split(':')[1];
-      var newhours = hours + 2 <= 24 ? hours + 2 : hours - 22
+      var newhours = hours + 2 <= 24 ? hours + 2 : hours - 22;
       updatingDate.timeEnd24 = `${newhours}:${mins}:00`;
       updatingDate.lastUpdated = new Date(ele.lastUpdated).valueOf();
       console.log('wrting', updatingDate);
@@ -203,7 +203,7 @@
     } else if (!ele.timeStart24) {
       console.log('no start time', ele.eventId);
     }
-  }
+  };
 
   eventHandler.readData = function (path) {
     $currentState = $('#current-state');
@@ -251,22 +251,13 @@
         console.log('missing meeting type: ', ele.eventId);
       } else {
         switch (ele.meetingType.slice(0, 4)) {
-          case 'Tele':
-            $toAppend.find('.location-data').html(teleInputsTemplate(ele));
-            break;
-          case 'Tick':
-            $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
-            break;
+        case 'Tele':
+          $toAppend.find('.location-data').html(teleInputsTemplate(ele));
+          break;
+        case 'Tick':
+          $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
+          break;
         }
-      }
-      if (!ele.lat) {
-        $('#location-errors').append($toAppend.clone());
-      }
-      if (!ele.zoneString && !ele.repeatingEvent && ele.meetingType !== 'Tele-Town Hall') {
-        $('#date-errors').append($toAppend.clone());
-      }
-      if (ele.dateObj < Date.now() && !ele.repeatingEvent) {
-        $('#for-archive').append($toAppend.clone());
       }
       $('#all-events-table').append($toAppend);
     });
@@ -311,12 +302,12 @@
         console.log('no meeting type', ele);
       } else {
         switch (ele.meetingType.slice(0, 4)) {
-          case 'Tele':
-            $toAppend.find('.location-data').html(teleInputsTemplate(ele));
-            break;
-          case 'Tick':
-            $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
-            break;
+        case 'Tele':
+          $toAppend.find('.location-data').html(teleInputsTemplate(ele));
+          break;
+        case 'Tick':
+          $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
+          break;
         }
       }
       $toAppend.find('.btn-group').html(approveButtons(ele));
@@ -325,7 +316,7 @@
     $('[data-toggle="tooltip"]').tooltip();
   };
 
-  $('')
+  $('');
 
   module.eventHandler = eventHandler;
 })(window);
