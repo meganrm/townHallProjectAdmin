@@ -242,7 +242,7 @@ User.prototype.getSenateEvents = function() {
         acc.push(cur)
       // otherwise only add the event if it's within 50 miles of the person's zip
       } else {
-        var dist = Distance.between({ lat: user.lat, lon: user.long }, { lat: cur.lat, lon: cur.long })
+        var dist = Distance.between({ lat: user.lat, lon: user.lng}, { lat: cur.lat, lon: cur.lng})
         if (dist < Distance('80 km')) {
           acc.push(cur)
         }
