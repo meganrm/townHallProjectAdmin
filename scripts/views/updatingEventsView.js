@@ -90,6 +90,17 @@
     }
   };
 
+  updateEventView.updateMOCEvents = function (dataWritten) {
+    if (dataWritten.govtrack_id) {
+      console.log('govtrack_id', dataWritten);
+      firebase.database().ref('mocData/' + dataWritten.govtrack_id + '/' + dataWritten.meetingType + '/' + dataWritten.eventId).set(dataWritten.eventId);
+      if (dataWritten.meetingType === 'Town Hall') {
+        firebase.database().ref('mocData/' + dataWritten.govtrack_id + '/missingMember').set(false);
+        
+      }
+    }
+  };
+
   updateEventView.submitUpdateForm = function (event) {
     event.preventDefault();
     $form = $(this);
@@ -100,7 +111,9 @@
       var approvedTH = TownHall.allTownHallsFB[key];
       approvedTH.updateFB(key).then(function (dataWritten) {
         if (dataWritten.eventId) {
+          console.log(dataWritten);
           var print = dataWritten;
+          updateEventView.updateMOCEvents(dataWritten)
           print.writtenId = key;
           print.edit = 'updated';
           $('#edited').append(preview(print));

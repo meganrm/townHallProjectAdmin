@@ -1,6 +1,7 @@
 
 (function (module) {
   mocReportView = {};
+
   mocReportView.drawTable = function(member) {
     var compiledTemplate = Handlebars.getTemplate('mocReport');
     if (member.lastUpdated === 'Never') {
@@ -10,11 +11,12 @@
     }
   };
 
-  Moc.loadAll().then(function(returned){
+  Moc.loadAllUpdated().then(function(returned){
     returned.forEach(function(member){
       mocReportView.drawTable(member);
     });
   });
+
   firebase.database().ref('mocData/').on('child_changed', function(snapshot){
     var memberobj = snapshot.val();
     var name = memberobj.ballotpedia_id ? memberobj.ballotpedia_id: memberobj.first_name + ' ' + memberobj.last_name;

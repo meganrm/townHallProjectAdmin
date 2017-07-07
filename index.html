@@ -63,6 +63,7 @@
             <li><a class="hash-link" data-toggle="tab" href="#all-events-page">All public events</a></li>
             <li><a class="hash-link" data-toggle="tab" href="#for-approval-page">Pending approval</a></li>
             <li><a class="hash-link" data-toggle="tab" href="#moc-update">MOCs updated this week</a></li>
+            <li><a class="hash-link" data-toggle="tab" href="#moc-editor">MOC editor</a></li>
             <!-- <li><a class="hash-link" data-toggle="tab" href="#to-archive-page">Past events</a></li> -->
             <li><a class="hash-link" data-toggle="tab" href="#archived-page">Load old events</a></li>
           </ul>
@@ -319,7 +320,6 @@
                 If the date looks fine, it may be the time or time zone.
                 <div>
                   <ul id="date-errors" class="list-group events-table">
-
                   </ul><!--end table-->
                 </div>
               </section>
@@ -329,13 +329,12 @@
                 <h3 class="text-primary table-title text-center">Events submitted for review</h3>
                 <div>
                   <ul id="for-approval" class="list-group events-table">
-
                   </ul><!--end table-->
                 </div>
               </section>
             </div>
             <div role="tabpanel" class="tab-pane page" id="moc-update">
-              <section >
+              <section>
                 <h3 class="text-primary table-title text-center">MOC report</h3>
                 <div>
                   <ul id="moc-report-not-updated" class="list-group events-table col-sm-6">
@@ -343,6 +342,21 @@
                   <ul id="moc-report-updated" class="list-group events-table col-sm-6">
                   </ul><!--end table-->
                 </div>
+              </section>
+            </div>
+            <div role="tabpanel" class="tab-pane page" id="moc-editor">
+              <section>
+                <h3 class="text-primary table-title text-center">Edit or add MOCs</h3>
+                <form class="" id="moc-editor-form">
+                  <h4>Member of Congress Information<br>
+                    <small>Enter their full name to look up current MOC</small>
+                  </h4>
+                  <div class="form-group col-md-12" id="member-form-group">
+                    <label class="sr-only" for="member-lookup">Member</label>
+                    <input type="text" class="form-control input-underline" id="member-lookup" placeholder="Full name" value="" autocomplete="off">
+                    <span id="member-help-block" class="help-block">Only first name and last name, not titles</span>
+                  </div>
+                </form>
               </section>
             </div>
             <div role="tabpanel" class="tab-pane page" id="to-archive-page">
@@ -357,26 +371,22 @@
                     </ul>
                   </div>
                 </div>
-                  <ul id="for-archive" class="list-group events-table">
-                  </ul><!--end table-->
+                <ul id="for-archive" class="list-group events-table">
+                </ul><!--end table-->
+              </section>
+            </div>
+            <div role="tabpanel" class="tab-pane page" id="archived-page">
+              <section class="">
+                <h3 class="text-primary table-title text-center">Archived Events</h3>
+                <div class="row">
                 </div>
-                <div role="tabpanel" class="tab-pane page" id="archived-page">
-                  <section class="">
-                    <h3 class="text-primary table-title text-center">Archived Events</h3>
-                    <div class="row">
-
-                    </div>
-                      <ul id="archived" class="list-group events-table">
-
-                      </ul><!--end table-->
-                    </div>
+                <ul id="archived" class="list-group events-table">
+                </ul><!--end table-->
               </section>
             </div>
           </div>
         </div>
       </div>
-
-
       <footer class="footer">
         <div class="container text-center">
           <ul id="ACLU-buttons">
@@ -392,7 +402,7 @@
             <li><small>Event details can change at short notice, please contact your representative to confirm.</small></li>
           </ul>
         </div>
-    </footer>
+      </footer>
     <!-- Vendor Files -->
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="/node_modules/moment/min/moment.min.js"></script>
@@ -410,6 +420,7 @@
     <script src="/scripts/views/updatingEventsView.js"></script>
     <script src="/scripts/views/downloadingEvents.js"></script>
     <script src="/scripts/views/mocReportView.js"></script>
+    <script src="/scripts/views/mocEditorView.js"></script>
 
   </body>
 </html>

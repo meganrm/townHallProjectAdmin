@@ -1,0 +1,56 @@
+  <section class="member-info text-info">
+      <div class="form-group col-md-12">
+        <label  for="ballotpedia_id">Display Name</label>
+        <input type="text" class="form-control input-underline" id="ballotpedia_id" placeholder="Display name" value="{{ballotpedia_id}}">
+      </div>
+      <div class="form-group col-md-12">
+        <label  for="type">Chamber</label>
+        <div class="input-group">
+          <input type="text" class="form-control" aria-label="..." id="type" value="{{type}}" placeholder="Chamber" readonly>
+          <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li><a data-value="sen" href="#">sen</a></li>
+              <li><a data-value="rep" href="#">rep</a></li>
+            </ul>
+          </div><!-- /btn-group -->
+        </div><!-- /input-group -->
+      </div>
+      <div class="form-group col-md-6">
+        <label  for="state">State (abbr)</label>
+        <input type="text" class="form-control input-underline" id="state" placeholder="Home State" value="{{state}}">
+      </div>
+      <div class="form-group col-md-6">
+        <label  for="district">District Number</label>
+        <input type="text" class="form-control input-underline" id="district" placeholder="District" value="">
+        <span id="helpBlock" class="help-block">For Senate, leave blank</span>
+      </div>
+      <div class="form-group party col-md-12">
+        <label  for="party">Party</label>
+        <div class="input-group">
+          <input type="text" class="form-control" aria-label="..." id="party" value="{{party}}" placeholder="Party" readonly>
+          <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li><a data-value="Democratic" href="#">Democratic</a></li>
+              <li><a data-value="Republican" href="#">Republican</a></li>
+              <li><a data-value="Independent" href="#">Independent</a></li>
+            </ul>
+          </div><!-- /btn-group -->
+        </div><!-- /input-group -->
+      </div><!-- /form-group -->
+      <div class="form-group col-md-12">
+        <label  for="mmissingMember" >Missing Member?</label>
+        <div class="input-group">
+          <input type="text" class="form-control" aria-label="..." id="missingMember" value="{{missingMember}}" placeholder="Missing member" readonly>
+          <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li><a data-value="true" href="#">true</a></li>
+              <li><a data-value="false" href="#">false</a></li>
+            </ul>
+          </div><!-- /btn-group -->
+        </div><!-- /input-group -->
+      </div>
+  </section>
+<button type="submit" name="button">Update MOC data</button>
