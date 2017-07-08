@@ -6,8 +6,12 @@
     var compiledTemplate = Handlebars.getTemplate('mocReport');
     if (member.lastUpdated === 'Never') {
       $('#moc-report-not-updated').append(compiledTemplate(member));
+    } else if (member.daysAgo === 0) {
+      $('#moc-report-0').append(compiledTemplate(member));
+    } else if (member.daysAgo > 0 && member.daysAgo < 7) {
+      $('#moc-report-1').append(compiledTemplate(member));
     } else {
-      $('#moc-report-updated').append(compiledTemplate(member));
+      $('#moc-report-2').append(compiledTemplate(member));
     }
   };
 

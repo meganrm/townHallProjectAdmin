@@ -78,7 +78,6 @@ validateMember = function (member) {
   };
   saveMOC = function (event) {
     event.preventDefault();
-    console.log(Moc.currentMoc);
     moc = Moc.currentMoc
     moc.updateFB()
   }

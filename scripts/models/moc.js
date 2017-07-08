@@ -16,12 +16,20 @@
           var memberobj = new Moc(member.val());
           var name = memberobj.ballotpedia_id ? memberobj.ballotpedia_id: memberobj.first_name + ' ' + memberobj.last_name;
           var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
+          var days;
+          if (memberobj.lastUpdated) {
+            var now = moment();
+            var timeAgo = moment(memberobj.lastUpdated);
+            days = now.diff(timeAgo, 'days');
+          }
           Moc.allMocsObjs[member.key] = memberobj;
           allupdated.push({
             id: member.key,
             name: name,
             chamber : memberobj.type,
-            lastUpdated : lastUpdated
+            lastUpdatedBy : memberobj.lastUpdatedBy,
+            lastUpdated : lastUpdated,
+            daysAgo: days
           });
         });
         console.log(allupdated.length);
