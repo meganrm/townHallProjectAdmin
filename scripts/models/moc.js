@@ -27,12 +27,22 @@
             id: member.key,
             name: name,
             chamber : memberobj.type,
+            state: memberobj.state,
             lastUpdatedBy : memberobj.lastUpdatedBy,
             lastUpdated : lastUpdated,
             daysAgo: days
           });
         });
         console.log(allupdated.length);
+        allupdated.sort(function(a, b) {
+          if (a.state < b.state ) {
+            return -1;
+          } else if (a.state > b.state) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
         resolve(allupdated);
       });
     });
