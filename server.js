@@ -49,7 +49,7 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
           to: 'meganrm@gmail.com',
           subject: 'Event approved',
           html: `<p>Send to ${townhall.enteredBy} </p>
-          <p>The event you submitted was approved and is now live on townhallproject.com. Thank you so much for your work.</p>
+          <p>TThank you for your event submission to Town Hall Project. We have approved your event:</p>
           <ul>
             <li>Member of Congress: ${townhall.Member}</li>
             <li>Date: ${townhall.Date}</li>
@@ -57,6 +57,7 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
             <li>Location: ${townhall.Location}</li>
             <li>Address: ${townhall.address}</li>
           </ul>
+          <p>Your event is now live on townhallproject.com. Keep up the great work!</p>
           <footer><p><a href="%tag_unsubscribe_url%">Click to stop getting email updates about your submitted events</a></p></footer>`
         };
         data['h:Reply-To']='TownHall Project <info@townhallproject.com>';
