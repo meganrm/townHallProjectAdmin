@@ -47,9 +47,10 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
         var data = {
           from: 'Town Hall Updates <update@updates.townhallproject.com>',
           to: 'meganrm@gmail.com',
+          cc: 'Nathan Williams <nwilliams@townhallproject.com>',
           subject: 'Event approved',
           html: `<p>Send to ${townhall.enteredBy} </p>
-          <p>TThank you for your event submission to Town Hall Project. We have approved your event:</p>
+          <p>Thank you for your event submission to Town Hall Project. We have approved your event:</p>
           <ul>
             <li>Member of Congress: ${townhall.Member}</li>
             <li>Date: ${townhall.Date}</li>
@@ -69,4 +70,37 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
       }
     });
   }
+});
+
+firebasedb.ref('deletedTownHalls/').on('child_added', function(snapshot){
+  var key = snapshot.key;
+  var metaData = snapshot.val();
+  var townhall = metaData.townHall;
+  var reason = metaData.reason;
+  var user = metaData.user;
+  var data = {
+    from: 'Town Hall Updates <update@updates.townhallproject.com>',
+    to: 'meganrm@gmail.com',
+    cc: 'Nathan Williams <nwilliams@townhallproject.com>',
+    subject: 'Event was not approved',
+    html: `<p>Send to ${user} </p>
+    <p>Thank you for your event submission to Town Hall Project. We were not able to approve your event for the following reason: <br>${reason}</p>
+    <ul>
+      <li>Member of Congress: ${townhall.Member}</li>
+      <li>Date: ${townhall.Date}</li>
+      <li>Time: ${townhall.Time}</li>
+      <li>Location: ${townhall.Location}</li>
+      <li>Address: ${townhall.address}</li>
+    </ul>
+    <p>Feel free to re-submit when you have corrections and/or additional info. Or contact info@townhallproject.com. Thank you for your hard work!</p>
+    <footer><p><a href="%tag_unsubscribe_url%">Click to stop getting email updates about your submitted events</a></p></footer>`
+  };
+  data['h:Reply-To']='TownHall Project <info@townhallproject.com>';
+  data['o:tag']='researcher-update';
+  mailgun.messages().send(data, function () {
+    oldTownHall = firebasedb.ref(`deletedTownHalls/${key}`).remove();
+    if (oldTownHall) {
+      console.log('sent email, removed record');
+    }
+  });
 });

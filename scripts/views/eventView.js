@@ -310,7 +310,7 @@
           break;
         }
       }
-      $toAppend.find('.btn-group').html(approveButtons(ele));
+      $toAppend.find('.btns').html(approveButtons(ele));
       $('#for-approval').append($toAppend);
     });
     $('[data-toggle="tooltip"]').tooltip();

@@ -15,20 +15,20 @@
     var updates = updated.reduce(function (newObj, cur) {
       var $curValue = $(cur).val();
       switch (cur.id) {
-        case 'timeStart24':
-          newObj.timeStart24 = $curValue + ':00';
-          newObj.Time = updateEventView.humanTime($curValue);
-          break;
-        case 'timeEnd24':
-          newObj.timeEnd24 = $curValue + ':00';
-          newObj.timeEnd = updateEventView.humanTime($curValue);
-          break;
-        case 'yearMonthDay':
-          newObj[cur.id] = $curValue;
-          newObj.Date = new Date($curValue.replace(/-/g, '/')).toDateString();
-          break;
-        default:
-          newObj[cur.id] = $curValue;
+      case 'timeStart24':
+        newObj.timeStart24 = $curValue + ':00';
+        newObj.Time = updateEventView.humanTime($curValue);
+        break;
+      case 'timeEnd24':
+        newObj.timeEnd24 = $curValue + ':00';
+        newObj.timeEnd = updateEventView.humanTime($curValue);
+        break;
+      case 'yearMonthDay':
+        newObj[cur.id] = $curValue;
+        newObj.Date = new Date($curValue.replace(/-/g, '/')).toDateString();
+        break;
+      default:
+        newObj[cur.id] = $curValue;
       }
       return newObj;
     }, {});
@@ -56,12 +56,34 @@
     });
   };
 
+  updateEventView.saveDeleteReason = function(id, reason) {
+    var oldTownHall = TownHall.allTownHallsFB[id];
+    firebase.database().ref(`deletedTownHalls/${oldTownHall.userID}`).update({
+      user: oldTownHall.enteredBy,
+      reason: reason,
+      townHall: oldTownHall
+    });
+  };
+
   updateEventView.deleteEvent = function (event) {
     event.preventDefault();
-    var id = $(this).attr('data-id');
-    var path = $(this).attr('data-path');
+    var $deleteButton = $(this);
+    var id = $deleteButton.attr('data-id');
     var oldTownHall = TownHall.allTownHallsFB[id];
+    var path = $deleteButton.attr('data-path');
     console.log(id, path, oldTownHall);
+    var listID = $deleteButton.closest('.events-table').attr('id');
+    console.log(listID);
+    if (listID === 'for-approval') {
+      var reason = $deleteButton.attr('data-delete-reason');
+      console.log(reason);
+      if (!reason) {
+        var $form = $deleteButton.parents('form');
+        $form.find('#delete-error').removeClass('hidden');
+        return;
+      }
+      updateEventView.saveDeleteReason(id, reason);
+    }
     oldTownHall.deleteEvent(path).then(function (deletedEvent) {
       delete TownHall.allTownHallsFB[id];
       $(`.${id}`).remove();
@@ -96,7 +118,6 @@
       firebase.database().ref('mocData/' + dataWritten.govtrack_id + '/' + dataWritten.meetingType + '/' + dataWritten.eventId).set(dataWritten.eventId);
       if (dataWritten.meetingType === 'Town Hall') {
         firebase.database().ref('mocData/' + dataWritten.govtrack_id + '/missingMember').set(false);
-        
       }
     }
   };
@@ -113,11 +134,11 @@
         if (dataWritten.eventId) {
           console.log(dataWritten);
           var print = dataWritten;
-          updateEventView.updateMOCEvents(dataWritten)
+          updateEventView.updateMOCEvents(dataWritten);
           print.writtenId = key;
           print.edit = 'updated';
           $('#edited').append(preview(print));
-          dataWritten.deleteEvent('UserSubmission').then(function (deletedEvent) {
+          dataWritten.deleteEvent('UserSubmission').then(function () {
             $(`#for-approval #${key}`).remove();
           });
         }
@@ -263,10 +284,20 @@
 
   updateEventView.changeMeetingType = function (event) {
     event.preventDefault();
+    console.log(this);
     $form = $(this).parents('form');
     var value = $(this).attr('data-value');
     $form.find('#meetingType').val(value);
     $form.find('#meetingType').change();
+  };
+
+  updateEventView.changeDeleteReason = function (event) {
+    event.preventDefault();
+    $form = $(this).parents('form');
+    var value = $(this).attr('data-value');
+    $form.find('#delete-reason').val(value);
+    $form.find('#delete-error').addClass('hidden');
+    $form.find('#delete').attr('data-delete-reason', value);
   };
 
   updateEventView.meetingTypeChanged = function (event) {
@@ -288,27 +319,28 @@
       thisTownHall = TownHall.currentEvent;
     }
     switch (value.slice(0, 4)) {
-      case 'Tele':
-        $location.html(teleInputsTemplate(thisTownHall));
-        updateEventView.updatedView($form, $listgroup);
-        break;
-      case 'Tick':
-        $location.html(ticketInputsTemplate(thisTownHall));
-        updateEventView.updatedView($form, $listgroup);
-        break;
-      default:
-        $location.html(defaultLocationTemplate(thisTownHall));
-        updateEventView.updatedView($form, $listgroup);
+    case 'Tele':
+      $location.html(teleInputsTemplate(thisTownHall));
+      updateEventView.updatedView($form, $listgroup);
+      break;
+    case 'Tick':
+      $location.html(ticketInputsTemplate(thisTownHall));
+      updateEventView.updatedView($form, $listgroup);
+      break;
+    default:
+      $location.html(defaultLocationTemplate(thisTownHall));
+      updateEventView.updatedView($form, $listgroup);
     }
   };
 
   updateEventView.loadOldEvents = function() {
 
-  }
+  };
 
   // event listeners for table interactions
   $('.events-table').on('click', '#geocode-button', updateEventView.geoCode);
-  $('.events-table').on('click', '.dropdown-menu a', updateEventView.changeMeetingType);
+  $('.events-table').on('click', '.meeting-type-dropdown a', updateEventView.changeMeetingType);
+  $('.events-table').on('click', '.delete-reason-choice a', updateEventView.changeDeleteReason);
   $('.events-table').on('change', '#meetingType', updateEventView.meetingTypeChanged);
   $('.events-table').on('keyup', '.event-input', updateEventView.formChanged);
   $('.events-table').on('change', '.datetime', updateEventView.dateChanged);
@@ -319,20 +351,20 @@
   $('#archived-lookup').on('submit', updateEventView.loadOldEvents);
 
   $('#scroll-to-top').on('click', function () {
-    $("html, body").animate({ scrollTop: 0 }, "slow");
+    $('html, body').animate({ scrollTop: 0 }, 'slow');
   });
 
   window.addEventListener('scroll', function () {
     var y = window.scrollY;
-     if (y >= 800) {
-       if ($('#scroll-to-top').css('visibility') !== 'visible') {
-         $('#scroll-to-top').css('visibility', 'visible').hide().fadeIn();
-       }
-     } else {
-       if ($('#scroll-to-top').css('visibility') === 'visible') {
-         $('#scroll-to-top').css('visibility', 'hidden').show().fadeOut('slow');
-       }
-     }
+    if (y >= 800) {
+      if ($('#scroll-to-top').css('visibility') !== 'visible') {
+        $('#scroll-to-top').css('visibility', 'visible').hide().fadeIn();
+      }
+    } else {
+      if ($('#scroll-to-top').css('visibility') === 'visible') {
+        $('#scroll-to-top').css('visibility', 'hidden').show().fadeOut('slow');
+      }
+    }
   });
 
   function writeUserData(userId, name, email) {

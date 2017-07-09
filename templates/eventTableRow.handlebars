@@ -35,7 +35,7 @@
         <input type="text" class="form-control event-input" aria-label="..." id="meetingType" value="{{meetingType}}" readonly>
         <div class="input-group-btn">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
-          <ul class="dropdown-menu dropdown-menu-right">
+          <ul class="dropdown-menu dropdown-menu-right meeting-type-dropdown">
             <li><a data-value="Town Hall" href="#">Town Hall</a></li>
             <li><a data-value="Tele-Town Hall" href="#">Tele-Town Hall</a></li>
             <li><a data-value="Ticketed Event" href="#">Ticketed Event</a></li>
@@ -120,8 +120,8 @@
         </div>
       </div>
     </div>
-    <div class="text-center">
-      <div class="btn-group " role="group" aria-label="...">
+    <div class="text-center btns">
+      <div class="btn-group" role="group" aria-label="...">
         <button type="button" class="btn btn-blue " id="archive" data-id="{{eventId}}" data-toggle="tooltip" data-placement="top" title="For events that occured but are in the past">Archive</button>
         <button type="button" class="btn btn-secondary " id="delete" data-id="{{eventId}}" data-path="townHalls" data-toggle="tooltip" data-placement="top" title="For events that were canceled or wrong">Delete</button>
         <button type="submit" class="btn" id="update-button">Update</button>
