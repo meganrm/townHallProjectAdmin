@@ -205,14 +205,33 @@
     }
   };
 
+  eventHandler.recessProgress = function (townhall) {
+    var percent = 1/535 * 100;
+    var current;
+    var updated;
+    if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-08-04', [])) {
+      if (townhall.Party === 'Democratic') {
+        current = parseInt($('.dem-aug-progress').attr('data-count'));
+        updated = current + percent;
+        $('.dem-aug-progress').attr('data-count', updated);
+        $('.dem-aug-progress').width(updated + '%');
+      } else {
+        current = parseInt($('.rep-aug-progress').attr('data-count'));
+        updated = current + percent;
+        $('.rep-aug-progress').attr('data-count', updated);
+        $('.rep-aug-progress').width(updated + '%');
+      }
+    }
+  };
+
   eventHandler.readData = function (path) {
     $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;
       $currentState.attr('data-total', total);
       var ele = new TownHall(snapshot.val());
-      var id = ele.eventId;
       obj = {};
+      eventHandler.recessProgress(ele);
       eventHandler.checkLastUpdated(ele);
       eventHandler.checkEndTime(ele);
       TownHall.allTownHallsFB[ele.eventId] = ele;
@@ -268,7 +287,6 @@
   eventHandler.readDataUsers = function () {
     firebase.database().ref('/UserSubmission/').on('child_added', function getSnapShot(snapshot) {
       var ele = new TownHall(snapshot.val());
-      var id = ele.eventId;
       obj = {};
       TownHall.allTownHallsFB[ele.eventId] = ele;
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
