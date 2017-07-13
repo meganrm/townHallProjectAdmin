@@ -46,10 +46,9 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
       if (user[townhall.eventId] !== 'sent') {
         var data = {
           from: 'Town Hall Updates <update@updates.townhallproject.com>',
-          to: 'meganrm@gmail.com',
-          cc: 'Nathan Williams <nwilliams@townhallproject.com>',
+          to: `${townhall.enteredBy}`,
           subject: 'Event approved',
-          html: `<p>Send to ${townhall.enteredBy} </p>
+          html: `
           <p>Thank you for your event submission to Town Hall Project. We have approved your event:</p>
           <ul>
             <li>Member of Congress: ${townhall.Member}</li>
@@ -59,6 +58,10 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
             <li>Address: ${townhall.address}</li>
           </ul>
           <p>Your event is now live on townhallproject.com. Keep up the great work!</p>
+          <br>
+          <br>
+          <br>
+          <br>
           <footer><p><a href="%tag_unsubscribe_url%">Click to stop getting email updates about your submitted events</a></p></footer>`
         };
         data['h:Reply-To']='TownHall Project <info@townhallproject.com>';
@@ -80,10 +83,10 @@ firebasedb.ref('deletedTownHalls/').on('child_added', function(snapshot){
   var user = metaData.user;
   var data = {
     from: 'Town Hall Updates <update@updates.townhallproject.com>',
-    to: 'meganrm@gmail.com',
-    cc: 'Nathan Williams <nwilliams@townhallproject.com>',
+    to: `${user}`,
+    cc: 'meganrm@townhallproject.com',
     subject: 'Event was not approved',
-    html: `<p>Send to ${user} </p>
+    html: `
     <p>Thank you for your event submission to Town Hall Project. We were not able to approve your event for the following reason: <br>${reason}</p>
     <ul>
       <li>Member of Congress: ${townhall.Member}</li>
@@ -93,6 +96,10 @@ firebasedb.ref('deletedTownHalls/').on('child_added', function(snapshot){
       <li>Address: ${townhall.address}</li>
     </ul>
     <p>Feel free to re-submit when you have corrections and/or additional info. Or contact info@townhallproject.com. Thank you for your hard work!</p>
+    <br>
+    <br>
+    <br>
+    <br>
     <footer><p><a href="%tag_unsubscribe_url%">Click to stop getting email updates about your submitted events</a></p></footer>`
   };
   data['h:Reply-To']='TownHall Project <info@townhallproject.com>';
