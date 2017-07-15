@@ -5,7 +5,8 @@ var express = require('express'),
   app = express();
 
 // var https = require('https');
-var users = require('../bin/emailAutomation_users.js');
+// var users = require('../bin/emailAutomation_users.js');
+
 app.use(express.static('./'));
 
 app.get('*', function(request, response) {
