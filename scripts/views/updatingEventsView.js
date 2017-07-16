@@ -77,12 +77,9 @@
     if (listID === 'for-approval') {
       var reason = $deleteButton.attr('data-delete-reason');
       console.log(reason);
-      if (!reason) {
-        var $form = $deleteButton.parents('form');
-        $form.find('#delete-error').removeClass('hidden');
-        return;
+      if (reason) {
+        updateEventView.saveDeleteReason(id, reason);
       }
-      updateEventView.saveDeleteReason(id, reason);
     }
     oldTownHall.deleteEvent(path).then(function (deletedEvent) {
       delete TownHall.allTownHallsFB[id];
