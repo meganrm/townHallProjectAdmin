@@ -187,7 +187,7 @@ User.prototype.composeEmail = function(district, allevents, index){
 
   var subject;
   var today = new Date().getDay();
-  if (today === 3) {
+  if (today === 4) {
     subject = `Upcoming Town Hall events near you`;
   } else {
     subject = `Recently added or updated Town Hall events near you`;
@@ -296,7 +296,7 @@ User.getDataForUsers = function() {
 
     });
   }
-  TownHall.setLastEamilTime();
+  TownHall.setLastEmailTime();
   User.composeSummary();
 };
 

@@ -27,12 +27,12 @@
 
   var firebasedb = admin.database();
 
-  TownHall.setLastEamilTime = function() {
+  TownHall.setLastEmailTime = function() {
     var today = new Date().getDay();
     var now = Date.now();
     console.log(now);
-    if (today === 3) {
-      console.log('wed');
+    if (today === 4) {
+      console.log('Thursday');
       firebasedb.ref('emailLastSent/weekly').set(now);
     }
     console.log('setting daily');
@@ -57,11 +57,11 @@
         // not in the next week
         return false;
       }
-      // if Wednesday
-      if (today === 3) {
+      // if Thursday
+      if (today === 4) {
         // console.log('wednesday', townhall.Date );
         return true;
-      // if not wednesday, is the event new since last emailed?
+      // if not Thursday, is the event new since last emailed?
       } else if (townhall.lastUpdated > lastDaily){
         // console.log('updated recently', townhall.Date );
         return true;

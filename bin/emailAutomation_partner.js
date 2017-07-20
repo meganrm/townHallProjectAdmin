@@ -69,7 +69,7 @@
     </body>`;
     var subject;
     var today = new Date().getDay();
-    if (today === 3) {
+    if (today === 4) {
       subject = `${district} Town Hall events this week`;
     } else {
       subject = `Recently added or updated Town Hall events in ${district}`;
