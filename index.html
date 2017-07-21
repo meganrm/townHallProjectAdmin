@@ -65,7 +65,7 @@
             <li><a class="hash-link" data-toggle="tab" href="#moc-update">MOCs updated this week</a></li>
             <li><a class="hash-link" data-toggle="tab" href="#moc-editor">MOC editor</a></li>
             <!-- <li><a class="hash-link" data-toggle="tab" href="#to-archive-page">Past events</a></li> -->
-            <li><a class="hash-link" data-toggle="tab" href="#archived-page">Load old events</a></li>
+            <li><a class="hash-link" data-toggle="tab" href="#archived-page">Download Center</a></li>
           </ul>
         </div>
       </div>
@@ -382,7 +382,11 @@
             </div>
             <div role="tabpanel" class="tab-pane page" id="archived-page">
               <section class="">
-                <h3 class="text-primary table-title text-center">Archived Events</h3>
+                <h3 class="text-primary table-title text-center">Download Center</h3>
+                <ul id="ACLU-buttons">
+                  <button type="button" name="button" class="btn hidden" id="ACLU-download">Click to compile ACLU data</button>
+                  <button type="button" name="button" class="btn hidden" id="user-download">Click to compile user data</button>
+                </ul>
                 <div class="row">
                   <h4>Congress composition </h4>
                   <div class="progress">
@@ -412,9 +416,7 @@
       </div>
       <footer class="footer">
         <div class="container text-center">
-          <ul id="ACLU-buttons">
-            <button type="button" name="button" class="btn" id="ACLU-download">Click to compile data</button>
-          </ul>
+
           <ul class="list-unstyled">
             <li><a href="mailto:townhallproject2018@gmail.com" class="text-white"><i class="fa fa-envelope-square fa-3x" aria-hidden="true"></i></a>
               <a href="https://twitter.com/townhallproject" class="text-white"><i class="fa fa-twitter-square fa-3x" aria-hidden="true"></i></a>
@@ -438,10 +440,14 @@
     <!-- Script Files -->
     <script src="/scripts/models/event0.js"></script>
     <script src="/scripts/models/moc.js"></script>
+    <script src="/scripts/models/downloadingEvents.js"></script>
+    <script src="/scripts/models/downloadingUsers.js"></script>
+
     <script src="/scripts/data/states.js"></script>
     <script src="/scripts/views/eventView.js"></script>
     <script src="/scripts/views/updatingEventsView.js"></script>
-    <script src="/scripts/views/downloadingEvents.js"></script>
+    <script src="/scripts/views/downloadCenter.js"></script>
+
     <script src="/scripts/views/mocReportView.js"></script>
     <script src="/scripts/views/mocEditorView.js"></script>
 

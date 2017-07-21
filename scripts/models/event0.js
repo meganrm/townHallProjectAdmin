@@ -6,6 +6,25 @@
     }
   }
 
+//   firebase.database().ref('townHalls/').once('value').then(function(snapshot){
+//     snapshot.forEach(function(townHall){
+// 	     if (townHall.val().meetingType ==='Town Hall' || townHall.val().meetingType ==='Ticketed Event'){
+// 		       firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'in-person'})
+//          } else if (townHall.val().meetingType ==='Empty Chair Town Hall' || townHall.val().meetingType ==='Adopt-A-District/State'){
+//            firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'activism'})
+//
+//          } else if (townHall.val().meetingType ==='Office Hours') {
+//            firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'staff'})
+//
+//          } else if (townHall.val().meetingType ==='Tele-Town Hall') {
+//            firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'tele'})
+//
+//          } else {
+//            console.log(townHall.val());
+//          }
+// })
+// })
+
   // Global data stete
   TownHall.allTownHalls = [];
   TownHall.allTownHallsFB = {};

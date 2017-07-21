@@ -81,6 +81,5 @@
     document.getElementById('ACLU-buttons').appendChild(link);
   };
 
-  $('#ACLU-download').on('click', ACLUTownHall.download);
   module.ACLUTownHall = ACLUTownHall;
 })(window);
