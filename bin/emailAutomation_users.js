@@ -106,13 +106,13 @@ User.composeSummary = function(user) {
   User.zipsNotInDatabase.forEach(function(zip){
     badZipsReport = badZipsReport + `<span>'${zip}', </span>`;
   });
-  eventsReport = Townhall.prints.join();
+
   var data = {
     from: 'Town Hall Updates <update@updates.townhallproject.com>',
     to: 'meganrm@gmail.com',
     cc: 'nwilliams@townhallproject.com',
     subject: 'Sent town hall update emails',
-    html: `<p>Sent emails to: ${User.sentEmails.length} people</p> <p>${districtreport}</p><p>${eventsReport}</p><p>${badZipsReport}</p>`
+    html: `<p>Sent emails to: ${User.sentEmails.length} people</p> <p>${districtreport}</p><p>${badZipsReport}</p>`
   };
   User.sendEmail(user, data);
 };
