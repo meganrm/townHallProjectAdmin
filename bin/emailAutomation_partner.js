@@ -84,9 +84,28 @@
     PartnerEmail.sendEmail(partner, data);
   };
 
+  PartnerEmail.eventReport = function(){
+    var html = '';
+    for (const key of Object.keys(TownHall.prints)) {
+      html = html + `<ul>${key}</ul>`;
+      TownHall.prints[key].forEach(function(ele){
+        html = html + ele;
+      });
+    }
+    var data = {
+      from: 'Town Hall Updates <update@updates.townhallproject.com>',
+      to: 'Megan Riel-Mehan <meganrm@townhallproject.com>',
+      subject: 'Events checked',
+      html: html
+    };
+    var partner;
+    PartnerEmail.sendEmail(partner, data);
+  };
+
   TownHall.getLastSent().then(function(lastUpdated){
     TownHall.getAll(lastUpdated).then(function(){
       console.log('got events');
+      PartnerEmail.eventReport();
       for (const key of Object.keys(TownHall.townHallbyDistrict)) {
         var thispartnerEmail = new PartnerEmail();
         thispartnerEmail.composeEmail(key, TownHall.townHallbyDistrict[key]);

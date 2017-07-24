@@ -87,7 +87,13 @@
   });
 
   var firebasedb = admin.database();
-  admin.database.enableLogging(true);
+  // admin.database.enableLogging(true);
+  TownHall.prints = {
+    inPast: [],
+    notInNextWeek: [],
+    isThursday: [],
+    changedToday : []
+  };
 
   TownHall.setLastEmailTime = function() {
     var today = new Date().getDay();
@@ -108,24 +114,31 @@
     var milsecToDays = (1000 * 60 * 60 * 24);
     var today = new Date().getDay();
     var townhallDay = new Date(townhall.dateObj);
+    var include = townhall.include();
+    var daysUntil = (townhallDay - lastweekly)/milsecToDays;
+
     if (townhall.dateObj) {
       if (townhall.dateObj < Date.now()) {
-        // console.log('in past', townhall.Date );
         // in past
+        if (include) {
+          TownHall.prints.inPast.push(`<li>${townhall.Date}</li>`);
+        }
         return false;
       }
-      if ((townhallDay - lastweekly)/milsecToDays > 8 ) {
-        // console.log('not in next week', townhall.Date,  (townhallDay - lastweekly)/milsecToDays);
+      if (daysUntil > 8 ) {
+        if (include) {
+          TownHall.prints.notInNextWeek.push(`<li>${townhall.Date}, Days between event and last Thursday: ${daysUntil}</li>`);
+        }
         // not in the next week
         return false;
       }
       // if Thursday
       if (today === 4) {
-        // console.log('wednesday', townhall.Date );
+        TownHall.prints.isThursday.push(`<li>${townhall.Date}</li>`);
         return true;
       // if not Thursday, is the event new since last emailed?
       } else if (townhall.lastUpdated > lastDaily){
-        // console.log('updated recently', townhall.Date );
+        TownHall.prints.changedToday.push(`<li>${townhall.Date}, ${townhall.meetingType}, include? ${include}</li>`);
         return true;
       }
       return false;
