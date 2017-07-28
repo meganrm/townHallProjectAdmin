@@ -23,7 +23,7 @@
 
   firebase.database().ref('mocData/').on('child_changed', function(snapshot){
     var memberobj = snapshot.val();
-    var name = memberobj.ballotpedia_id ? memberobj.ballotpedia_id: memberobj.first_name + ' ' + memberobj.last_name;
+    var name = memberobj.displayName;
     var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
     $('#' + memberobj.govtrack_id).remove();
     var member = {

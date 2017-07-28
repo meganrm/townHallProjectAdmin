@@ -12,7 +12,7 @@
         govtrack_id = parseInt(id);
         if (govtrack_id) {
           user['moc_id_' + i] = govtrack_id;
-          user['moc_name_' + i] = Moc.allMocsObjs[govtrack_id].ballotpedia_id? Moc.allMocsObjs[govtrack_id].ballotpedia_id :Moc.allMocsObjs[govtrack_id].first_name + ' ' + Moc.allMocsObjs[govtrack_id].last_name;
+          user['moc_name_' + i] = Moc.allMocsObjs[govtrack_id].displayName;
         }
       })
     } else {

@@ -89,9 +89,9 @@
 
   saveMOC = function (event) {
     event.preventDefault();
-    if ($('#ballotpedia_id').hasClass('changed')) {
+    if ($('#displayName').hasClass('changed')) {
       mocID = new Moc({
-        nameEntered: $('#ballotpedia_id').val(),
+        nameEntered: $('#displayName').val(),
         id: Moc.currentMoc.govtrack_id
       });
       mocID.updateDisplayName();
@@ -100,13 +100,13 @@
     moc = Moc.currentMoc;
     moc.updateFB().then(function(){
       $('.to-remove').remove();
-      $('#update-successful').text(`Update of ${Moc.currentMoc.ballotpedia_id} successful!`);
+      $('#update-successful').text(`Update of ${Moc.currentMoc.displayName} successful!`);
     });
   };
 
   $('#moc-editor-form').on('change', '#member-lookup', lookupMember);
   $('#moc-editor-form').on('change', '.moc-input', updateMember);
-  $('#moc-editor-form').on('change', '#ballotpedia_id', updateDisplayName);
+  $('#moc-editor-form').on('change', '#displayName', updateDisplayName);
   $('#moc-editor-form').on('click', '.member-info a', changeDropdown);
   $('#moc-editor-form').on('submit', saveMOC);
 

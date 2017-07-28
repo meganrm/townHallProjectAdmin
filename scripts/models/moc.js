@@ -14,7 +14,7 @@
       firebase.database().ref('mocData/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){
           var memberobj = new Moc(member.val());
-          var name = memberobj.ballotpedia_id ? memberobj.ballotpedia_id: memberobj.first_name + ' ' + memberobj.last_name;
+          var name = memberobj.displayName;
           var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
           var days;
           if (memberobj.lastUpdated) {
