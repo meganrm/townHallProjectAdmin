@@ -1,6 +1,6 @@
 
 (function (module) {
-  mocEditorView = {};
+  missingMemberPosterView = {};
   function setupTypeaheads(input) {
     var typeaheadConfig = {
       fitToElement: true,
@@ -42,7 +42,7 @@
     var $list = $('#current-pending');
     $('.to-remove').remove();
     $('#submit-success').addClass('hidden');
-    var compiledTemplate = Handlebars.getTemplate('newMOC');
+    var compiledTemplate = Handlebars.getTemplate('mocPoster');
     $list.empty();
     var $errorMessage = $('.new-event-form #member-help-block');
     var $memberformgroup = $('#member-form-group');
@@ -54,7 +54,7 @@
         if (snapshot.exists()) {
           var mocdata = snapshot.val();
           Moc.currentMoc = new Moc(mocdata);
-          $('#moc-editor-form').append(compiledTemplate(mocdata));
+          $('#missingMemberPosterModal').append(compiledTemplate(mocdata));
 
         } else {
           $('#member-form-group').addClass('has-error');
@@ -74,41 +74,15 @@
     $input.val(value);
     Moc.currentMoc[$input.attr('id')] = value;
   };
-
-  updateMember = function (event) {
-    event.preventDefault();
-    var $input = $(this);
-    var value = $(this).val();
-    Moc.currentMoc[$input.attr('id')] = value;
-  };
-
-  updateDisplayName = function (event) {
-    var $input = $(this);
-    $input.addClass('changed')
-  };
-
   saveMOC = function (event) {
     event.preventDefault();
-    if ($('#ballotpedia_id').hasClass('changed')) {
-      mocID = new Moc({
-        nameEntered: $('#ballotpedia_id').val(),
-        id: Moc.currentMoc.govtrack_id
-      });
-      mocID.updateDisplayName();
-    }
-
     moc = Moc.currentMoc;
-    moc.updateFB().then(function(){
-      $('.to-remove').remove();
-      $('#update-successful').text(`Update of ${Moc.currentMoc.ballotpedia_id} successful!`);
-    });
+    moc.updateFB();
   };
 
-  $('#moc-editor-form').on('change', '#member-lookup', lookupMember);
-  $('#moc-editor-form').on('change', '.moc-input', updateMember);
-  $('#moc-editor-form').on('change', '#ballotpedia_id', updateDisplayName);
+  $('#moc-editor-form').on('change', '#member-poster-lookup', lookupMember);
   $('#moc-editor-form').on('click', '.member-info a', changeDropdown);
   $('#moc-editor-form').on('submit', saveMOC);
 
-  module.mocEditorView = mocEditorView;
+  module.missingMemberPosterView = missingMemberPosterView;
 })(window);

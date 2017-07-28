@@ -353,11 +353,11 @@
                 <h3 class="text-primary table-title text-center">Edit or add MOCs</h3>
                 <form class="" id="moc-editor-form">
                   <h4>Member of Congress Information<br>
-                    <small>Enter their full name to look up current MOC</small>
+                    <small>Enter their full name to look up current MOC <span class="text-success" id="update-successful"></span></small>
                   </h4>
                   <div class="form-group col-md-12" id="member-form-group">
                     <label class="sr-only" for="member-lookup">Member</label>
-                    <input type="text" class="form-control input-underline" id="member-lookup" placeholder="Full name" value="" autocomplete="off">
+                    <input type="text" class="form-control input-underline member-lookup" id="member-lookup" placeholder="Full name" value="" autocomplete="off">
                     <span id="member-help-block" class="help-block">Only first name and last name, not titles</span>
                   </div>
                 </form>
@@ -391,12 +391,13 @@
                   <h4>Congress composition </h4>
                   <div class="progress">
                     <div class="progress-bar progress-bar-primary" style="width:45%">
-                      <span >Democratic</span>
+                      <span>Democratic</span>
                     </div>
                     <div class="progress-bar progress-bar-warning" style="width:55%">
                       <span>Republican</span>
                     </div>
                   </div>
+
                   <h4>August Recess Progress</h4>
                   <div class="progress">
                     <div class="progress-bar progress-bar-primary dem-aug-progress" data-count=0>
@@ -407,10 +408,24 @@
                     </div>
                   </div>
                 </div>
+                <h4>Missing Member Flier</h4>
+                <div class="">
+                  <div class="form-group col-md-12" id="member-form-group">
+                    <label class="sr-only" for="member-lookup">Member</label>
+                    <input type="text" class="form-control input-underline member-lookup" id="member-poster-lookup" placeholder="Full name" value="" autocomplete="off">
+                    <span id="member-help-block" class="help-block">Only first name and last name, not titles</span>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#missingMemberPosterModal">View Poster</button>
+
+                <div class="modal fade" id="missingMemberPosterModal">
+
+                </div>
                 <ul id="archived" class="list-group events-table">
                 </ul><!--end table-->
               </section>
             </div>
+
           </div>
         </div>
       </div>
@@ -450,6 +465,7 @@
 
     <script src="/scripts/views/mocReportView.js"></script>
     <script src="/scripts/views/mocEditorView.js"></script>
+    <script src="/scripts/views/missingMemberPosterView.js"></script>
 
   </body>
 </html>

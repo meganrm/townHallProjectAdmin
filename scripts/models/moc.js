@@ -79,5 +79,27 @@
     });
   };
 
+  Moc.prototype.updateDisplayName = function () {
+    var mocObj = this;
+    memberKey = Moc.getMemberKey(mocObj.nameEntered);
+    return new Promise(function (resolve, reject) {
+      firebase.database().ref('/mocID/' + memberKey).update(mocObj).then(function(){
+        resolve(mocObj);
+      }).catch(function (error) {
+        reject('could not update', mocObj, error);
+      });
+    });
+  };
+
+  Moc.getMemberKey = function (member) {
+    var memberKey;
+    if (member.split(' ').length === 3) {
+      memberKey = member.split(' ')[1].toLowerCase() + member.split(' ')[2].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+    } else {
+      memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+    }
+    return memberKey;
+  };
+
   module.Moc = Moc;
 })(window);

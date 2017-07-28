@@ -297,6 +297,15 @@
     $form.find('#delete').attr('data-delete-reason', value);
   };
 
+  updateEventView.changeIconFlag = function (event) {
+    event.preventDefault();
+    console.log(this);
+    $form = $(this).parents('form');
+    var value = $(this).attr('data-value');
+    $form.find('#iconFlag').val(value);
+    $form.find('#iconFlag').change();
+  };
+
   updateEventView.meetingTypeChanged = function (event) {
     event.preventDefault();
     var thisTownHall;
@@ -329,16 +338,16 @@
       updateEventView.updatedView($form, $listgroup);
     }
   };
-
   updateEventView.loadOldEvents = function() {
-
   };
 
   // event listeners for table interactions
   $('.events-table').on('click', '#geocode-button', updateEventView.geoCode);
   $('.events-table').on('click', '.meeting-type-dropdown a', updateEventView.changeMeetingType);
   $('.events-table').on('click', '.delete-reason-choice a', updateEventView.changeDeleteReason);
+  $('.events-table').on('click', '.icon-flag-dropdown a', updateEventView.changeIconFlag);
   $('.events-table').on('change', '#meetingType', updateEventView.meetingTypeChanged);
+  $('.events-table').on('change', '#iconFlag', updateEventView.formChanged);
   $('.events-table').on('keyup', '.event-input', updateEventView.formChanged);
   $('.events-table').on('change', '.datetime', updateEventView.dateChanged);
   $('.events-table').on('change', '.date-string', updateEventView.dateString);

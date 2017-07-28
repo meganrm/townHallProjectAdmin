@@ -24,6 +24,23 @@
 //          }
 // })
 // })
+// function updatedOldData (oldKey, newKey, dateKey) {
+//   firebase.database().ref('/townHallsOld/' + dateKey).once('value').then(function(snapshot) {
+//       snapshot.forEach(function(oldTownHall) {
+//           townHall = oldTownHall.val()
+//           if (townHall[oldValue]) {
+//               var value  = townHall[oldValue]
+//               var eventID = oldTownHall.val().eventId;
+//               firebase.database().ref(`/townHallsOld/ ${dateKey}/${townHall[eventID]}`).update({ newKey: value });
+//               console.log("party: " + party);
+//           } else {
+//               //stateName = ""
+//               console.log('no "Party" property')
+//           }
+//       })
+//   })
+// }
+
 
   // Global data stete
   TownHall.allTownHalls = [];

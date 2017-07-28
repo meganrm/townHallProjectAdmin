@@ -1,7 +1,7 @@
-  <section class="member-info text-info">
+  <section class="member-info text-info to-remove">
       <div class="form-group col-md-12">
         <label  for="ballotpedia_id">Display Name</label>
-        <input type="text" class="form-control input-underline" id="ballotpedia_id" placeholder="Display name" value="{{ballotpedia_id}}">
+        <input type="text" class="form-control input-underline moc-input" id="ballotpedia_id" placeholder="Display name" value="{{ballotpedia_id}}">
       </div>
       <div class="form-group col-md-12">
         <label  for="type">Chamber</label>
@@ -18,12 +18,12 @@
       </div>
       <div class="form-group col-md-6">
         <label  for="state">State (abbr)</label>
-        <input type="text" class="form-control input-underline" id="state" placeholder="Home State" value="{{state}}">
+        <input type="text" class="form-control input-underline moc-input" id="state" placeholder="Home State" value="{{state}}">
       </div>
       <div class="form-group col-md-6">
         <label  for="district">District Number</label>
-        <input type="text" class="form-control input-underline" id="district" placeholder="District" value="">
-        <span id="helpBlock" class="help-block">For Senate, leave blank</span>
+        <input type="text" class="form-control input-underline moc-input" id="district" placeholder="District" value="{{district}}">
+        <span id="helpBlock" class="help-block">A number, for Senate, leave blank</span>
       </div>
       <div class="form-group party col-md-12">
         <label  for="party">Party</label>
@@ -53,4 +53,4 @@
         </div><!-- /input-group -->
       </div>
   </section>
-<button type="submit" name="button">Update MOC data</button>
+<button type="submit" name="button" class="to-remove">Update MOC data</button>

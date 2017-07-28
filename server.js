@@ -5,7 +5,6 @@ var express = require('express'),
   app = express();
 
 // var https = require('https');
-// var users = require('../bin/emailAutomation_users.js');
 
 app.use(express.static('./'));
 
@@ -13,6 +12,8 @@ app.get('*', function(request, response) {
   console.log('New request:', request.url);
   response.sendFile('index.html', { root: '.' });
 });
+
+// var Partner = require('./bin/emailAutomation_partner.js');
 
 app.listen(port, function() {
   console.log('Server started on port ' + port + '!');

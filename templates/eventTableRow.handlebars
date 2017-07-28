@@ -46,6 +46,19 @@
           </ul>
         </div><!-- /btn-group -->
       </div><!-- /input-group -->
+      <label class="sr-only" for="iconFlag">Event Type</label>
+      <div class="input-group">
+        <input type="text" class="form-control event-input" id="iconFlag" value="{{iconFlag}}" readonly placeholder="Symbol for the map">
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+          <ul class="dropdown-menu dropdown-menu-right icon-flag-dropdown">
+            <li><a data-value="in-person" href="#"><span class="event-icon event-icon__in-person"></span>Member of Congress will be present</a></li>
+            <li><a data-value="staff" href="#"><span class="event-icon event-icon__staff"></span>Held by staff</a></li>
+            <li><a data-value="activist" href="#"><span class="event-icon event-icon__activism"></span>Organized by activists</a></li>
+            <li><a data-value="tele" href="#"><span class="event-icon event-icon__tele"></span>Tele-Town hall or online event</a></li>
+          </ul>
+        </div><!-- /btn-group -->
+      </div><!-- /input-group -->
     </div>
     <div class="location-data">
       <div class="form-group">
