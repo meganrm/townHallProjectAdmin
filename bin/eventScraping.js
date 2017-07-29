@@ -29,7 +29,7 @@ firebasedb.ref('/towhHallIDs/').once('value').then(function(snapshot){
 
 function getTownhalls() {
   firebase.database().ref('mocData/').once('value').then((snapshot) => {
-    getFacebookEvents(snapshot.val())
+    getFacebookEvents(snapshot.val());
   });
   getEventbriteEvents();
 }
@@ -40,17 +40,24 @@ function getFacebookEvents(MoCs) {
   Object.keys(MoCs).forEach(id => {
     let MoC = MoCs[id];
     if (MoC.hasOwnProperty('facebook') && MoC.facebook) {
-      createFacebookQuery(MoC.facebook, startDate).then(res => {
-        // Create references to MoCs for easy data lookup later
-        res.data.forEach(event => event.MoC = MoC);
-        return res.data;
-      }).catch(err => {
-        // Most / all of these will be 404s unless we hit rate limiting.
-      });
+      facebookPromises.push(
+        createFacebookQuery(MoC.facebook, startDate).then(res => {
+          // Create references to MoCs for easy data lookup later
+          res.data.forEach(event => event.MoC = MoC);
+          return res.data;
+        }).catch(() => {})
+      );
     }
   });
 
   Promise.all(facebookPromises).then(res => {
+    // Stop gap measure for while we have bad facebook id data and are getting undefined
+    res = res.filter(eventCollection => {
+      if (Array.isArray(eventCollection)) {
+        return eventCollection;
+      }
+    });
+    // Collapse into flat array
     var facebookEvents = [].concat.apply([], res);
     var newEventIds = removeExistingIds(facebookEvents.map(event => event.id));
 
@@ -80,7 +87,9 @@ function getEventbriteEvents() {
   var eventbritePromises = [];
 
   eventbriteQueryTerms.forEach(function(queryTerm) {
-    eventbritePromises.push($.get('https://www.eventbriteapi.com/v3/events/search/?q=' + queryTerm + "&categories=112&token=" + eventBriteToken));
+    eventbritePromises.push(
+      $.get('https://www.eventbriteapi.com/v3/events/search/?q=' + queryTerm + '&categories=112&token=' + eventBriteToken)
+    );
   });
 
   // var events = [];
@@ -96,9 +105,10 @@ function removeExistingIds(eventIds) {
   existingTownHallIds.forEach(existingId => {
     let position = eventIds.indexOf(existingId);
     if (position !== -1) {
-      eventIds.splace(position, 1);
+      eventIds.splice(position, 1);
     }
   });
+  return eventIds;
 }
 
 function submitTownhall(townhall) {
@@ -116,7 +126,7 @@ function createFacebookQuery(facebookID, startDate) {
   return request({
     uri: 'https://graph.facebook.com/v2.10/' + facebookID + '/events?since=' + startDate +'&access_token=' + facebookToken,
     json: true
-  })
+  });
 }
 
 function transformFacebookTownhall(event) {
