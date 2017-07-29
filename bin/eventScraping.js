@@ -3,7 +3,7 @@ var admin = require('firebase-admin');
 var https = require('https');
 var request = require('request-promise'); // NB:  This is isn't the default request library!
 
-var eventBriteToken = process.env.EVENTBRITE_TOKEN;
+var eventbriteToken = process.env.EVENTBRITE_TOKEN;
 var facebookToken = process.env.FACEBOOK_TOKEN;
 var firebaseKey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n');
 
@@ -87,18 +87,20 @@ function getEventbriteEvents() {
   var eventbritePromises = [];
 
   eventbriteQueryTerms.forEach(function(queryTerm) {
-    eventbritePromises.push(
-      $.get('https://www.eventbriteapi.com/v3/events/search/?q=' + queryTerm + '&categories=112&token=' + eventBriteToken)
-    );
+    eventbritePromises.push(createEventbriteQuery(queryTerm));
   });
 
-  // var events = [];
-
-  // Promise.all(eventbritePromises).then(function(results){
-  //     results.forEach(result => events.push(...result.events));
-  //     events.map(e => 'Name: ' + e.name.text + ', start in utc: ' + e.start.utc + ', url: ' + e.url).forEach(e => console.log(e))
-  //     debugger;
-  // });
+  Promise.all(eventbritePromises).then(function(res) {
+    res = res.map(eventCollection => eventCollection.events);
+    // Collapse into flat array
+    var eventbriteEvents = [].concat.apply([], res);
+    var newEventIds = removeExistingIds(eventbriteEvents.map(event => event.id));
+    eventbriteEvents.forEach(event => {
+      if (newEventIds.indexOf(event.id) !== -1) {
+        submitTownhall(transformEventbriteTownhall(event));
+      }
+    });
+  });
 }
 
 function removeExistingIds(eventIds) {
@@ -119,12 +121,12 @@ function createFacebookQuery(facebookID, startDate) {
   return request({
     uri: 'https://graph.facebook.com/v2.10/' + facebookID + '/events?since=' + startDate +'&access_token=' + facebookToken,
     json: true
-  })
+  });
 }
 
-function createFacebookQuery(facebookID, startDate) {
+function createEventbriteQuery(queryTerm) {
   return request({
-    uri: 'https://graph.facebook.com/v2.10/' + facebookID + '/events?since=' + startDate +'&access_token=' + facebookToken,
+    uri: 'https://www.eventbriteapi.com/v3/events/search/?q=' + queryTerm + '&categories=112&expand=organizer,venue&token=' + eventbriteToken,
     json: true
   });
 }
@@ -159,6 +161,37 @@ function transformFacebookTownhall(event) {
       townhall.lat = location.latitude;
       townhall.lng = location.longitude;
       townhall.address = location.street + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
+    }
+  }
+
+  return townhall;
+}
+
+function transformEventbriteTownhall(event) {
+  let start = new Date(event.start.utc);
+  let end = new Date(event.end.utc);
+  var townhall = {
+    eventId: event.id,
+    Member: event.organizer.name,
+    eventName: event.name.text,
+    meetingType: 'unknown',
+    link: event.url,
+    linkName: 'Eventbrite Link',
+    dateObj: Date.parse(start),
+    dateString: start.toDateString(),
+    Time: start.toLocaleString('en-US', { hour: 'numeric',minute:'numeric', hour12: true }),
+    timeStart24: start.toLocaleString('en-US', { hour: 'numeric', minute:'numeric', second: 'numeric', hour12: false }),
+    timeEnd24: end.toLocaleString('en-US', { hour: 'numeric', minute:'numeric', second: 'numeric', hour12: false }),
+    yearMonthDay: start.toISOString().substring(0, 10),
+    lastUpdated: Date.now(),
+  };
+
+  if (event.hasOwnProperty('venue')) {
+    townhall.Location = event.venue.name;
+    townhall.lat = event.venue.latitude;
+    townhall.lng = event.venue.longitude;
+    if (event.venue.hasOwnProperty('address')) {
+      townhall.address = event.venue.address.localized_address_display;
     }
   }
 
