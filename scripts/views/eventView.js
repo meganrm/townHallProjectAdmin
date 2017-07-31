@@ -205,21 +205,41 @@
     }
   };
 
+  eventHandler.membersEvents = new Set();
   eventHandler.recessProgress = function (townhall) {
-    var percent = 1/535 * 100;
     var current;
     var updated;
+    var percent;
     if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-08-04', [])) {
-      if (townhall.Party === 'Democratic') {
-        current = parseInt($('.dem-aug-progress').attr('data-count'));
-        updated = current + percent;
-        $('.dem-aug-progress').attr('data-count', updated);
-        $('.dem-aug-progress').width(updated + '%');
-      } else {
-        current = parseInt($('.rep-aug-progress').attr('data-count'));
-        updated = current + percent;
-        $('.rep-aug-progress').attr('data-count', updated);
-        $('.rep-aug-progress').width(updated + '%');
+      if (!eventHandler.membersEvents.has(townhall.Member) && townhall.meetingType ==='Town Hall') {
+        if (townhall.District === 'Senate') {
+          percent = 100;
+          if (townhall.Party === 'Democratic') {
+            current = Number($('.dem-aug-progress-senate').attr('data-count'));
+            updated = current + percent;
+            $('.dem-aug-progress-senate').attr('data-count', updated);
+            $('.dem-aug-progress-senate').width(updated + '%');
+          } else {
+            current = Number($('.rep-aug-progress-senate').attr('data-count'));
+            updated = current + percent;
+            $('.rep-aug-progress-senate').attr('data-count', updated);
+            $('.rep-aug-progress-senate').width(updated + '%');
+          }
+        } else {
+          percent = 1/435 * 100;
+          if (townhall.Party === 'Democratic') {
+            current = Number($('.dem-aug-progress-house').attr('data-count'));
+            updated = current + percent;
+            $('.dem-aug-progress-house').attr('data-count', updated);
+            $('.dem-aug-progress-house').width(updated + '%');
+          } else {
+            current = Number($('.rep-aug-progress-house').attr('data-count'));
+            updated = current + percent;
+            $('.rep-aug-progress-house').attr('data-count', updated);
+            $('.rep-aug-progress-house').width(updated + '%');
+          }
+        }
+        eventHandler.membersEvents.add(townhall.Member);
       }
     }
   };

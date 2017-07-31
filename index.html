@@ -398,12 +398,21 @@
                     </div>
                   </div>
 
-                  <h4>August Recess Progress</h4>
+                  <h4>Senate August Recess Progress</h4>
                   <div class="progress">
-                    <div class="progress-bar progress-bar-primary dem-aug-progress" data-count=0>
+                    <div class="progress-bar progress-bar-primary dem-aug-progress-senate" data-count=0>
                       <span class="sr-only">Democratic progress</span>
                     </div>
-                    <div class="progress-bar progress-bar-warning rep-aug-progress" data-count=0>
+                    <div class="progress-bar progress-bar-warning rep-aug-progress-senate" data-count=0>
+                      <span class="sr-only">Republican progress</span>
+                    </div>
+                  </div>
+                  <h4>House August Recess Progress</h4>
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-primary dem-aug-progress-house" data-count=0>
+                      <span class="sr-only">Democratic progress</span>
+                    </div>
+                    <div class="progress-bar progress-bar-warning rep-aug-progress-house" data-count=0>
                       <span class="sr-only">Republican progress</span>
                     </div>
                   </div>
@@ -453,12 +462,14 @@
     <script src="templates.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
     <!-- Script Files -->
+    <script src="/scripts/data/states.js"></script>
+    <script src="/scripts/data/userAssignments.js"></script>
+
     <script src="/scripts/models/event0.js"></script>
     <script src="/scripts/models/moc.js"></script>
     <script src="/scripts/models/downloadingEvents.js"></script>
     <script src="/scripts/models/downloadingUsers.js"></script>
 
-    <script src="/scripts/data/states.js"></script>
     <script src="/scripts/views/eventView.js"></script>
     <script src="/scripts/views/updatingEventsView.js"></script>
     <script src="/scripts/views/downloadCenter.js"></script>
