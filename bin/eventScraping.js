@@ -59,10 +59,10 @@ function getFacebookEvents(MoCs) {
     });
     // Collapse into flat array
     var facebookEvents = [].concat.apply([], res);
-    var newEventIds = removeExistingIds(facebookEvents.map(event => event.id));
+    var newEventIds = removeExistingIds(facebookEvents.map(event => 'fb_' + event.id));
 
     facebookEvents.forEach(event => {
-      if (newEventIds.indexOf(event.id) !== -1) {
+      if (newEventIds.indexOf('fb_' + event.id) !== -1) {
         submitTownhall(transformFacebookTownhall(event));
       }
     });
@@ -94,9 +94,9 @@ function getEventbriteEvents() {
     res = res.map(eventCollection => eventCollection.events);
     // Collapse into flat array
     var eventbriteEvents = [].concat.apply([], res);
-    var newEventIds = removeExistingIds(eventbriteEvents.map(event => event.id));
+    var newEventIds = removeExistingIds(eventbriteEvents.map(event => 'eb_' + event.id));
     eventbriteEvents.forEach(event => {
-      if (newEventIds.indexOf(event.id) !== -1) {
+      if (newEventIds.indexOf('eb_' + event.id) !== -1) {
         submitTownhall(transformEventbriteTownhall(event));
       }
     });
@@ -135,7 +135,7 @@ function transformFacebookTownhall(event) {
   let start = new Date(event.start_time);
   let end = new Date(event.end_time);
   var townhall = {
-    eventId: event.id,
+    eventId: 'fb_' + event.id,
     Member: event.MoC.displayName,
     govtrack_id: event.MoC.govtrack_id,
     Party: event.MoC.party,
@@ -171,7 +171,7 @@ function transformEventbriteTownhall(event) {
   let start = new Date(event.start.utc);
   let end = new Date(event.end.utc);
   var townhall = {
-    eventId: event.id,
+    eventId: 'eb_' + event.id,
     Member: event.organizer.name,
     eventName: event.name.text,
     meetingType: 'unknown',
