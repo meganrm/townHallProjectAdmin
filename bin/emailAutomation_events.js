@@ -158,6 +158,13 @@
     case 'Tele-Town Hall':
       include = true;
       break;
+    case 'Other':
+      if (iconFlag === 'in-person') {
+        include = true;
+      } else {
+        include = false;
+      }
+      break;
     default:
       include = false;
     }
