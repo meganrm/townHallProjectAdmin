@@ -216,8 +216,7 @@
   eventHandler.recessProgress = function (townhall) {
     var total;
     if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-09-04', [])) {
-      console.log('right date');
-      if (!eventHandler.membersEvents.has(townhall.Member) && townhall.iconFlag ==='in-person') {
+      if (!eventHandler.membersEvents.has(townhall.Member) && townhall.meetingType ==='Town Hall') {
         if (townhall.District === 'Senate') {
           total = 100;
           if (townhall.Party === 'Democratic') {
@@ -242,7 +241,7 @@
 
   eventHandler.getPastEvents = function(path, dateStart, dateEnd){
     var ref = firebase.database().ref(path);
-    ref.orderByChild("dateObj").startAt(dateStart).endAt(dateEnd).on('child_added', function(snapshot) {
+    ref.orderByChild('dateObj').startAt(dateStart).endAt(dateEnd).on('child_added', function(snapshot) {
       eventHandler.recessProgress(snapshot.val());
     });
   };
