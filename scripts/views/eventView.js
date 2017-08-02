@@ -204,41 +204,41 @@
       console.log('no start time', ele.eventId);
     }
   };
-
+  function updateProgressBar($bar, percent){
+    current = Number($bar.attr('data-count'));
+    updated = current + 1;
+    $bar.attr('data-count', updated);
+    width = updated / percent * 100
+    $bar.width(width + '%');
+    $bar.text(updated)
+  }
   eventHandler.membersEvents = new Set();
   eventHandler.recessProgress = function (townhall) {
     var current;
     var updated;
     var percent;
     if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-08-04', [])) {
-      if (!eventHandler.membersEvents.has(townhall.Member) && townhall.meetingType ==='Town Hall') {
+      if (townhall.meetingType === 'Town Hall') {
+        console.log(townhall.iconFlag, townhall.eventId);
+      }
+      if (!eventHandler.membersEvents.has(townhall.Member) && townhall.iconFlag ==='in-person') {
         if (townhall.District === 'Senate') {
           percent = 100;
           if (townhall.Party === 'Democratic') {
-            current = Number($('.dem-aug-progress-senate').attr('data-count'));
-            updated = current + percent;
-            $('.dem-aug-progress-senate').attr('data-count', updated);
-            $('.dem-aug-progress-senate').width(updated + '%');
+            $bar = $('.dem-aug-progress-senate')
           } else {
-            current = Number($('.rep-aug-progress-senate').attr('data-count'));
-            updated = current + percent;
-            $('.rep-aug-progress-senate').attr('data-count', updated);
-            $('.rep-aug-progress-senate').width(updated + '%');
+            $bar = $('.rep-aug-progress-senate')
           }
         } else {
-          percent = 1/435 * 100;
+          percent = 435;
           if (townhall.Party === 'Democratic') {
-            current = Number($('.dem-aug-progress-house').attr('data-count'));
-            updated = current + percent;
-            $('.dem-aug-progress-house').attr('data-count', updated);
-            $('.dem-aug-progress-house').width(updated + '%');
+            $bar = $('.dem-aug-progress-house')
           } else {
-            current = Number($('.rep-aug-progress-house').attr('data-count'));
-            updated = current + percent;
-            $('.rep-aug-progress-house').attr('data-count', updated);
-            $('.rep-aug-progress-house').width(updated + '%');
+            $bar = $('.rep-aug-progress-house')
           }
         }
+        updateProgressBar($bar, percent)
+
         eventHandler.membersEvents.add(townhall.Member);
       }
     }
