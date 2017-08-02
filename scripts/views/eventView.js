@@ -204,45 +204,54 @@
       console.log('no start time', ele.eventId);
     }
   };
-  function updateProgressBar($bar, percent){
+  function updateProgressBar($bar, total){
     current = Number($bar.attr('data-count'));
     updated = current + 1;
     $bar.attr('data-count', updated);
-    width = updated / percent * 100
+    width = updated / total * 100;
     $bar.width(width + '%');
-    $bar.text(updated)
+    $bar.text(updated);
   }
   eventHandler.membersEvents = new Set();
   eventHandler.recessProgress = function (townhall) {
-    var current;
-    var updated;
-    var percent;
-    if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-08-04', [])) {
-      if (townhall.meetingType === 'Town Hall') {
-        console.log(townhall.iconFlag, townhall.eventId);
-      }
+    var total;
+    if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-09-04', [])) {
+      console.log('right date');
       if (!eventHandler.membersEvents.has(townhall.Member) && townhall.iconFlag ==='in-person') {
         if (townhall.District === 'Senate') {
-          percent = 100;
+          total = 100;
           if (townhall.Party === 'Democratic') {
-            $bar = $('.dem-aug-progress-senate')
+            $bar = $('.dem-aug-progress-senate');
           } else {
-            $bar = $('.rep-aug-progress-senate')
+            $bar = $('.rep-aug-progress-senate');
           }
         } else {
-          percent = 435;
+          total = 435;
           if (townhall.Party === 'Democratic') {
-            $bar = $('.dem-aug-progress-house')
+            $bar = $('.dem-aug-progress-house');
           } else {
-            $bar = $('.rep-aug-progress-house')
+            $bar = $('.rep-aug-progress-house');
           }
         }
-        updateProgressBar($bar, percent)
+        updateProgressBar($bar, total);
 
         eventHandler.membersEvents.add(townhall.Member);
       }
     }
   };
+
+  eventHandler.getPastEvents = function(path, dateStart, dateEnd){
+    var ref = firebase.database().ref(path);
+    ref.orderByChild("dateObj").startAt(dateStart).endAt(dateEnd).on('child_added', function(snapshot) {
+      eventHandler.recessProgress(snapshot.val());
+    });
+  };
+
+  var dateStart = new Date('2017-07-29').valueOf();
+  var dateEnd = new Date('2017-09-04').valueOf();
+
+  eventHandler.getPastEvents('townHallsOld/2017-7', dateStart, dateEnd);
+  eventHandler.getPastEvents('townHallsOld/2017-6', dateStart, dateEnd);
 
   eventHandler.readData = function (path) {
     $currentState = $('#current-state');
