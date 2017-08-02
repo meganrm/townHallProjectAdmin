@@ -94,6 +94,8 @@ function getEventbriteEvents() {
     res = res.map(eventCollection => eventCollection.events);
     // Collapse into flat array
     var eventbriteEvents = [].concat.apply([], res);
+    // With generic searches we get some duplicates, let's remove them
+    eventbriteEvents = eventbriteEvents.filter(unqiueFilter);
     var newEventIds = removeExistingIds(eventbriteEvents.map(event => 'eb_' + event.id));
     eventbriteEvents.forEach(event => {
       if (newEventIds.indexOf('eb_' + event.id) !== -1) {
@@ -111,6 +113,10 @@ function removeExistingIds(eventIds) {
     }
   });
   return eventIds;
+}
+
+function unqiueFilter(value, index, self) {
+  return self.findIndex(obj => obj.id === value.id) === index;
 }
 
 function submitTownhall(townhall) {
