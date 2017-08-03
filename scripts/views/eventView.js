@@ -105,9 +105,32 @@
     eventHandler.renderTableWithArray(data, $table);
   };
 
+  eventHandler.lookupOldEvents = function(event){
+    event.preventDefault();
+    var currentMonth = moment().get('month');
+    var key = $('#lookup-key').val();
+    var value = $('#lookup-value').val();
+    var dates = [];
+    for (var i = 0; i < currentMonth + 1; i++) {
+      dates.push('2017-' + i);
+    }
+    console.log(key, value, dates);
+    var totalCount = 0;
+    dates.forEach(function(date, index){
+      TownHall.getOldData(key, value, date).then(function(returnedSet){
+        totalCount = totalCount + returnedSet.size;
+        if (index + 1 === dates.length) {
+          console.log(totalCount);
+          $('#lookup-results').val(totalCount);
+        }
+      });
+    });
+  };
+
 // url hash for direct links to subtabs
 // slightly hacky routing
   $(document).ready(function () {
+    $('#lookup-old-events-form').on('submit', eventHandler.lookupOldEvents);
     $('.sort').on('click', 'a', eventHandler.sortTable);
     $('.filter').on('click', 'a', eventHandler.filterTable);
     $('#filter-info').on('click', 'button.btn', eventHandler.removeFilter);
@@ -131,11 +154,7 @@
   });
 
   eventHandler.metaData = function () {
-    metaDataObj = new TownHall();
-    metaDataObj.topZeroResults = [];
-    metaDataObj.total = TownHall.allTownHalls.length;
-    var metaDataTemplate = Handlebars.getTemplate('metaData');
-    $('.metadata').html(metaDataTemplate(metaDataObj));
+
   };
 
   eventHandler.checkTime = function (time) {

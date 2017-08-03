@@ -6,40 +6,7 @@
     }
   }
 
-//   firebase.database().ref('townHalls/').once('value').then(function(snapshot){
-//     snapshot.forEach(function(townHall){
-// 	     if (townHall.val().meetingType ==='Town Hall' || townHall.val().meetingType ==='Ticketed Event'){
-// 		       firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'in-person'})
-//          } else if (townHall.val().meetingType ==='Empty Chair Town Hall' || townHall.val().meetingType ==='Adopt-A-District/State'){
-//            firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'activism'})
-//
-//          } else if (townHall.val().meetingType ==='Office Hours') {
-//            firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'staff'})
-//
-//          } else if (townHall.val().meetingType ==='Tele-Town Hall') {
-//            firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'tele'})
-//
-//          } else {
-//            console.log(townHall.val());
-//          }
-// })
-// })
-// function updatedOldData (oldKey, newKey, dateKey) {
-//   firebase.database().ref('/townHallsOld/' + dateKey).once('value').then(function(snapshot) {
-//       snapshot.forEach(function(oldTownHall) {
-//           townHall = oldTownHall.val()
-//           if (townHall[oldValue]) {
-//               var value  = townHall[oldValue]
-//               var eventID = oldTownHall.val().eventId;
-//               firebase.database().ref(`/townHallsOld/ ${dateKey}/${townHall[eventID]}`).update({ newKey: value });
-//               console.log("party: " + party);
-//           } else {
-//               //stateName = ""
-//               console.log('no "Party" property')
-//           }
-//       })
-//   })
-// }
+
 
 
   // Global data stete
@@ -87,6 +54,23 @@
         resolve(newEvent);
       }).catch(function (error) {
         reject(error);
+      });
+    });
+  };
+
+  TownHall.getOldData = function getOldData (key, value, dateKey) {
+    var db = firebase.database();
+    var ref = db.ref('/townHallsOld/' + dateKey);
+    var totals = new Set();
+    return new Promise (function(resolve, reject){
+      ref.once('value').then(function(snapshot) {
+        snapshot.forEach(function(oldTownHall) {
+          townHall = oldTownHall.val();
+          if (townHall[key] === value) {
+            totals.add(townHall);
+          }
+        });
+        resolve(totals);
       });
     });
   };
