@@ -235,13 +235,13 @@
     if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-09-04', [])) {
       if (!eventHandler.membersEvents.has(townhall.Member) && townhall.meetingType ==='Town Hall') {
         if (townhall.District === 'Senate') {
-          total = 98;
-          if (townhall.Party === 'Democratic') {
-            $bar = $('.dem-aug-progress-senate');
-            $total = $('.dem-senate');
-          } else {
+          total = 100;
+          if (townhall.Party === 'Republican') {
             $bar = $('.rep-aug-progress-senate');
             $total = $('.rep-senate');
+          } else {
+            $bar = $('.dem-aug-progress-senate');
+            $total = $('.dem-senate');
           }
         } else {
           total = 434;
