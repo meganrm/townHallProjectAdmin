@@ -203,9 +203,6 @@
             }
         }
 
-        // a few entries have { State: 'IL' } 
-        // doesn't account for "State" value of "New York"
-        // "State : Georgia" "statesAb : Gainsville" ERROR
         function stateUpdate (oldValue, newValue, townHallObj) {
             var state;
             var currentValue;
