@@ -211,65 +211,52 @@
             var currentValue;
             var stateCheck;
 
-            // check if statesAb property 
-            // is abbr. value of state
-            // OR --> if statesAb value
-            // is not null --> check that it is not
-            // a full state name (in which case 
-            // use getKeyByValue)
-
             if (townHallObj[oldValue]) {
+
+                // if 2 char - set as state
                 currentValue = townHallObj[oldValue];
                 if (currentValue.trim().length == 2) {
                     state = currentValue;
                 } 
 
-                if (currentValue.trim().length > 2) {
-                    // check if value is in statesAb object
-                    // if so, get key to state value
+                // if full name of state - getKeyByValue
+                if (currentValue.length > 2) {
                     stateCheck = getKeyByValue(statesAb, currentValue);
-                    if (stateCheck !== null) {
+                    if (typeof stateCheck !== 'undefined') {
                         state = stateCheck;
-                    } else if (stateCheck == null || townHallObj.hastOwnProperty('State')) {
-                        var statePropertyValue = townHallObj.State;
-                        stateCheck = getKeyByValue(statesAb, statePropertyValue);
-                        if (stateCheck !== null) {
-                            state = stateCheck;
-                        }
-                    } else {
-                        console.log("statesAb and State valid, but no matches");
                     }
+                } 
+                
+                if (typeof state !== 'undefined') {
+                    console.log("state : " + state);
                 }
-            } else if (state == null && !townHallObj[oldValue] || 
-                       state == null && townHallObj[oldValue].length > 2 && townHallObj.State.trim().length > 2) {
-                    // if statesAb is not there or stateAb property is larger than 2 and 'State'
-                    // property exists --> 
-                    // check if state prop is full state name (getkeybyvalue)
-                    // or the abbreviation itself
 
-                    currentStateValue = townHallObj.State;
-                    if (currentStateValue.length == 2) {
-                        state = currentStateValue;
-                    } else { 
-                        stateCheck = getKeyByValue(statesAb, currentStateValue);
-                        if (stateCheck !== null) {
-                            state = stateCheck;
-                        }
+                //
+
+            } else if (!townHallObj[oldValue] && townHallObj.hasOwnProperty('State')) {
+                // if 2 char - set as state
+                currentValue = townHallObj['State'];
+                if (currentValue.trim().length == 2) {
+                    state = currentValue;
+                } 
+
+                // if full name - getKeyByValue
+                if (currentValue.length > 2) {
+                    stateCheck = getKeyByValue(statesAb, currentValue);
+                    if (typeof stateCheck !== 'undefined') {
+                        state = stateCheck;
                     }
-            } else if (state == null && townHallObj.hastOwnProperty('State') && townHallObj.State.trim().length == 2) {
-                    console.log(townHallObj.State + " HELLLOOOO");
-                    state = townHallObj.State;
-            }
+                } 
 
-            if (typeof state !== 'undefined') { 
-                console.log(newValue + " : " + state);
-                //newValueVar = window[newValue];
-                //var path = townHallObj.eventId;
-                // updateObj(`/townHallsOld/${dateKey}/${townHallOld.key}`, newValueVar, state);
+                if (typeof state !== 'undefined') {
+                    console.log("state : " + state);
+                }
+                
+
             } else {
-                console.log(townHallObj);
-                console.log("Error finding a state Abbreviation from object (WIP) ");
+                console.log("Could not get state abbr. value from object");
             }
+            
         }
 
         function addGovTrackId (oldTownHall, townHallObj) {
