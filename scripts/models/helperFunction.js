@@ -68,12 +68,12 @@
         }
 
         // call functions to update data
-        updateOldData("Party", "party"); 
-        updateOldData("District", "district");
+        // updateOldData("Party", "party"); 
+        // updateOldData("District", "district");
         updateOldData("StateAb", "state");    // order matters here --> stateAb function will look for 'State' value in order to get Abbr (call first)
-        updateOldData("State", "stateName");
+        // updateOldData("State", "stateName");
         // updateOldData("", "govTrack");
-        stateNameMoc();
+        // stateNameMoc();
         
 
         function updateOldData(oldValue, newValue) {
@@ -208,10 +208,15 @@
             var currentValue;
             var stateCheck;
 
-            if (townHallObj[oldValue]) {
+            if (townHallObj[oldValue] || !townHallObj[oldValue] && townHallObj.hasOwnProperty('State')) {
 
                 // if 2 char - set as state
-                currentValue = townHallObj[oldValue];
+                if (typeof townHallObj[oldValue] !== 'undefined') {
+                    currentValue = townHallObj[oldValue];
+                } else {
+                    currentValue = townHallObj['State'];
+                }
+                
                 if (currentValue.trim().length == 2) {
                     state = currentValue;
                 } 
@@ -229,26 +234,6 @@
                 }
 
                 //
-
-            } else if (!townHallObj[oldValue] && townHallObj.hasOwnProperty('State')) {
-                // if 2 char - set as state
-                currentValue = townHallObj['State'];
-                if (currentValue.trim().length == 2) {
-                    state = currentValue;
-                } 
-
-                // if full name - getKeyByValue
-                if (currentValue.length > 2) {
-                    stateCheck = getKeyByValue(statesAb, currentValue);
-                    if (typeof stateCheck !== 'undefined') {
-                        state = stateCheck;
-                    }
-                } 
-
-                if (typeof state !== 'undefined') {
-                    console.log("state : " + state);
-                }
-                
 
             } else {
                 console.log("Could not get state abbr. value from object");
