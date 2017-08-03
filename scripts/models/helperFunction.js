@@ -2,7 +2,7 @@
 
     function helperFunctions() {
 
-        // initialize dateKey array and state abbr --> name object vars
+        //// Initialize variables ////
         var dateKeys = ['2016-4', '2017-0', '2017-1', '2017-2', '2017-3', '2017-4', '2017-5', '2017-6'];
 
         var statesAb = {
@@ -67,26 +67,27 @@
                         WY: "Wyoming"
         }
 
-        // call functions to update data
-        // updateOldData("Party", "party"); 
-        // updateOldData("District", "district");
-        updateOldData("StateAb", "state");    // order matters here --> stateAb function will look for 'State' value in order to get Abbr (call first)
-        // updateOldData("State", "stateName");
-        // updateOldData("", "govTrack");
-        // stateNameMoc();
-        
+        //////// call functions to update data //////
 
+        updateOldData("Party", "party"); 
+        updateOldData("District", "district");
+        updateOldData("StateAb", "state");    // order matters here --> stateAb function will look for 'State' value in order to get Abbr (call first)
+        updateOldData("State", "stateName");
+        // updateOldData("", "govTrack");
+        stateNameMoc();
+        
+        //////// general update function //////
+
+        // [default : will update old value with new value]
         function updateOldData(oldValue, newValue) {
-            //  dateKey
             var dateKey;
 
-            // for loop over each date key
+            // loop over each date key
             for (var i = 0; i < dateKeys.length; i++) {
                 dateKey = dateKeys[i];
                 firebase.database().ref('/townHallsOld/' + dateKey).once('value').then(function(snapshot) {
                     snapshot.forEach(function(oldTownHall) {
                         var townHallObj = oldTownHall.val();
-                        // switch statement
                         switch(newValue){
                             case 'party':
                                 partyUpdate(oldValue, newValue, townHallObj);
@@ -119,8 +120,9 @@
             }
         }
 
-        function partyUpdate (oldValue, newValue, townHallObj) {
+        //////// specific update functions ////////
 
+        function partyUpdate (oldValue, newValue, townHallObj) {
             if (townHallObj[oldValue]) {
                 currentValue = townHallObj[oldValue];
                 if (currentValue == "Democrat" || currentValue == "democrat") {
@@ -135,9 +137,8 @@
             }
         }
 
-        // fix undefined case
+        
         function districtUpdate (oldValue, newValue, townHallObj) {
-
             if (townHallObj[oldValue]) {
                 originalValue = townHallObj[oldValue];
                 var updatedDistrict;
@@ -145,10 +146,10 @@
                     // get substring after and check for zero index
                     var dashLoc = originalValue.indexOf("-");
                     var strAfterDash = originalValue.substring(dashLoc + 1);
-                    // make sure there is a zero in front (check length)
-                    // this is for once object : district : 011 | was --> IL-011
                     if (strAfterDash.length == 1) {
                         updatedDistrict = "0" + strAfterDash;
+                    } else if (strAfterDash.length == 3) { // check for this object --> district : 011 | was --> IL-011
+                        updatedDistrict = strAfterDash.substring(1);
                     } else {
                         updatedDistrict = strAfterDash;
                     }
@@ -175,7 +176,6 @@
         }
 
         function stateNameUpdate (oldValue, newValue, townHallObj) {
-
             if (townHallObj[oldValue]) {
                 currentValue = townHallObj[oldValue];
                 var stateName;
@@ -190,13 +190,11 @@
                         }
                     }
                 } else {
-                    // set stateName to current Value
                     stateName = currentValue;
                 }
                 //newValueVar = window[newValue];
                 //var path = townHallObj.eventId;
                 // updateObj(`/townHallsOld/${dateKey}/${townHallOld.key}`, newValueVar, stateName);
-
                 console.log(newValue + " : " + stateName);
             } else {
                 console.log("No " + oldValue + " property found.")
@@ -210,13 +208,13 @@
 
             if (townHallObj[oldValue] || !townHallObj[oldValue] && townHallObj.hasOwnProperty('State')) {
 
-                // if 2 char - set as state
                 if (typeof townHallObj[oldValue] !== 'undefined') {
                     currentValue = townHallObj[oldValue];
                 } else {
                     currentValue = townHallObj['State'];
                 }
                 
+                // if 2 char - set as state
                 if (currentValue.trim().length == 2) {
                     state = currentValue;
                 } 
@@ -232,8 +230,6 @@
                 if (typeof state !== 'undefined') {
                     console.log("state : " + state);
                 }
-
-                //
 
             } else {
                 console.log("Could not get state abbr. value from object");
@@ -295,9 +291,9 @@
             return new Promise(function(resolve, reject) {
                 firebase.database().ref('mocID/' + memberKey).once('value').then(function (snapshot) {
                     if (snapshot.exists()) {
-                    resolve(snapshot.val().id)
+                        resolve(snapshot.val().id)
                     } else {
-                    reject('That member is not in our database, please check the spelling, and only use first and last name.')
+                        reject('That member is not in our database, please check the spelling, and only use first and last name.')
 
                     }
                 })
@@ -305,7 +301,6 @@
         }
 
         // update object
-        // townHallshold
         function updateObj(path, key, value) {
             firebase.database().ref(path).update({ key : value })
         }
