@@ -204,35 +204,56 @@
       console.log('no start time', ele.eventId);
     }
   };
-  function updateProgressBar($bar, total){
+
+  eventHandler.initalProgressBar = function initalProgressBar(total, $total){
+    currentNoEvents = Number($total.attr('data-count'));
+    $total.attr('data-count', currentNoEvents);
+    widthNoEvents = currentNoEvents / total * 100;
+    $total.width(widthNoEvents + '%');
+    $total.text(currentNoEvents);
+  };
+
+  function updateProgressBar($bar, total, $total){
     current = Number($bar.attr('data-count'));
     updated = current + 1;
     $bar.attr('data-count', updated);
     width = updated / total * 100;
     $bar.width(width + '%');
     $bar.text(updated);
+
+    currentNoEvents = Number($total.attr('data-count'));
+    updatedNoEvents = currentNoEvents - 1;
+    $total.attr('data-count', updatedNoEvents);
+    widthNoEvents = updatedNoEvents / total * 100;
+    $total.width(widthNoEvents + '%');
+    $total.text(updatedNoEvents);
   }
+
   eventHandler.membersEvents = new Set();
   eventHandler.recessProgress = function (townhall) {
     var total;
     if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-09-04', [])) {
       if (!eventHandler.membersEvents.has(townhall.Member) && townhall.meetingType ==='Town Hall') {
         if (townhall.District === 'Senate') {
-          total = 100;
+          total = 98;
           if (townhall.Party === 'Democratic') {
             $bar = $('.dem-aug-progress-senate');
+            $total = $('.dem-senate');
           } else {
             $bar = $('.rep-aug-progress-senate');
+            $total = $('.rep-senate');
           }
         } else {
-          total = 435;
+          total = 434;
           if (townhall.Party === 'Democratic') {
             $bar = $('.dem-aug-progress-house');
+            $total = $('.dem-house');
           } else {
             $bar = $('.rep-aug-progress-house');
+            $total = $('.rep-house');
           }
         }
-        updateProgressBar($bar, total);
+        updateProgressBar($bar, total, $total);
 
         eventHandler.membersEvents.add(townhall.Member);
       }
@@ -253,6 +274,10 @@
   eventHandler.getPastEvents('townHallsOld/2017-6', dateStart, dateEnd);
 
   eventHandler.readData = function (path) {
+    eventHandler.initalProgressBar(98, $('.dem-senate'));
+    eventHandler.initalProgressBar(98, $('.rep-senate'));
+    eventHandler.initalProgressBar(434, $('.dem-house'));
+    eventHandler.initalProgressBar(434, $('.rep-house'));
     $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;
@@ -313,6 +338,7 @@
 
 
   eventHandler.readDataUsers = function () {
+
     firebase.database().ref('/UserSubmission/').on('child_added', function getSnapShot(snapshot) {
       var ele = new TownHall(snapshot.val());
       obj = {};
