@@ -575,4 +575,6 @@
 
     }
 
+    helperFunctions();
+    
 })();
