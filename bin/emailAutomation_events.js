@@ -159,7 +159,7 @@
       include = true;
       break;
     case 'Other':
-      if (iconFlag === 'in-person') {
+      if (townhall.iconFlag === 'in-person') {
         include = true;
       } else {
         include = false;
