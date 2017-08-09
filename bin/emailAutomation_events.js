@@ -182,6 +182,8 @@
     var title;
     if (this.repeatingEvent) {
       date = this.repeatingEvent;
+    }  else if (this.dateString) {
+      date = this.dateString;
     } else {
       date = this.Date;
     }
