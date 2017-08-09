@@ -232,6 +232,20 @@
     $total.text(currentNoEvents);
   };
 
+  var max = 100;
+
+  function updateTotalEventsBar($bar){
+    current = Number($bar.attr('data-count'));
+    max = Number($bar.attr('data-max'));
+    updated = current + 1;
+    max = updated > max ? updated : max;
+    console.log(max);
+    width = updated / (max + 50) * 100;
+    $bar.attr('data-count', updated);
+    $bar.width(width + '%');
+    $bar.text(updated);
+  }
+
   function updateProgressBar($bar, total, $total){
     current = Number($bar.attr('data-count'));
     updated = current + 1;
@@ -248,34 +262,40 @@
     $total.text(updatedNoEvents);
   }
 
+  function parseBars(party, chamber, newMember, total) {
+    if (newMember) {
+      $memberBar = $(`.${party}-aug-progress-${chamber}`);
+      $total = $(`.${party}-${chamber}`);
+      updateProgressBar($memberBar, total, $total);
+    }
+    $bar = $(`.${party}-aug-total-${chamber}`);
+    updateTotalEventsBar($bar)
+  }
+
   eventHandler.membersEvents = new Set();
   eventHandler.recessProgress = function (townhall) {
     var total;
-    if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-09-04', [])) {
-      if (!eventHandler.membersEvents.has(townhall.Member) && townhall.meetingType ==='Town Hall') {
+    var  newMember = false;
+
+    if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-09-04', []) && townhall.meetingType ==='Town Hall') {
+        if (!eventHandler.membersEvents.has(townhall.Member)) {
+          newMember = true;
+          eventHandler.membersEvents.add(townhall.Member);
+        }
+        if (townhall.Party === 'Republican') {
+          party = 'rep'
+        } else {
+          party = 'dem'
+        }
         if (townhall.District === 'Senate') {
           total = 100;
-          if (townhall.Party === 'Republican') {
-            $bar = $('.rep-aug-progress-senate');
-            $total = $('.rep-senate');
-          } else {
-            $bar = $('.dem-aug-progress-senate');
-            $total = $('.dem-senate');
-          }
+          chamber = 'senate'
         } else {
           total = 434;
-          if (townhall.Party === 'Democratic') {
-            $bar = $('.dem-aug-progress-house');
-            $total = $('.dem-house');
-          } else {
-            $bar = $('.rep-aug-progress-house');
-            $total = $('.rep-house');
-          }
-        }
-        updateProgressBar($bar, total, $total);
+          chamber = 'house'
 
-        eventHandler.membersEvents.add(townhall.Member);
-      }
+        }
+      parseBars(party, chamber, newMember, total);
     }
   };
 
@@ -293,8 +313,8 @@
   eventHandler.getPastEvents('townHallsOld/2017-6', dateStart, dateEnd);
 
   eventHandler.readData = function (path) {
-    eventHandler.initalProgressBar(98, $('.dem-senate'));
-    eventHandler.initalProgressBar(98, $('.rep-senate'));
+    eventHandler.initalProgressBar(100, $('.dem-senate'));
+    eventHandler.initalProgressBar(100, $('.rep-senate'));
     eventHandler.initalProgressBar(434, $('.dem-house'));
     eventHandler.initalProgressBar(434, $('.rep-house'));
     $currentState = $('#current-state');
