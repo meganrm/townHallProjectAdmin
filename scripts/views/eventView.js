@@ -239,7 +239,6 @@
     max = Number($bar.attr('data-max'));
     updated = current + 1;
     max = updated > max ? updated : max;
-    console.log(max);
     width = updated / (max + 50) * 100;
     $bar.attr('data-count', updated);
     $bar.width(width + '%');
