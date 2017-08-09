@@ -548,7 +548,6 @@
                         resolve(snapshot.val().id)
                     } else {
                         reject('That member is not in our database, please check the spelling, and only use first and last name.')
-
                     }
                 })
             })
