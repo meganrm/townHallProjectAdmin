@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 var admin = require('firebase-admin');
-var https = require('https');
 var request = require('request-promise'); // NB:  This is isn't the default request library!
 
 var eventbriteToken = process.env.EVENTBRITE_TOKEN;
@@ -17,18 +16,19 @@ admin.initializeApp({
 });
 
 var firebasedb = admin.database();
-admin.database.enableLogging(true);
+// admin.database.enableLogging(true);
 
 // Get list of existing townhalls so we don't submit duplicates
 var existingTownHallIds = [];
-firebasedb.ref('/towhHallIDs/').once('value').then(function(snapshot){
-  // TODO:  Change this to actual map
-  existingTownHallIds.push(...snapshot.val().map(event => event.id));
+firebasedb.ref('/townHallIds/').once('value').then(function(snapshot){
+  snapshot.forEach(node => {
+    existingTownHallIds.push(node.val().eventId);
+  });
   getTownhalls();
 });
 
 function getTownhalls() {
-  firebase.database().ref('mocData/').once('value').then((snapshot) => {
+  firebasedb.ref('mocData/').once('value').then((snapshot) => {
     getFacebookEvents(snapshot.val());
   });
   getEventbriteEvents();
@@ -120,7 +120,20 @@ function unqiueFilter(value, index, self) {
 }
 
 function submitTownhall(townhall) {
-  firebasedb.ref('/UserSubmission/' + townhall.eventId).set(townhall);
+  var updates = {};
+  updates['/townHallIds/' + townhall.eventId] = {
+    eventId:townhall.eventId,
+    lastUpdated: Date.now()
+  };
+  updates['/UserSubmission/' + townhall.eventId] = townhall;
+
+  return firebasedb.ref().update(updates);
+
+  // firebasedb.ref('/townHallIds/' + townhall.eventId).set({
+  //   eventId:townhall.eventId,
+  //   lastUpdated: Date.now()
+  // });
+  // firebasedb.ref('/UserSubmission/' + townhall.eventId).set(townhall);
 }
 
 function createFacebookQuery(facebookID, startDate) {
