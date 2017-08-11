@@ -18,7 +18,7 @@
     } else {
       this.Title = cur.Member + ' (' + cur.District + ') ' + cur.meetingType;
     }
-    this.Date = cur.Date;
+    this.Date = cur.dateString ? cur.dateString: cur.Date;
     this.Time = cur.Time;
     this.Venue = cur.Location;
     this.Address = address;
