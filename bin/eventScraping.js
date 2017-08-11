@@ -5,6 +5,7 @@ var request = require('request-promise'); // NB:  This is isn't the default requ
 var eventbriteToken = process.env.EVENTBRITE_TOKEN;
 var facebookToken = process.env.FACEBOOK_TOKEN;
 var firebaseKey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n');
+var statesAb = require('../bin/stateMap.js');
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -120,20 +121,16 @@ function unqiueFilter(value, index, self) {
 }
 
 function submitTownhall(townhall) {
-  var updates = {};
-  updates['/townHallIds/' + townhall.eventId] = {
-    eventId:townhall.eventId,
-    lastUpdated: Date.now()
-  };
-  updates['/UserSubmission/' + townhall.eventId] = townhall;
-
-  return firebasedb.ref().update(updates);
-
-  // firebasedb.ref('/townHallIds/' + townhall.eventId).set({
+  console.log(townhall);
+  // var updates = {};
+  // updates['/townHallIds/' + townhall.eventId] = {
   //   eventId:townhall.eventId,
   //   lastUpdated: Date.now()
-  // });
-  // firebasedb.ref('/UserSubmission/' + townhall.eventId).set(townhall);
+  // };
+  // updates['/UserSubmission/' + townhall.eventId] = townhall;
+  //
+  // return firebasedb.ref().update(updates);
+
 }
 
 function createFacebookQuery(facebookID, startDate) {
@@ -151,6 +148,7 @@ function createEventbriteQuery(queryTerm) {
 }
 
 function transformFacebookTownhall(event) {
+  console.log(event.start_time);
   let start = new Date(event.start_time);
   let end = new Date(event.end_time);
   var townhall = {
@@ -159,7 +157,9 @@ function transformFacebookTownhall(event) {
     govtrack_id: event.MoC.govtrack_id,
     Party: event.MoC.party,
     District: event.MoC.state + '-' + event.MoC.district,
-    StateAb: event.MoC.state,
+    State: statesAb[event.MoC.state],
+    stateName: statesAb[event.MoC.state],
+    state: event.MoC.state,
     eventName: event.name,
     meetingType: 'unknown',
     link: 'https://www.facebook.com/events/' + event.id + '/',
