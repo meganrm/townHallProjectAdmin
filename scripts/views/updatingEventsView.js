@@ -283,7 +283,7 @@
     event.preventDefault();
     $form = $(this).parents('form');
     var value = $(this).attr('data-value');
-    $form.find('#meetingType').val(value);
+    $form.find('#meetingType').val(value).addClass('edited');
     $form.find('#meetingType').change();
   };
 
@@ -313,7 +313,6 @@
     $form.find('#meetingType-error').addClass('hidden');
     $form.find('#meetingType').parent().removeClass('has-error');
     var $listgroup = $(this).parents('.list-group-item');
-
     switch (value) {
     case 'Tele-Town Hall':
       $form.find('.general-inputs').addClass('hidden');
