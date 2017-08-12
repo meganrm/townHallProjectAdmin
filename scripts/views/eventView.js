@@ -395,6 +395,13 @@
         }
       }
 
+      if (!ele.zoneString && ele.lat) {
+        ele.validateZone(ele.eventId).then(function(returnedTH){
+          TownHall.allTownHallsFB[ele.eventId] = returnedTH
+          returnedTH.updateUserSubmission(ele.eventId).then(function(updated){
+          })
+        })
+      }
       if (ele.yearMonthDay) {
         var month = ele.yearMonthDay.split('-')[1];
         var day = ele.yearMonthDay.split('-')[2];

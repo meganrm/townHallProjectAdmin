@@ -6,6 +6,7 @@ var eventbriteToken = process.env.EVENTBRITE_TOKEN;
 var facebookToken = process.env.FACEBOOK_TOKEN;
 var firebaseKey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n');
 var statesAb = require('../bin/stateMap.js');
+var moment = require('moment');
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -100,7 +101,7 @@ function getEventbriteEvents() {
     var newEventIds = removeExistingIds(eventbriteEvents.map(event => 'eb_' + event.id));
     eventbriteEvents.forEach(event => {
       if (newEventIds.indexOf('eb_' + event.id) !== -1) {
-        submitTownhall(transformEventbriteTownhall(event));
+        // submitTownhall(transformEventbriteTownhall(event));
       }
     });
   });
@@ -122,14 +123,14 @@ function unqiueFilter(value, index, self) {
 
 function submitTownhall(townhall) {
   console.log(townhall);
-  // var updates = {};
-  // updates['/townHallIds/' + townhall.eventId] = {
-  //   eventId:townhall.eventId,
-  //   lastUpdated: Date.now()
-  // };
-  // updates['/UserSubmission/' + townhall.eventId] = townhall;
-  //
-  // return firebasedb.ref().update(updates);
+  var updates = {};
+  updates['/townHallIds/' + townhall.eventId] = {
+    eventId:townhall.eventId,
+    lastUpdated: Date.now()
+  };
+  updates['/UserSubmission/' + townhall.eventId] = townhall;
+
+  return firebasedb.ref().update(updates);
 
 }
 
@@ -148,9 +149,7 @@ function createEventbriteQuery(queryTerm) {
 }
 
 function transformFacebookTownhall(event) {
-  console.log(event.start_time);
   let start = new Date(event.start_time);
-  let end = new Date(event.end_time);
   var townhall = {
     eventId: 'fb_' + event.id,
     Member: event.MoC.displayName,
@@ -165,11 +164,12 @@ function transformFacebookTownhall(event) {
     link: 'https://www.facebook.com/events/' + event.id + '/',
     linkName: 'Facebook Link',
     dateObj: Date.parse(start),
-    dateString: start.toDateString(),
-    Time: start.toLocaleString('en-US', { hour: 'numeric',minute:'numeric', hour12: true }),
-    timeStart24: start.toLocaleString('en-US', { hour: 'numeric', minute:'numeric', second: 'numeric', hour12: false }),
-    timeEnd24: end.toLocaleString('en-US', { hour: 'numeric', minute:'numeric', second: 'numeric', hour12: false }),
-    yearMonthDay: start.toISOString().substring(0, 10),
+    dateString: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
+    Date: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
+    Time: moment.parseZone(event.start_time).format('LT'),
+    timeStart24: moment.parseZone(event.start_time).format('HH:mm:ss'),
+    timeEnd24: moment.parseZone(event.end_time).format('HH:mm:ss'),
+    yearMonthDay: moment.parseZone(event.start_time).format('YYYY-MM-DD'),
     lastUpdated: Date.now()
   };
 
@@ -202,7 +202,7 @@ function transformEventbriteTownhall(event) {
     timeStart24: start.toLocaleString('en-US', { hour: 'numeric', minute:'numeric', second: 'numeric', hour12: false }),
     timeEnd24: end.toLocaleString('en-US', { hour: 'numeric', minute:'numeric', second: 'numeric', hour12: false }),
     yearMonthDay: start.toISOString().substring(0, 10),
-    lastUpdated: Date.now(),
+    lastUpdated: Date.now()
   };
 
   if (event.hasOwnProperty('venue')) {

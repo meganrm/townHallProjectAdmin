@@ -77,7 +77,11 @@
 
   TownHall.prototype.updateUserSubmission = function (key) {
     var newEvent = this;
+    key = key? key : newEvent.eventId;
     return new Promise(function (resolve, reject) {
+      if (!key) {
+        reject('needs key');
+      }
       firebase.database().ref('/UserSubmission/' + key).update(newEvent);
       resolve(newEvent);
     });
@@ -230,7 +234,7 @@
         if (!response.timeZoneName) {
           reject('no timezone results', id, response);
         } else {
-          console.log(response);
+          // console.log(response);
           newTownHall.zoneString = response.timeZoneId;
           var timezoneAb = response.timeZoneName.split(' ');
           newTownHall.timeZone = timezoneAb.reduce(function (acc, cur) {
@@ -241,7 +245,7 @@
             var hawaiiTime = 'UTC-1000';
           }
           var zone = hawaiiTime ? hawaiiTime : newTownHall.timeZone;
-          console.log(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone);
+          // console.log(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone);
           newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone).getTime();
           resolve(newTownHall);
         }
