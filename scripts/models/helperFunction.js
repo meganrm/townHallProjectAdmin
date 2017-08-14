@@ -3,9 +3,9 @@
     function helperFunctions() {
 
         //// Initialize variables ////
-        var dateKeys = ['2016-4', '2017-0', '2017-1', '2017-2', '2017-3', '2017-4', '2017-5', '2017-6'];
+        var date_list = ['2016-4', '2017-0', '2017-1', '2017-2', '2017-3', '2017-4', '2017-5', '2017-6', '2017-7'];
 
-        var statesAb = {
+        var states_obj = {
                         AL: "Alabama",
                         AK: "Alaska",
                         AS: "American Samoa",
@@ -81,15 +81,15 @@
 
         // [default : will update old value with new value]
         function updateOldData(oldValue, newValue) {
-            var dateKey;
+            var date_key;
 
             // loop over each date key
-            for (var i = 0; i < dateKeys.length; i++) {
-                dateKey = dateKeys[i];
-                firebase.database().ref('/townHallsOld/' + dateKey).once('value').then(function(snapshot) {
+            for (var i = 0; i < date_list.length; i++) {
+                date_key = date_list[i];
+                firebase.database().ref('/townHallsOld/' + date_key).once('value').then(function(snapshot) {
                     snapshot.forEach(function(oldTownHall) {
                         var townHallObj = oldTownHall.val();
-                        switch(newValue){
+                        switch(newValue) {
                             case 'party':
                                 partyUpdate(oldValue, newValue, townHallObj);
                                 break;
@@ -106,14 +106,14 @@
                                 iconFlagUpdate(townHallObj);
                                 break;
                             case 'govTrack':
-                                addGovTrackId(townHallObj); // had parameter : dateKey
+                                addGovTrackId(townHallObj); // had parameter : date_key
                                 break;
                             default:
                                 if(townHallObj[oldValue]) {
                                     currentValue = townHallObj[oldValue];
                                     //newValueVar = window[newValue];
                                     //var path = townHallObj.eventId;
-                                    // updateObj(`/townHallsOld/${dateKey}/${townHallOld.key}`, newValueVar, currentValue);
+                                    // updateObj(`/townHallsOld/${date_key}/${townHallOld.key}`, newValueVar, currentValue);
                                     console.log(newValue + " : " + currentValue);
                                 } else {
                                     console.log("No " + oldValue + " property found.")
@@ -132,7 +132,7 @@
                 if (party == "Democrat" || party == "democrat") {
                     party = "Democratic";
                 }
-                // updateObj(`/townHallsOld/${dateKey}/${townHallOld.key}`, 'party', party);
+                // updateObj(`/townHallsOld/${date_key}/${townHallOld.key}`, 'party', party);
                 console.log(newValue + " : " + party);
             } else {
                 console.log("No " + oldValue + " property found.")
@@ -161,19 +161,28 @@
                     // set originalValue to updatedDistrict
                     updatedDistrict = originalValue;
                 } 
+
+                if (originalValue == "Senate") {
+                    updatedDistrict = originalValue;
+                }
                 
                 if (updatedDistrict) {
                     console.log(newValue + " : " + updatedDistrict);
-                    // updateObj(`/townHallsOld/${dateKey}/${townHallObj.key}`, 'district', updatedDistrict);
+                    // updateObj(`/townHallsOld/${date_key}/${townHallObj.key}`, 'district', updatedDistrict);
                 } else {
+                    // none of the townhallobj district values are blank
+                    // so these will now just go to 'Senate' for value
                     // console.log(townHallObj);
                     updatedDistrict = '--';
                     console.log("district : " + updatedDistrict);
-                    // console.log("Not sure what to do. Here is object 'District' value: " + originalValue);
-                    // updateObj(`/townHallsOld/${dateKey}/${townHallObj.key}`, 'district', updatedDistrict);
+                    // updateObj(`/townHallsOld/${date_key}/${townHallObj.key}`, 'district', updatedDistrict);
                 }
             } else {
-                console.log("No " + oldValue + " property found | was --> " + originalValue)
+                // console.log(townHallObj);
+                console.log(oldValue + " property is blank. Will update to: '--'");
+                updatedDistrict = '--';
+                updatedDistrict = townHallObj.District;
+                // updateObj(`/townHallsOld/${date_key}/${townHallObj.key}`, 'district', updatedDistrict);
             }
         }
 
@@ -182,19 +191,19 @@
                 currentValue = townHallObj[oldValue];
                 var stateName;
                 if (currentValue.length == 2) {
-                    var stateKeys = Object.keys(statesAb);
+                    var stateKeys = Object.keys(states_obj);
 
                     // compare current state Abbr with keys - 
                     // set stateName to match value associated with key
                     for (var i = 0; i < stateKeys.length; i++) {
                         if (currentValue == stateKeys[i]) {
-                            stateName = statesAb[stateKeys[i]];
+                            stateName = states_obj[stateKeys[i]];
                         }
                     }
                 } else {
                     stateName = currentValue;
                 }
-                // updateObj(`/townHallsOld/${dateKey}/${townHallObj.key}`, 'stateName', stateName);
+                // updateObj(`/townHallsOld/${date_key}/${townHallObj.key}`, 'stateName', stateName);
                 console.log(newValue + " : " + stateName);
             } else {
                 console.log("No " + oldValue + " property found.")
@@ -221,7 +230,7 @@
 
                 // if full name of state - getKeyByValue
                 if (currentValue.length > 2) {
-                    stateCheck = getKeyByValue(statesAb, currentValue);
+                    stateCheck = getKeyByValue(states_obj, currentValue);
                     if (typeof stateCheck !== 'undefined') {
                         state = stateCheck;
                     }
@@ -231,7 +240,7 @@
                     console.log("state : " + state);
                 }
                 // update state
-                // updateObj(`/townHallsOld/${dateKey}/${townHallObj.key}`, 'state' , state);
+                // updateObj(`/townHallsOld/${date_key}/${townHallObj.key}`, 'state' , state);
 
             } else {
                 console.log("Could not get state abbr. value from object");
@@ -242,7 +251,7 @@
         function iconFlagUpdate(townHallObj) {
             var iconFlag;
             console.log("{ iconFlag : " + iconFlag + " }")
-            // updateObj(`/townHallsOld/${dateKey}/${townHallObj.key}`, 'iconFlag', iconFlag);
+            // updateObj(`/townHallsOld/${date_key}/${townHallObj.key}`, 'iconFlag', iconFlag);
         }
 
         function addGovTrackId (townHallObj) {
@@ -250,7 +259,7 @@
                 getMember(townHallObj.Member).then(function(govtrack_id) {
                     console.log( "govtrack_id : " +  govtrack_id);
                     // set event govtrack_id to value
-                    // updateObj(`/townHallsOld/${dateKey}/${townHallOld.key}`, govtrack_id, govtrack_id);
+                    // updateObj(`/townHallsOld/${date_key}/${townHallOld.key}`, govtrack_id, govtrack_id);
                 })
             } else {
                 console.log("townHallObj.Member is undefined")
@@ -265,25 +274,25 @@
                     var stateName;
 
                     // get path key 
-                    var pathKey = member.govtrack_id;
+                    var path_key = member.govtrack_id;
 
                     // get member stateAbbr value
                     var currentAbbrState = member.val().state;
 
                     // states abbr from object keys
-                    var keys = Object.keys(statesAb);
+                    var keys = Object.keys(states_obj);
 
                     // compare current state Abbr with keys - 
                     // set stateName to match value associated with key
                     for (var i = 0; i < keys.length; i++) {
                         if (currentAbbrState == keys[i]) {
-                            stateName = statesAb[keys[i]];
+                            stateName = states_obj[keys[i]];
                             console.log("stateName for MOC : " + stateName);
                         }
                     }
                     // once found, update firebase with stateName property of current full stateName
-                    // firebase.database().ref('/mocData/' + pathkey).update({ stateName : stateName });
-                    // updateObj(`/mocData/${dateKey}/${pathKey}`, stateName, stateName);
+                    // firebase.database().ref('/mocData/' + path_key).update({ stateName : stateName });
+                    // updateObj(`/mocData/${date_key}/${path_key}`, stateName, stateName);
                 })
             })
         }
@@ -293,12 +302,6 @@
         // getMember 
         getMember = function (displayName) {
             var memberKey;
-
-            // if undefined?
-            // if (typeof memberKey == undefined) {
-            //     console.log("Town hall Member undefined");
-            //     return;
-            // } 
 
             if (displayName.split(' ').length === 3) {
                 memberKey = displayName.split(' ')[1].toLowerCase() + displayName.split(' ')[2].toLowerCase() + '_' + displayName.split(' ')[0].toLowerCase();
