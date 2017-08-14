@@ -15,8 +15,8 @@
                         CO: "Colorado",
                         CT: "Connecticut",
                         DE: "Delaware",
-                        DC: "District Of Columbia",
-                        FM: "Federated States Of Micronesia",
+                        DC: "District of Columbia",
+                        FM: "Federated States of Micronesia",
                         FL: "Florida",
                         GA: "Georgia",
                         GU: "Guam",
@@ -85,10 +85,11 @@
 
             // loop over each date key
             for (var i = 0; i < date_list.length; i++) {
-                date_key = date_list[i];
+                let date_key = date_list[i];
                 firebase.database().ref('/townHallsOld/' + date_key).once('value').then(function(snapshot) {
                     snapshot.forEach(function(oldTownHall) {
                         var townHallObj = oldTownHall.val();
+                        // console.log(date_key, townHallObj.Date);
                         switch(newValue) {
                             case 'party':
                                 partyUpdate(oldValue, newValue, townHallObj);
@@ -557,8 +558,10 @@
         }
 
         // update object
-        function updateObj(path, key, value) {
-            firebase.database().ref(path).update({ key : value })
+        function updateObj(path, key_val, val) {
+            obj = {};
+            obj[key_val] = val;
+            firebase.database().ref(path).update(obj);
         }
 
         // get object key from value
