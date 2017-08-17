@@ -73,6 +73,7 @@
         updateOldData("District", "district");
         updateOldData("StateAb", "state");    // order matters here --> stateAb function will look for 'State' value in order to get Abbr (call first)
         updateOldData("State", "stateName");
+        updateOldData("Date", "dateString");
         updateOldData("", "govTrack");
         updateOldData("", "iconFlag");
         stateNameMoc();
