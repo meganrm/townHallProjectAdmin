@@ -115,25 +115,33 @@
 
         function updateHocValues(hoc, type) {
             var currentHOC = hoc;
+            var mocdata_match;
+            var propub_moc_obj;
             currentHOC.forEach(function(propub_member) {
+                mocdata_match = "";
+
                 // function returns propub_moc_obj
-                var propub_moc_obj = buildUpdateObj(propub_member);
-                // find match to mocData --> should return a 'mocData/' obj or nothing
-                findMatch(propub_moc_obj).then(function(value) { 
-                    var mocdata_match = value;
+                propub_moc_obj = buildUpdateObj(propub_member);
+                // find match to mocData 
+                firebase.database().ref('/mocData/' + propub_moc_obj.govtrack_id).once('value').then(function(snapshot) {
+                    mocdata_match = snapshot.val();
+                })
+                
+                if (mocdata_match !== "") {
                     console.log("Values to update on existing member:")
                     // forEach property of propub_moc_obj
                     for (property in propub_moc_obj) {
-                        if (!mocdata_match[property] || 
-                            mocdata_match[property] !== propub_moc_obj[property] && propub_moc_obj[property] !== null)
+                        if (!mocdata_match[property] ||
+                            mocdata_match[property] !== propub_moc_obj[property]
+                            && propub_moc_obj[property] !== null 
+                            && property !== 'displayName')
                             console.log(property, " : ", propub_moc_obj[property])
                             // updateObj("mocData/" + mocdata_match.govtrack_id, property, propub_moc_obj[property]); 
                     }
                     console.log("---------------------");
-                }).catch(function() {
+                } else {
                     console.log("Update Entire Object in 'mocData/': ", propub_moc_obj);
-                    // make update call here
-                });
+                }
             });
         }
 
