@@ -65,8 +65,8 @@
     function Moc(govtrack_id, propublica_id, isCurrent, displayName, type, party, facebook, stateName) {
         this.govtrack_id  = govtrack_id;
         this.propublica_id = propublica_id;
-        this.displayName = displayName;
         this.isCurrent = isCurrent;
+        this.displayName = displayName;
         this.type = type;
         this.party = party;
         this.facebook = facebook;
@@ -132,6 +132,7 @@
                     console.log("---------------------");
                 }).catch(function() {
                     console.log("Update Entire Object in 'mocData/': ", propub_moc_obj);
+                    // make update call here
                 });
             });
         }
@@ -160,8 +161,8 @@
             //  property values
             propublica_govtrack = parseInt(propub_member.govtrack_id);
             propublica_id = propub_member.id;
-            propub_display_name = propub_member.first_name + " " + propub_member.last_name;
             propub_isCurrent = propub_member.in_office;
+            propub_display_name = propub_member.first_name + " " + propub_member.last_name;
             propub_type = type;
             propub_party = getParty(propub_member.party);
             propub_facebook = propub_member.facebook_account;
