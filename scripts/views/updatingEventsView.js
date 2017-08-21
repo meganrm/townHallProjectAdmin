@@ -305,6 +305,42 @@
     $form.find('#iconFlag').change();
   };
 
+  updateEventView.showHideMeetingTypeFields = function(value, $form) {
+    switch (value) {
+    case 'Tele-Town Hall':
+      $form.find('.general-inputs').addClass('hidden');
+      $form.find('.tele-inputs').removeClass('hidden');
+      $form.find('#iconFlag').val('tele').addClass('edited');
+      //TODO: regeocode
+      // newEventView.geoCodeOnState();
+      break;
+    case 'Adopt-A-District/State':
+      $form.find('.general-inputs').removeClass('hidden');
+      $form.find('.adopter-data').removeClass('hidden');
+      $form.find('#iconFlag').val('activism').addClass('edited');
+      setupTypeaheads('#districtAdopter');
+      break;
+    case 'Ticketed Event':
+      $form.find('#iconFlag').val('in-person').addClass('edited');
+      $form.find('.general-inputs').removeClass('hidden');
+      break;
+    case 'Office Hours':
+      $form.find('#iconFlag').val('staff').addClass('edited');
+      $form.find('.general-inputs').removeClass('hidden');
+      break;
+    case 'Town Hall':
+      $form.find('#iconFlag').val('in-person').addClass('edited');
+      $form.find('.general-inputs').removeClass('hidden');
+      break;
+    case 'Empty Chair Town Hall':
+      $form.find('#iconFlag').val('activism').addClass('edited');
+      $form.find('.general-inputs').removeClass('hidden');
+      break;
+    default:
+      $form.find('.general-inputs').removeClass('hidden');
+    }
+  };
+
   updateEventView.meetingTypeChanged = function (event) {
     event.preventDefault();
     var $form = $(this).parents('form');
@@ -313,47 +349,8 @@
     $form.find('#meetingType-error').addClass('hidden');
     $form.find('#meetingType').parent().removeClass('has-error');
     var $listgroup = $(this).parents('.list-group-item');
-    switch (value) {
-    case 'Tele-Town Hall':
-      $form.find('.general-inputs').addClass('hidden');
-      $form.find('.tele-inputs').removeClass('hidden');
-      $form.find('#iconFlag').val('tele').addClass('edited');
-      //TODO: regeocode
-      // newEventView.geoCodeOnState();
-      updateEventView.updatedView($form, $listgroup);
-      break;
-    case 'Adopt-A-District/State':
-      $form.find('.general-inputs').removeClass('hidden');
-      $form.find('.adopter-data').removeClass('hidden');
-      $form.find('#iconFlag').val('activism').addClass('edited');
-      setupTypeaheads('#districtAdopter');
-      updateEventView.updatedView($form, $listgroup);
-      break;
-    case 'Ticketed Event':
-      $form.find('#iconFlag').val('in-person').addClass('edited');
-      $form.find('.general-inputs').removeClass('hidden');
-      updateEventView.updatedView($form, $listgroup);
-      break;
-    case 'Office Hours':
-      $form.find('#iconFlag').val('staff').addClass('edited');
-      $form.find('.general-inputs').removeClass('hidden');
-      updateEventView.updatedView($form, $listgroup);
-      break;
-    case 'Town Hall':
-      $form.find('#iconFlag').val('in-person').addClass('edited');
-      $form.find('.general-inputs').removeClass('hidden');
-      updateEventView.updatedView($form, $listgroup);
-      break;
-    case 'Empty Chair Town Hall':
-      $form.find('#iconFlag').val('activism').addClass('edited');
-      $form.find('.general-inputs').removeClass('hidden');
-      updateEventView.updatedView($form, $listgroup);
-      break;
-    default:
-      $form.find('.general-inputs').removeClass('hidden');
-      updateEventView.updatedView($form, $listgroup);
-
-    }
+    updateEventView.showHideMeetingTypeFields(value, $form);
+    updateEventView.updatedView($form, $listgroup);
   };
 
   updateEventView.loadOldEvents = function() {

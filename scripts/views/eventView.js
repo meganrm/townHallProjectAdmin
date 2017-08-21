@@ -268,7 +268,7 @@
       updateProgressBar($memberBar, total, $total);
     }
     $bar = $(`.${party}-aug-total-${chamber}`);
-    updateTotalEventsBar($bar)
+    updateTotalEventsBar($bar);
   }
 
   eventHandler.membersEvents = new Set();
@@ -282,17 +282,22 @@
           eventHandler.membersEvents.add(townhall.Member);
         }
         if (townhall.Party === 'Republican') {
-          party = 'rep'
+          party = 'rep';
         } else {
-          party = 'dem'
+          party = 'dem';
         }
-        if (townhall.District === 'Senate') {
-          total = 100;
-          chamber = 'senate'
-        } else {
+        if (townhall.district) {
           total = 434;
-          chamber = 'house'
-
+          chamber = 'house';
+        } else if (townhall.District === 'Senate') {
+          total = 100;
+          chamber = 'senate';
+        } else if (townhall.District.split('-').length > 1){
+          total = 434;
+          chamber = 'house';
+        } else {
+          total = 100;
+          chamber = 'senate';
         }
       parseBars(party, chamber, newMember, total);
     }
@@ -330,8 +335,6 @@
       TownHall.addFilterIndexes(ele);
       eventHandler.checkTimeFormat(ele);
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
-      var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
-      var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
       if (ele.timeStart24 && ele.timeEnd24) {
         if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
           console.log('24 hour time error: ', ele.eventId);
@@ -358,16 +361,9 @@
 
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {
-        console.log('missing meeting type: ', ele.eventId);
+        console.log('no meeting type', ele);
       } else {
-        switch (ele.meetingType.slice(0, 4)) {
-        case 'Tele':
-          $toAppend.find('.location-data').html(teleInputsTemplate(ele));
-          break;
-        case 'Tick':
-          $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
-          break;
-        }
+        updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
       }
       $('#all-events-table').append($toAppend);
     });
@@ -382,8 +378,6 @@
       obj = {};
       TownHall.allTownHallsFB[ele.eventId] = ele;
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
-      var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
-      var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
       var approveButtons = Handlebars.getTemplate('approveButtons');
 
       if (ele.timeStart24 && ele.timeEnd24) {
@@ -397,10 +391,10 @@
 
       if (!ele.zoneString && ele.lat) {
         ele.validateZone(ele.eventId).then(function(returnedTH){
-          TownHall.allTownHallsFB[ele.eventId] = returnedTH
+          TownHall.allTownHallsFB[ele.eventId] = returnedTH;
           returnedTH.updateUserSubmission(ele.eventId).then(function(updated){
-          })
-        })
+          });
+        });
       }
       if (ele.yearMonthDay) {
         var month = ele.yearMonthDay.split('-')[1];
@@ -418,14 +412,7 @@
       if (!ele.meetingType) {
         console.log('no meeting type', ele);
       } else {
-        switch (ele.meetingType.slice(0, 4)) {
-        case 'Tele':
-          $toAppend.find('.location-data').html(teleInputsTemplate(ele));
-          break;
-        case 'Tick':
-          $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
-          break;
-        }
+        updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
       }
       $toAppend.find('.btns').html(approveButtons(ele));
       $('#for-approval').append($toAppend);
