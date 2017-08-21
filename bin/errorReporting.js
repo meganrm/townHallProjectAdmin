@@ -26,5 +26,4 @@ errorReport.prototype.sendEmail = function(){
   });
 };
 
-
 module.exports = errorReport;

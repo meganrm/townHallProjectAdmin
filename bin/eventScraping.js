@@ -149,13 +149,19 @@ function createEventbriteQuery(queryTerm) {
 }
 
 function transformFacebookTownhall(event) {
+  var district;
+  if (event.MoC.type === 'sen') {
+    district = 'Senate';
+  } else {
+    district = event.MoC.state + '-' + event.MoC.district;
+  }
   let start = new Date(event.start_time);
   var townhall = {
     eventId: 'fb_' + event.id,
     Member: event.MoC.displayName,
     govtrack_id: event.MoC.govtrack_id,
     Party: event.MoC.party,
-    District: event.MoC.state + '-' + event.MoC.district,
+    District: district,
     State: statesAb[event.MoC.state],
     stateName: statesAb[event.MoC.state],
     state: event.MoC.state,
