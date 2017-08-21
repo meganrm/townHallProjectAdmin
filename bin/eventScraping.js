@@ -41,9 +41,9 @@ function getFacebookEvents(MoCs) {
   var startDate = Math.floor(new Date() / 1000); //Needs to be in Unix timestamp form
   Object.keys(MoCs).forEach(id => {
     let MoC = MoCs[id];
-    if (MoC.hasOwnProperty('facebook') && MoC.facebook) {
+    if (MoC.hasOwnProperty('facebook') && MoC.facebook_account) {
       facebookPromises.push(
-        createFacebookQuery(MoC.facebook, startDate).then(res => {
+        createFacebookQuery(MoC.facebook_account, startDate).then(res => {
           // Create references to MoCs for easy data lookup later
           res.data.forEach(event => event.MoC = MoC);
           return res.data;
