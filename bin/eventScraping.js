@@ -222,3 +222,5 @@ function transformEventbriteTownhall(event) {
 
   return townhall;
 }
+
+module.exports = eventScraping;
