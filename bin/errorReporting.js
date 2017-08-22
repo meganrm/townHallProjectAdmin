@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-function errorReport(error) {
+function errorReport(error, subject) {
   this.from = 'Town Hall Updates <update@updates.townhallproject.com>';
   this.to = 'Megan Riel-Mehan <meganrm@townhallproject.com>';
-  this.subject = 'Something has gone terribly wrong';
+  this.subject = subject? subject: 'Something has gone terribly wrong';
   if (typeof(error) === 'object') {
     var str='';
     Object.keys(error).forEach(function(key){
