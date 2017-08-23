@@ -115,7 +115,7 @@
             }
 
             if (updatedDistrict) {
-                // updateObj(`/townHallsOld/${date_key}/${key}`, 'district', updatedDistrict);
+                updateObj(`/townHallsOld/${date_key}/${key}`, 'district', updatedDistrict);
             } else {
                 // none of the townhallobj district values are blank
                 // so these will now just go to 'Senate' for value
