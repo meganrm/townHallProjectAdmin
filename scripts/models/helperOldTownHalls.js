@@ -139,7 +139,11 @@
         }
   
         if (updatedDistrict) {
-          updateObj(`/townHallsOld/${date_key}/${key}`, 'district', updatedDistrict);
+          updateObj(
+            `/townHallsOld/${date_key}/${key}`,
+            "district",
+            updatedDistrict
+          );
         } else {
           console.log("no district : " + townHallObj.eventId, key, date_key);
         }
@@ -233,7 +237,7 @@
             // set event govtrack_id to value
             updateObj(
               `/townHallsOld/${date_key}/${key}`,
-              'govtrack_id',
+              "govtrack_id",
               govtrack_id
             );
           })
@@ -273,39 +277,46 @@
     // getMember
     getMember = function(displayName) {
       var memberKey;
+      if (displayName == 'Schweikert') {
+          displayName = 'david schweikert;'
+      }
+      //console.log(displayName);
+      // displayName = displayName.replace(/[^\w\sáúé]/g, '');
+      // displayName = displayName.replace(/(^|\s)(representative)|(rep)|(senator)|(\s|$)|[^\w\sáúé]/g, '');
+      formatName = displayName.replace(
+        /[^\w\sáúé-]|(rep)\s|(representative)\s|(senator)\s/gi,
+        ""
+      );
   
-      if (displayName.split(" ").length === 3) {
-        memberKey =
-          displayName.split(" ")[1].toLowerCase() +
-          displayName.split(" ")[2].toLowerCase() +
-          "_" +
-          displayName.split(" ")[0].toLowerCase();
+      if (formatName.split(" ").length === 3) {
+        if (formatName.split(" ")[1].length === 1) {
+          memberKey =
+          formatName.split(" ")[2].toLowerCase() +
+            "_" +
+            formatName.split(" ")[0].toLowerCase();
+        } else {
+          memberKey =
+          formatName.split(" ")[1].toLowerCase() +
+          formatName.split(" ")[2].toLowerCase() +
+            "_" +
+            formatName.split(" ")[0].toLowerCase();
+        }
       } else {
         memberKey =
-          displayName.split(" ")[1].toLowerCase() +
+        formatName.split(" ")[1].toLowerCase() +
           "_" +
-          displayName.split(" ")[0].toLowerCase();
+          formatName.split(" ")[0].toLowerCase();
       }
   
-      if ((/^[a-z]\.(.+)\_(.+)/g).test(memberKey)) { // (e.clyburn_james)
-        memberKey = memberKey.replace(/^[a-z]\./g, "");
-      } else if ((/(.+)\,\_(.+)/g).test(memberKey)) { // (burr,_richard)
-        memberKey = memberKey.replace(/[,]+/g, "");
-      } else if ((/(.+)\,(jr)\.\_(.+)/g).test(memberKey)) { // (casey,jr.bob)
-        memberKey = memberKey.replace(/\,(jr)\./g, "");
-      }
-  
+      memberKey = memberKey.replace(/^[a-z]\./g, "");
+      memberKey = memberKey.replace(/[,]+/g, "");
+      memberKey = memberKey.replace(/\,(jr)\./g, "");
+      memberKey = memberKey.replace(/(jr)/g, "");
   
       // *** also special cases with a number of names **
       switch (memberKey) {
-        case "donaldmceachin_a.":
+        case "donaldmceachin_a":
           memberKey = "mceachin_donald";
-          break;
-        case "comerjr._james":
-          memberKey = "comer_james";
-          break;
-        case "butterfield_g.k.":
-          memberKey = "butterfield_gk";
           break;
         case "himes_jim":
           memberKey = "himes_james";
@@ -328,17 +339,8 @@
         case "walz_tim":
           memberKey = "walz_timothy";
           break;
-        case "carolshea-porter_rep":
-          memberKey = "sheaporter_carol";
-          break;
-        case "donaldnorcross_rep":
-          memberKey = "norcross_donald";
-          break;
         case "smith_chris":
           memberKey = "smith_christopher";
-          break;
-        case "burr,_richard":
-          memberKey = "burr_richard";
           break;
         case "portman_rob":
           memberKey = "portman_robert";
@@ -355,6 +357,7 @@
         case "velazquez_nydia":
           memberKey = "velázquez_nydia";
           break;
+        case "barragn_nanette":
         case "barragan_nanette":
           memberKey = "barragán_nanette";
           break;
@@ -370,10 +373,6 @@
         case "serrano_jose":
           memberKey = "serrano_josé";
           break;
-        case 'shaheen_senator':
-        case "shaheen,_senator":
-          memberKey = "shaheen_jeanne";
-          break;
         case "cardin_ben":
           memberKey = "cardin_benjamin";
           break;
@@ -388,9 +387,6 @@
         case "jameslagevin_representive":
         case "langevin_jim":
           memberKey = "langevin_james";
-          break;
-        case "johnsarbanes_rep":
-          memberKey = "sarbanes_john";
           break;
         case "pearce_steve":
           memberKey = "pearce_stevan";
@@ -408,7 +404,7 @@
         case "beyer_don":
           memberKey = "beyer_donald";
           break;
-        case "manchiniii_joe": 
+        case "manchiniii_joe":
           memberKey = "manchin_joe";
           break;
         case "moultan_seth":
@@ -470,9 +466,6 @@
         case "bonamici_susan":
           memberKey = "bonamici_suzanne";
           break;
-        case "cburgess_michael":
-          memberKey = "burgess_michael";
-          break;
         case "crawford_rick":
           memberKey = "crawford_eric";
           break;
@@ -491,7 +484,7 @@
         case "esty_elzabeth":
           memberKey = "esty_elizabeth";
           break;
-        case "davis(illinois)_rodney":
+        case "davisillinois_rodney":
           memberKey = "davis_rodney";
           break;
         case "renacci_jim":
@@ -504,10 +497,11 @@
           memberKey = "knight_steve";
           break;
         case "mclanekuster_ann":
+        case 'ann_rep':
         case "kuster_annie":
           memberKey = "kuster_ann";
           break;
-        case "johnson(wisconsin)_ron":
+        case "johnsonwisconsin_ron":
           memberKey = "johnson_ron";
           break;
         case "raylujan_ben":
@@ -520,7 +514,7 @@
         case "jontester_senator":
           memberKey = "tester_jon";
           break;
-        case "scott(georgia)_david":
+        case "scottgeorgia_david":
           memberKey = "scott_david";
           break;
         case "isakson_johnny":
@@ -541,8 +535,14 @@
         case "sanchez_linda":
           memberKey = "sánchez_linda";
           break;
-        case "b.holding_george":  
+        case "ebholding_george":
           memberKey = "holding_george";
+          break;
+        case "crdenas_tony":
+          memberKey = "cárdenas_tony";
+          break;
+        case 'norman_ralph':
+          memberKey = 'abraham_ralph';
           break;
         default:
           // not a special case
@@ -552,12 +552,11 @@
       // still missing:
       // price_tom
       // shuster_brian
-      // lusk,_nancy
+      // lusk,_nancy (multiple members listed on event)
+      // hassan shaheen (multiple members listed on event)
+      // till_burr (multiple members on listed event)
       // blarson_john
       // ruben_rep
-      // ann_rep
-      // norman_ralph
-      // Schweikert
   
       return new Promise(function(resolve, reject) {
         firebase
@@ -570,7 +569,8 @@
             } else {
               reject(
                 memberKey +
-                  " That member is not in our database, please check the spelling, and only use first and last name."
+                  " That member is not in our database, please check the spelling, and only use first and last name. "
+                  + displayName 
               );
             }
           });
@@ -590,13 +590,6 @@
     function getKeyByValue(object, value) {
       return Object.keys(object).find(function(key) {
         return object[key] === value;
-      });
-    }
-  
-    // get object value from key
-    function getValueByKey(object, key) {
-      return Object.values(object).find(function(value) {
-        return value === object[key];
       });
     }
   
