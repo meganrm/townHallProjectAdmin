@@ -335,29 +335,6 @@
       TownHall.addFilterIndexes(ele);
       eventHandler.checkTimeFormat(ele);
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
-      if (ele.timeStart24 && ele.timeEnd24) {
-        if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
-          console.log('24 hour time error: ', ele.eventId);
-        } else {
-          ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
-          ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
-        }
-      }
-      if (ele.yearMonthDay) {
-        var month = ele.yearMonthDay.split('-')[1];
-        var day = ele.yearMonthDay.split('-')[2];
-        if (!month || !day) {
-          console.log('date error', ele.eventId);
-        } else {
-          if (month.length === 1) {
-            month = 0 + month;
-          }
-          if (day.length === 1) {
-            day = 0 + day;
-          }
-          ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
-        }
-      }
 
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {
@@ -372,22 +349,12 @@
 
 
   eventHandler.readDataUsers = function () {
-
     firebase.database().ref('/UserSubmission/').on('child_added', function getSnapShot(snapshot) {
       var ele = new TownHall(snapshot.val());
       obj = {};
       TownHall.allTownHallsFB[ele.eventId] = ele;
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var approveButtons = Handlebars.getTemplate('approveButtons');
-
-      if (ele.timeStart24 && ele.timeEnd24) {
-        if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
-          console.log(ele.eventId);
-        } else {
-          ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
-          ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
-        }
-      }
 
       if (!ele.zoneString && ele.lat) {
         ele.validateZone(ele.eventId).then(function(returnedTH){
@@ -404,13 +371,15 @@
       } else {
         updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
       }
+      if (!ele.lat) {
+        $toAppend.find('#geocode-button').removeClass('disabled');
+        $toAppend.find('#geocode-button').addClass('btn-blue');
+        $toAppend.find('#locationCheck').val('');
+      }
       $toAppend.find('.btns').html(approveButtons(ele));
       $('#for-approval').append($toAppend);
     });
-    $('[data-toggle="tooltip"]').tooltip();
   };
-
-  $('');
 
   module.eventHandler = eventHandler;
 })(window);
