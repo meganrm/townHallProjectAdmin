@@ -396,17 +396,7 @@
           });
         });
       }
-      if (ele.yearMonthDay) {
-        var month = ele.yearMonthDay.split('-')[1];
-        var day = ele.yearMonthDay.split('-')[2];
-        if (month && month.length === 1) {
-          month = 0 + month;
-        }
-        if (day && day.length === 1) {
-          day = 0 + day;
-        }
-        ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
-      }
+
       ele.lastUpdatedHuman = new Date(ele.lastUpdated).toDateString();
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {
