@@ -44,16 +44,8 @@ function eventValidation() {
   //   req.end();
   // };
 
-  function readData() {
-    firebasedb.ref('townHalls/').on('child_changed', function(snapshot){
-      var townhall = snapshot.val();
-      dateTimeValidation(townhall, 'townHalls/');
-    });
-    firebasedb.ref('UserSubmission/').on('child_added', function(snapshot){
-      var townhall = snapshot.val();
-      dateTimeValidation(townhall, 'UserSubmission/');
-    });
-  }
+
+
 
   function needsGeoCode(townhall){
     if (!townhall.lat && townhall.address) {
@@ -88,15 +80,15 @@ function eventValidation() {
       dateValid(townhall.yearMonthDay) &&
       timeValid(townhall.timeStart24) &&
       timeValid(townhall.timeEnd24)) {
-      if (!townhall.isValid) {
+      if (!townhall.dateValid) {
         update = {};
         update.dateValid = true;
         updateEvent(townhall.eventId, update, path);
       }
     } else if (!townhall.repeatingEvent) {
       if (needsGeoCode(townhall)) {
-        error = new ErrorReport(townhall.eventId, 'Needs geocode');
-        // error.sendEmail();
+        error = new ErrorReport(path + townhall.eventId, 'Needs geocode');
+        error.sendEmail();
       }
       if (!dateValid(townhall.yearMonthDay)) {
         console.log('date', townhall);
@@ -128,6 +120,14 @@ function eventValidation() {
     console.log(path + key, update);
     firebasedb.ref(path + key).update(update);
   }
-  readData()
+
+  firebasedb.ref('townHalls/').on('child_changed', function(snapshot){
+    var townhall = snapshot.val();
+    dateTimeValidation(townhall, 'townHalls/');
+  });
+  firebasedb.ref('UserSubmission/').on('child_added', function(snapshot){
+    var townhall = snapshot.val();
+    dateTimeValidation(townhall, 'UserSubmission/');
+  });
 }
 module.exports = eventValidation;

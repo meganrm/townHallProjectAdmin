@@ -318,7 +318,7 @@
       $form.find('.general-inputs').removeClass('hidden');
       $form.find('.adopter-data').removeClass('hidden');
       $form.find('#iconFlag').val('activism').addClass('edited');
-      setupTypeaheads('#districtAdopter');
+      // setupTypeaheads('#districtAdopter');
       break;
     case 'Ticketed Event':
       $form.find('#iconFlag').val('in-person').addClass('edited');
