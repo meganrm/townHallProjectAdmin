@@ -118,7 +118,7 @@ function eventValidation() {
 
   function updateEvent(key, update, path) {
     console.log(path + key, update);
-    // firebasedb.ref(path + key).update(update);
+    firebasedb.ref(path + key).update(update);
   }
 
   firebasedb.ref('townHalls/').on('child_changed', function(snapshot){
