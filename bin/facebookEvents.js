@@ -63,6 +63,16 @@ function getFacebookEvents(MoCs) {
   });
 }
 
+function removeExistingIds(eventIds) {
+  existingTownHallIds.forEach(existingId => {
+    let position = eventIds.indexOf(existingId);
+    if (position !== -1) {
+      eventIds.splice(position, 1);
+    }
+  });
+  return eventIds;
+}
+
 function submitTownhall(townhall) {
   console.log(townhall);
   var updates = {};
