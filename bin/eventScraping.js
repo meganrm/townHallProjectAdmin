@@ -10,6 +10,7 @@ var moment = require('moment');
 
 // Get list of existing townhalls so we don't submit duplicates
 var existingTownHallIds = [];
+
 firebasedb.ref('/townHallIds/').once('value').then(function(snapshot){
   snapshot.forEach(node => {
     existingTownHallIds.push(node.val().eventId);
