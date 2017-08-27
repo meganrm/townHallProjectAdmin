@@ -5,6 +5,8 @@
 var request = require('request-promise'); // NB:  This is isn't the default request library!
 
 var eventbriteToken = process.env.EVENTBRITE_TOKEN;
+var facebookToken = process.env.FACEBOOK_TOKEN;
+var firebaseKey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n');
 var statesAb = require('../bin/stateMap.js');
 var firebasedb = require('../bin/setupFirebase.js');
 
