@@ -11,11 +11,13 @@ var config = {
 };
 firebase.initializeApp(config);
 
-var termsToMatch = ['townhall', 'town hall', 'listening', 'forum', 'conversation', 'coffee'];
+var termsToMatch = ['townhall', 'town hall'];
 var visitedPages = [];
 var matchingPages = [];
 var MoCs = {};
 var currentMoC = {index: 0, name: ''};
+const today = new Date();
+const msPerDay = 1000*60*60*24;
 
 var crawler = new Crawler({
   maxConnections : 5,
@@ -31,7 +33,6 @@ var crawler = new Crawler({
       done();
       return;
     }
-
     let currentUrl = res.request.uri.href;
     // Avoid following 404s/redirects/etc
     if (res.statusCode !== 200 || currentUrl.indexOf('www.senate.gov') !== -1 || currentUrl.indexOf('//senate.gov') !== -1 ||
@@ -45,9 +46,11 @@ var crawler = new Crawler({
     let MoC = res.options.name;
     let host = res.request.uri.host.replace('www.', '');
     let text = $('body').text().toLowerCase();
+
     let foundMatches = termsToMatch.some(term => text.indexOf(term.toLowerCase()) !== -1);
-    if (foundMatches) {
-      matchingPages.push(currentUrl);
+    let lastModified = res.headers.hasOwnProperty('last-modified') ? new Date(res.headers['last-modified']) : null;
+    if (foundMatches && !lastModified || ((today - lastModified)/msPerDay) <= 90) {
+      matchingPages.push({'url': currentUrl, 'date': lastModified ? lastModified.toISOString().substring(0, 10) : null });
     }
     let re = new RegExp('^(?!mailto:|javascript:|..\/..\/|#)(?:http.?:\/\/(?:www\.)?' + host + '(?!http)).*', 'im');
     let internalLinks = $('a[href]').map(function() {
@@ -79,13 +82,13 @@ crawler.on('drain', function() {
       console.log('writing out', currentMoC.name);
       console.log('================================================');
       let data = '';
-      matchingPages.forEach(url => data += currentMoC.name + '~' + url + '\r\n');
+      matchingPages.forEach(obj => data += currentMoC.name + '~' + obj.url + '~' + (obj.date  !== null ? obj.date : '') + '\r\n');
       fs.appendFile('MoCUrls.csv', data);
       nextMoC();
     } else {
       console.log('Queue not empty:', crawler.queue);
     }
-  }, 30000);
+  }, 10000);
 });
 
 firebase.database().ref('mocData/').once('value').then((snapshot) => {
