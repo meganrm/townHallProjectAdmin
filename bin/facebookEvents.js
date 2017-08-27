@@ -57,10 +57,23 @@ function getFacebookEvents(MoCs) {
 
     facebookEvents.forEach(event => {
       if (newEventIds.indexOf('fb_' + event.id) !== -1) {
-        // submitTownhall(transformFacebookTownhall(event));
+        submitTownhall(transformFacebookTownhall(event));
       }
     });
   });
+}
+
+function submitTownhall(townhall) {
+  console.log(townhall);
+  var updates = {};
+  updates['/townHallIds/' + townhall.eventId] = {
+    eventId:townhall.eventId,
+    lastUpdated: Date.now()
+  };
+  updates['/UserSubmission/' + townhall.eventId] = townhall;
+
+  return firebasedb.ref().update(updates);
+
 }
 
 function createFacebookQuery(facebookID, startDate) {
@@ -68,6 +81,50 @@ function createFacebookQuery(facebookID, startDate) {
     uri: 'https://graph.facebook.com/v2.10/' + facebookID + '/events?since=' + startDate +'&access_token=' + facebookToken,
     json: true
   });
+}
+
+function transformFacebookTownhall(event) {
+  var district;
+  if (event.MoC.type === 'sen') {
+    district = 'Senate';
+  } else {
+    district = event.MoC.state + '-' + event.MoC.district;
+  }
+  let start = new Date(event.start_time);
+  var townhall = {
+    eventId: 'fb_' + event.id,
+    Member: event.MoC.displayName,
+    govtrack_id: event.MoC.govtrack_id,
+    Party: event.MoC.party,
+    District: district,
+    State: statesAb[event.MoC.state],
+    stateName: statesAb[event.MoC.state],
+    state: event.MoC.state,
+    eventName: event.name,
+    meetingType: 'unknown',
+    link: 'https://www.facebook.com/events/' + event.id + '/',
+    linkName: 'Facebook Link',
+    dateObj: Date.parse(start),
+    dateString: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
+    Date: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
+    Time: moment.parseZone(event.start_time).format('LT'),
+    timeStart24: moment.parseZone(event.start_time).format('HH:mm:ss'),
+    timeEnd24: moment.parseZone(event.end_time).format('HH:mm:ss'),
+    yearMonthDay: moment.parseZone(event.start_time).format('YYYY-MM-DD'),
+    lastUpdated: Date.now()
+  };
+
+  if (event.hasOwnProperty('place')) {
+    townhall.Location = event.place.name;
+    if (event.place.hasOwnProperty('location')) {
+      var location = event.place.location;
+      townhall.lat = location.latitude;
+      townhall.lng = location.longitude;
+      townhall.address = location.street + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
+    }
+  }
+
+  return townhall;
 }
 
 console.log('working')
