@@ -1,8 +1,8 @@
-<li id="{{id}}" class="event-row list-group-item {{lastUpdated}} {{chamber}} daysAgo daysAgo-{{daysAgo}}">
+<div id="{{id}}" class="col-xs-12 element-item event-row {{lastUpdated}} {{missingMember}} {{party}} {{chamber}} {{name}} {{state}} {{#if daysAgo}}daysAgo{{/if}} daysAgo-{{daysAgo}}">
   <ul class="list-inline list-inline-separated">
-    <li>{{name}}</li>
-    <li>{{state}}</li>
-    <li>{{lastUpdated}}</li>
-    <li>{{lastUpdatedBy}}</li>
+    <li class="col-xs-3">{{name}}</li>
+    <li class="col-xs-3">{{state}}</li>
+    <li class="col-xs-3">{{lastUpdated}}</li>
+    <li class="col-xs-3">{{lastUpdatedBy}} {{#if missingMember}}<small>*missing</small>{{/if}}</li>
   </ul>
-</li>
+</div>

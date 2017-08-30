@@ -10,28 +10,37 @@
 
   Moc.loadAllUpdated = function(){
     var allupdated = [];
+    dataviz.initalProgressBar(100, $('.dem-senate-report'));
+    dataviz.initalProgressBar(100, $('.rep-senate-report'));
+    dataviz.initalProgressBar(434, $('.dem-house-report'));
+    dataviz.initalProgressBar(434, $('.rep-house-report'));
     return new Promise(function (resolve, reject) {
       firebase.database().ref('mocData/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){
           var memberobj = new Moc(member.val());
-          var name = memberobj.displayName;
-          var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
-          var days;
-          if (memberobj.lastUpdated) {
-            var now = moment();
-            var timeAgo = moment(memberobj.lastUpdated);
-            days = now.diff(timeAgo, 'days');
+          if (memberobj.in_office) {
+            var name = memberobj.displayName;
+            var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
+            var days;
+            if (memberobj.lastUpdated) {
+              dataviz.mocReportProgress(memberobj)
+              var now = moment();
+              var timeAgo = moment(memberobj.lastUpdated);
+              days = now.diff(timeAgo, 'days');
+            }
+            Moc.allMocsObjs[member.key] = memberobj;
+            allupdated.push({
+              id: member.key,
+              name: name,
+              chamber : memberobj.type,
+              party : memberobj.party,
+              state: memberobj.state,
+              lastUpdatedBy : memberobj.lastUpdatedBy,
+              lastUpdated : lastUpdated,
+              daysAgo: days,
+              missingMember: memberobj.missingMember
+            });
           }
-          Moc.allMocsObjs[member.key] = memberobj;
-          allupdated.push({
-            id: member.key,
-            name: name,
-            chamber : memberobj.type,
-            state: memberobj.state,
-            lastUpdatedBy : memberobj.lastUpdatedBy,
-            lastUpdated : lastUpdated,
-            daysAgo: days
-          });
         });
         console.log(allupdated.length);
         allupdated.sort(function(a, b) {
