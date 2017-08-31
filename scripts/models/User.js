@@ -8,22 +8,32 @@
 
   User.prototype.assignMoc = function(mocID){
     var user = this;
-    console.log('users/' + user.ID + '/mocs/' + mocID);
-    firebase.database().ref('users/' + user.ID + '/mocs/' + mocID).update({isAssigned : true})
+    var ref = firebase.database().ref('users/' + user.ID + '/mocs/' + mocID + '/lastUpdated')
+    ref.once('value').then(function(snapshot){
+      if (parseInt(snapshot.val()) && moment(snapshot.val()).isValid()){
+        lastUpdated = snapshot.val()
+        console.log('lastUpdated', lastUpdated);
+      } else {
+        lastUpdated = ''
+      }
+      console.log('users/' + user.ID + '/mocs/' + mocID,{lastUpdated : lastUpdated});
+      firebase.database().ref('users/' + user.ID + '/mocs/' + mocID).update({lastUpdated : lastUpdated})
+    })
   }
 
-  // userAssignments.forEach(function(ele){
-  //   if (ele.ID) {
-  //     var user = new User(ele)
-  //     for (var i = 0; i < 9; i++) {
-  //       if (user['isAssigned_' + i] === 'yes') {
-  //         var mocID = user['moc_id_' + i]
-  //         console.log(user['isAssigned_' + i]);
-  //         user.assignMoc(mocID)
-  //       }
-  //     }
-  //   }
-  // })
+  function readResearcherAssignments(array) {
+    array.forEach(function(ele){
+      if (ele.ID) {
+        var user = new User(ele)
+        for (var i = 0; i < 9; i++) {
+          if (user['isAssigned_' + i] === 'yes') {
+            var mocID = user['moc_id_' + i]
+            user.assignMoc(mocID)
+          }
+        }
+      }
+    })
+  }
 
   User.getUser = function(userID){
     return new Promise(function(resolve, reject) {
@@ -36,7 +46,7 @@
       })
     });
   }
-  
+
   User.download = function(){
     var users = []
     var maxLength = 0
