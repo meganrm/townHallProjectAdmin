@@ -1,3 +1,4 @@
+require('dotenv').load();
 var admin = require('firebase-admin');
 var firebasekey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n');
 

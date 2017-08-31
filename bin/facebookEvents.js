@@ -9,7 +9,6 @@ var facebookToken = process.env.FACEBOOK_TOKEN;
 var firebaseKey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n');
 var statesAb = require('../bin/stateMap.js');
 var firebasedb = require('../bin/setupFirebase.js');
-
 var moment = require('moment');
 
 // Get list of existing townhalls so we don't submit duplicates
