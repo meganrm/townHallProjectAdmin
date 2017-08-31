@@ -1952,7 +1952,7 @@ userAssignments = [
     "isAssigned_8": ""
   },
   {
-    "ID": "",
+    "ID": "OdFqJrvQc2fYEe32bLoHgZG9cJx1",
     "Name": "Jewell Porter",
     "email": "jewelldporter@gmail.com",
     "moc_id_0": 300089,
@@ -2016,7 +2016,7 @@ userAssignments = [
     "isAssigned_8": ""
   },
   {
-    "ID": "",
+    "ID": "fcIIUobBMyYwzJJys7GIzNIRWWA3",
     "Name": "Katy Archibald",
     "email": "ktscollections@gmail.com",
     "moc_id_0": 412422,
@@ -2176,7 +2176,7 @@ userAssignments = [
     "isAssigned_8": ""
   },
   {
-    "ID": "",
+    "ID": "DG4WZgG2JlffgWQYgxTHu4I3F2A2",
     "Name": "Rob Sichler",
     "email": "meminso@gmail.com",
     "moc_id_0": 412501,
