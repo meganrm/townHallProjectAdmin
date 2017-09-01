@@ -22,7 +22,11 @@
     }
     this.event_starts_at_date = moment(cur.dateObj).format('L');
     this.event_starts_at_time = cur.Time.split(' ')[0];
-    this.event_starts_at_ampm = cur.Time.split(' ')[1].toLowerCase();
+    if (cur.Time.split(' ')[1]) {
+      this.event_starts_at_ampm = cur.Time.split(' ')[1].toLowerCase();
+    } else {
+      this.event_starts_at_ampm = ' '
+    }
     this.event_venue = cur.Location ? cur.Location: ' ';
     this.event_address1 = address;
     this.event_city = city;
@@ -41,7 +45,7 @@
       var cutoff = moment($date)
     }
     data = TownHall.allTownHalls.filter(function(ele){
-      return !ele.repeatingEvent && ele.meetingType != 'Tele-Town Hall' && moment(ele.dateObj).isAfter() && ele.meetingType !=='Tele-town Hall';}).reduce(function(acc, cur){
+      return moment(ele.dateObj).isValid()}).reduce(function(acc, cur){
         obj = new CSVTownHall(cur);
         if (obj.event_address1 ) {
           if (cutoff) {
