@@ -401,8 +401,8 @@
       if (user.uid !== TownHall.currentUser) {
         console.log(user.displayName, ' is signed in');
         TownHall.currentUser = user.uid;
-        DownLoadCenter.downloadButtonHandler('user-download', User.download, 'isAdmin');
-        DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download);
+        // DownLoadCenter.downloadButtonHandler('user-download', User.download, 'isAdmin');
+        
         eventHandler.readData('/townHalls/');
         eventHandler.metaData();
         eventHandler.readDataUsers();

@@ -252,6 +252,12 @@
       }
       $('#all-events-table').append($toAppend);
     });
+    firebase.database().ref(path).once('value').then(function(snapshot){
+      DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download, false);
+      DownLoadCenter.downloadButtonHandler('CAP-download', CSVTownHall.download, false, 'CAP CSV download');
+      DownLoadCenter.downloadButtonHandler('SC-download', CSVTownHall.download, false, 'Sierra Club CSV download');
+
+    })
     $('[data-toggle="tooltip"]').tooltip();
   };
 

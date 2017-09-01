@@ -455,11 +455,18 @@
             <div role="tabpanel" class="tab-pane page" id="download-center">
               <section class="">
                 <h3 class="text-primary table-title text-center">Download Center</h3>
-                <ul id="ACLU-buttons">
-                  <button type="button" name="button" class="btn hidden" id="ACLU-download">Click to compile ACLU data</button>
-                  <button type="button" name="button" class="btn hidden" id="user-download">Click to compile user data</button>
+                <h4>For our partners</h4>
+                <!-- <div class="form-group">
+                  <label for="dateInput">Download events updated or added after:</label>
+                  <input type="text" class="form-control" id="dateInput" placeholder="DD/MM/YYYY">
+                  <span id="helpBlock" class="help-block">If blank will download all the events currenlty on the site.</span>
+                </div> -->
+                <ul id="ACLU-buttons" class="list-inline">
                 </ul>
-                <div class="row">
+                <h4>THP Downloads</h4>
+                <ul id="THP-downloads" class="list-inline">
+                </ul>
+                <!-- <div class="row">
                   <h4>Members of Congress holding town halls during August Recess</h4>
                   <h4>Senate</h4>
                   <div class="progress">
@@ -521,7 +528,7 @@
                   </dl>
 
 
-                </div>
+                </div> -->
                 <h4>Missing Member Flier</h4>
                 <div class="">
                   <div class="form-group col-md-12" id="member-form-group">
@@ -574,6 +581,7 @@
     <script src="/scripts/models/event0.js"></script>
     <script src="/scripts/models/moc.js"></script>
     <script src="/scripts/models/downloadingEvents.js"></script>
+    <script src="/scripts/models/capEvents.js"></script>
     <script src="/scripts/models/User.js"></script>
 
     <script src="/scripts/views/eventView.js"></script>

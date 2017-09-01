@@ -149,7 +149,7 @@
       link.setAttribute('href', 'http://www.example.com/export');
     }
     link.innerHTML = 'Download Mocs';
-    document.getElementById('ACLU-buttons').appendChild(link);
+    document.getElementById('THP-downloads').appendChild(link);
   };
 
   module.Moc = Moc;

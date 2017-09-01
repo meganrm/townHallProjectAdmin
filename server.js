@@ -119,7 +119,6 @@ IndTownHall.prepTownHall = function(townhall){
     }
   }
 };
-
 firebasedb.ref('townHalls/').on('child_added', function(snapshot){
   var townhall = snapshot.val();
   firebasedb.ref(`townHallIds/${townhall.eventId}`).once('value').then(function(ele){
@@ -130,7 +129,7 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
     if (idObj && !idObj.indivisiblepath) {
       IndTownHall.prepTownHall(townhall);
     } else {
-      console.log('already added');
+      console.log('already added', idObj);
     }
   });
 

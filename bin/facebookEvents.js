@@ -73,7 +73,6 @@ function removeExistingIds(eventIds) {
 }
 
 function submitTownhall(townhall) {
-  console.log(townhall);
   var updates = {};
   updates['/townHallIds/' + townhall.eventId] = {
     eventId:townhall.eventId,
