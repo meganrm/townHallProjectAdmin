@@ -210,10 +210,7 @@
   }
 
   eventHandler.readData = function (path) {
-    dataviz.initalProgressBar(100, $('.dem-senate'));
-    dataviz.initalProgressBar(100, $('.rep-senate'));
-    dataviz.initalProgressBar(434, $('.dem-house'));
-    dataviz.initalProgressBar(434, $('.rep-house'));
+
     $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;

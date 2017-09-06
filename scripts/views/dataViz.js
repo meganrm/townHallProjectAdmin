@@ -20,6 +20,7 @@
   dataviz.getPastEvents = function(path, dateStart, dateEnd){
     var ref = firebase.database().ref(path);
     ref.orderByChild('dateObj').startAt(dateStart).endAt(dateEnd).on('child_added', function(snapshot) {
+      console.log(snapshot.val().Date);
       dataviz.recessProgress(snapshot.val());
     });
   };
@@ -113,15 +114,53 @@
     $total.text(currentNoEvents);
     if ($progress) {
       $progress.attr('data-count', 0);
-      $progress.width(0);
+      $progress.width(0 + '%');
+      $progress.text('');
     }
-
   };
 
-  var dateStart = new Date('2017-07-29').valueOf();
-  var dateEnd = new Date('2017-09-04').valueOf();
-  dataviz.getPastEvents('townHallsOld/2017-7', dateStart, dateEnd);
-  dataviz.getPastEvents('townHallsOld/2017-6', dateStart, dateEnd);
+  dataviz.resetGraph = function($bar){
+    $bar.attr('data-count', 0);
+    $bar.width(0 + '%');
+    $bar.text('');
+  }
+
+  dataviz.reset = function(){
+    dataviz.initalProgressBar(100, $('.dem-senate'), $('.dem-aug-progress-senate'));
+    dataviz.initalProgressBar(100, $('.rep-senate'), $('.rep-aug-progress-senate'));
+    dataviz.initalProgressBar(434, $('.dem-house'), $('.dem-aug-progress-house'));
+    dataviz.initalProgressBar(434, $('.rep-house'), $('.rep-aug-progress-house'));
+    dataviz.resetGraph($('.dem-aug-total-house'))
+    dataviz.resetGraph($('.rep-aug-total-house'))
+    dataviz.resetGraph($('.dem-aug-total-senate'))
+    dataviz.resetGraph($('.rep-aug-total-senate'))
+  }
+  dataviz.lookUpEvents = function(e){
+    e.preventDefault()
+    dataviz.reset()
+    var dateStart = moment($('#start-date').val()).startOf('day');
+    var dateEnd = moment($('#end-date').val()).endOf('day');
+    var start = dateStart.valueOf();
+    var end = dateEnd.valueOf()
+
+    var monthStart = dateStart.month();
+    var monthEnd = dateEnd.month();
+    var dates = []
+    for (var i = monthStart; i <= monthEnd; i++) {
+      dates.push('2017-' + i)
+    }
+    console.log(monthStart, monthEnd, dates);
+
+    dates.forEach(function(date){
+      dataviz.getPastEvents('townHallsOld/' + date, start, end);
+    })
+  }
+
+  $('#progress-bar-form').on('submit', dataviz.lookUpEvents)
+  dataviz.initalProgressBar(100, $('.dem-senate'));
+  dataviz.initalProgressBar(100, $('.rep-senate'));
+  dataviz.initalProgressBar(434, $('.dem-house'));
+  dataviz.initalProgressBar(434, $('.rep-house'));
 
   module.dataviz = dataviz;
 })(window);
