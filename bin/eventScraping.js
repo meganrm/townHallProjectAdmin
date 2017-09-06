@@ -159,7 +159,7 @@ function transformFacebookTownhall(event) {
     link: 'https://www.facebook.com/events/' + event.id + '/',
     linkName: 'Facebook Link',
     dateObj: Date.parse(start),
-    dateString: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
+    dateString: moment.parseZone(event.start_time).format('ddd, MMM D YYYY'),
     Date: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
     Time: moment.parseZone(event.start_time).format('LT'),
     timeStart24: moment.parseZone(event.start_time).format('HH:mm:ss'),

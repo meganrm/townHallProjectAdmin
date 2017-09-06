@@ -29,7 +29,7 @@ Researcher.prototype.composeEmail = function(html) {
     subject: `Sample Researcher Email + ${researcher.email}`,
     html: html
   };
-  data['h:Reply-To']='TownHall Project <info@townhallproject.com>, <Emily Blumberg> emilysblumberg@gmail.com';
+  data['h:Reply-To']='TownHall Project <info@townhallproject.com>, Emily Blumberg <emilysblumberg@gmail.com>';
   Researcher.sendEmail(data);
 };
 

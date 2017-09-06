@@ -14,7 +14,7 @@
   //     }
   //   })
   // })
-  function setupTypeaheads() {
+  eventHandler.setupTypeaheads = function setupTypeaheads() {
     var typeaheadConfig = {
       fitToElement: true,
       delay: 250,
@@ -129,29 +129,7 @@
 
 // url hash for direct links to subtabs
 // slightly hacky routing
-  $(document).ready(function () {
-    $('#lookup-old-events-form').on('submit', eventHandler.lookupOldEvents);
-    $('.sort').on('click', 'a', eventHandler.sortTable);
-    $('.filter').on('click', 'a', eventHandler.filterTable);
-    $('#filter-info').on('click', 'button.btn', eventHandler.removeFilter);
-    eventHandler.resetFilters();
-    setupTypeaheads();
 
-    if (location.hash) {
-      $('a[href=\'' + location.hash + '\']').tab('show');
-    } else {
-      TownHall.isMap = true;
-    }
-    $('nav').on('click', '.hash-link', function onClickGethref() {
-      var hashid = this.getAttribute('href');
-      if (hashid === '#home' && TownHall.isMap === true) {
-        history.replaceState({}, document.title, '.');
-      } else {
-        location.hash = this.getAttribute('href');
-      }
-      $('[data-toggle="popover"]').popover('hide');
-    });
-  });
 
   eventHandler.metaData = function () {
 
@@ -223,6 +201,13 @@
       console.log('no start time', ele.eventId);
     }
   };
+  eventHandler.renderNav = function(flag) {
+    if (!flag) {
+      $('.var-nav').addClass('hidden');
+      return
+    }
+    $('.hash-link.' + flag).removeClass('hidden');
+  }
 
   eventHandler.readData = function (path) {
     dataviz.initalProgressBar(100, $('.dem-senate'));
@@ -256,7 +241,6 @@
       DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download, false);
       DownLoadCenter.downloadButtonHandler('CAP-download', CSVTownHall.download, false, 'CAP CSV download');
       DownLoadCenter.downloadButtonHandler('SC-download', CSVTownHall.download, false, 'Sierra Club CSV download');
-
     })
     $('[data-toggle="tooltip"]').tooltip();
   };
@@ -294,6 +278,7 @@
       $('#for-approval').append($toAppend);
     });
   };
+
 
   module.eventHandler = eventHandler;
 })(window);

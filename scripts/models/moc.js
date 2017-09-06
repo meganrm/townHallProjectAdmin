@@ -10,10 +10,6 @@
 
   Moc.loadAllUpdated = function(){
     var allupdated = [];
-    dataviz.initalProgressBar(100, $('.dem-senate-report'));
-    dataviz.initalProgressBar(100, $('.rep-senate-report'));
-    dataviz.initalProgressBar(434, $('.dem-house-report'));
-    dataviz.initalProgressBar(434, $('.rep-house-report'));
     return new Promise(function (resolve, reject) {
       firebase.database().ref('mocData/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){

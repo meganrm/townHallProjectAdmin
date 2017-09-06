@@ -42,7 +42,7 @@
 
     // prepare CSV data
     var csvData = new Array();
-    csvData.push('"Title","Venue", "Address", "City", "State", "Zip","Categories","Date","Description","Time","Host", "Directions"');
+    csvData.push('"Title","Venue","Address","City","State","Zip","Categories","Date","Description","Time","Host","Directions"');
     data.forEach(function(item, index) {
       csvData.push(
         '"' + item.Title +

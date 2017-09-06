@@ -17,7 +17,6 @@
 
   function showbutton(button, downloadFunction, name){
     // $('#' + button).removeClass('hidden')
-    console.log(name);
     downloadFunction(name);
   }
 

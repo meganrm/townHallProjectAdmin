@@ -106,31 +106,43 @@
       mocReportView.renderMembers('mocReport', '.grid', member);
     }
   });
+  mocReportView.clearAll = function(parent){
+    $(parent).empty();
+    dataviz.initalProgressBar(100, $('.dem-senate-report'), $('.dem-updated-senate'));
+    dataviz.initalProgressBar(100, $('.rep-senate-report'), $('.rep-updated-senate'));
+    dataviz.initalProgressBar(434, $('.dem-house-report'), $('.dem-updated-house'));
+    dataviz.initalProgressBar(434, $('.rep-house-report'), $('.rep-updated-house'));
+  }
+  mocReportView.rendered = false;
 
-  Moc.loadAllUpdated().then(function(returnedData){
-    returnedData.sort(function(a, b){
-      if (!b.daysAgo && b.daysAgo !== 0) {
-        return 1
-      }
-      if (!a.daysAgo && a.daysAgo !== 0) {
-        return -1
-      }
-      if (a.daysAgo > b.daysAgo) {
-        return -1
-      } else if (a.daysAgo < b.daysAgo) {
-        return 1
-      } else if (a.daysAgo == b.daysAgo){
-        return 0
-      }
-    })
-    returnedData.forEach(function(member){
-      mocReportView.renderMembers('mocReport', '.grid', member);
-    })
-    allCategories = getAllCategories(returnedData);
-    // missingMemberView.renderAll('missingMemberButton', '#state-buttons', allCategories);
-    startIsotope();
+  mocReportView.init = function(){
+    mocReportView.clearAll('.grid')
+    Moc.loadAllUpdated().then(function(returnedData){
+      returnedData.sort(function(a, b){
+        if (!b.daysAgo && b.daysAgo !== 0) {
+          return 1
+        }
+        if (!a.daysAgo && a.daysAgo !== 0) {
+          return -1
+        }
+        if (a.daysAgo > b.daysAgo) {
+          return -1
+        } else if (a.daysAgo < b.daysAgo) {
+          return 1
+        } else if (a.daysAgo == b.daysAgo){
+          return 0
+        }
+      })
+      returnedData.forEach(function(member){
+        mocReportView.renderMembers('mocReport', '.grid', member);
+      })
+      allCategories = getAllCategories(returnedData);
+      // missingMemberView.renderAll('missingMemberButton', '#state-buttons', allCategories);
+      startIsotope();
+      mocReportView.rendered= true;
+    });
+  }
 
-  });
 
   module.mocReportView = mocReportView;
 })(window);

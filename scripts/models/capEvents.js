@@ -1,18 +1,8 @@
 (function (module) {
 
   function CSVTownHall(cur) {
-    var address,
-      zip,
-      city;
-    if (cur.address) {
-      var addList = cur.address.split(', ');
-      if (addList[addList.length - 1] === 'United States') {
-        addList.splice(addList.length - 1);
-      }
-      zip = addList[addList.length - 1].split(' ')[1];
-      city = addList[addList.length - 2];
-      addList.splice(addList.length - 2, 2);
-      address = addList.join(', ');
+    if (!cur.eventId) {
+      return
     }
     this.event_title;
     if (cur.iconFlag === 'staff') {
@@ -20,34 +10,46 @@
     } else {
       this.event_title = cur.Member + ' (' + cur.District + ') ' + cur.meetingType;
     }
-    this.event_starts_at_date = moment(cur.dateObj).format('L');
-    this.event_starts_at_time = cur.Time.split(' ')[0];
-    if (cur.Time.split(' ')[1]) {
-      this.event_starts_at_ampm = cur.Time.split(' ')[1].toLowerCase();
+    this.eventName = cur.eventName ? cur.eventName: ' ';
+    this.Location = cur.Location ? cur.Location: ' ';
+    this.meetingType = cur.meetingType;
+    this.Member = cur.Member;
+    this.District = cur.District;
+    this.Party = cur.Party;
+    this.State = cur.State;
+    if (cur.repeatingEvent) {
+      this.repeatingEvent = cur.repeatingEvent
+      this.Date = ' ';
+    } else if (cur.dateString) {
+      this.repeatingEvent = ' '
+      this.Date = cur.dateString;
     } else {
-      this.event_starts_at_ampm = ' '
+      this.repeatingEvent = ' '
+      this.Date = moment(cur.dateObj).format('ddd, MMM D YYYY');
     }
-    this.event_venue = cur.Location ? cur.Location: ' ';
-    this.event_address1 = address;
-    this.event_city = city;
-    this.event_postal = zip;
-    this.MOC = cur.Member;
-    this.event_public_description = cur.eventName ? cur.eventName : cur.Notes;
-    this.event_public_description = this.event_public_description ? this.event_public_description: this.event_title;
-    this.action_meeting_type = cur.meetingType;
-    this.action_link_to_event_information = cur.link ? cur.link : 'https://townhallproject.com/?eventId=' + cur.eventId;
+    this.timeStart = cur.Time;
+    this.timeEnd = cur.timeEnd;
+    this.timeZone = cur.timeZone ? cur.timeZone: ' ';
+    this.zoneString = cur.zoneString ? cur.zoneString: ' ';
+    this.address = cur.address;
+    this.Notes = cur.Notes ? cur.Notes.replace(/\"/g, "'"): ' ';
+
+    this.link = cur.link ? cur.link : 'https://townhallproject.com/?eventId=' + cur.eventId;
+    this.linkName = cur.linkName ? cur.linkName: ' ';
+    this.lat = cur.lat;
+    this.lng = cur.lng;
+    this.lastUpdatedHuman = cur.lastUpdatedHuman;
   }
 
   CSVTownHall.download = function(buttonName){
     var $date = $('#dateInput').val();
-    console.log($date);
     if ($date && moment($date).isValid) {
       var cutoff = moment($date)
     }
     data = TownHall.allTownHalls.filter(function(ele){
       return moment(ele.dateObj).isValid()}).reduce(function(acc, cur){
         obj = new CSVTownHall(cur);
-        if (obj.event_address1 ) {
+        if (obj.address) {
           if (cutoff) {
             var lastUpdated = moment(cur.lastUpdated);
             if (cutoff.isBefore(lastUpdated)) {
@@ -63,24 +65,18 @@
       },[]);
     // prepare CSV data
     var csvData = new Array();
-
     csvData.push(Object.keys(data[0]).join(', '));
+
     data.forEach(function(item, index) {
-      csvData.push(
-        '"' + item.event_title +
-      '","' + item.event_starts_at_date +
-      '","' + item.event_starts_at_time +
-      '","' + item.event_starts_at_ampm +
-      '","' + item.event_venue +
-      '","' + item.event_address1 +
-      '","' + item.event_city +
-      '","' + item.event_postal +
-      '","' + item.MOC +
-      '","' + item.event_public_description +
-      '","' + item.action_meeting_type +
-      '","' + item.action_link_to_event_information +
-      '"');
+      var row = '"' + item['event_title'] + '"'
+      Object.keys(item)
+      for (var i = 1; i < Object.keys(item).length; i++) {
+        row = row +  ',' +  '"' + item[Object.keys(item)[i]] + '"'
+      }
+      row = row + '\n';
+      csvData.push(row);
     });
+
 
     // download stuff
     var fileName = 'townhalls.csv';

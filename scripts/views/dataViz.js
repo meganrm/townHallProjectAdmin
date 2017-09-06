@@ -105,12 +105,17 @@
   };
 
 
-  dataviz.initalProgressBar = function initalProgressBar(total, $total){
-    currentNoEvents = Number($total.attr('data-count'));
+  dataviz.initalProgressBar = function initalProgressBar(total, $total, $progress){
+    currentNoEvents = Number($total.attr('data-start'));
     $total.attr('data-count', currentNoEvents);
     widthNoEvents = currentNoEvents / total * 100;
     $total.width(widthNoEvents + '%');
     $total.text(currentNoEvents);
+    if ($progress) {
+      $progress.attr('data-count', 0);
+      $progress.width(0);
+    }
+
   };
 
   var dateStart = new Date('2017-07-29').valueOf();

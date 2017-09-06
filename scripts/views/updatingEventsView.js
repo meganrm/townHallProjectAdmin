@@ -388,51 +388,10 @@
     }
   });
 
-  function writeUserData(userId, name, email) {
-    firebase.database().ref('users/' + userId).update({
-      username: name,
-      email: email
-    });
-  }
+  // DownLoadCenter.downloadButtonHandler('user-download', User.download, 'isAdmin');
 
-  firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-    // User is signed in.
-      if (user.uid !== TownHall.currentUser) {
-        console.log(user.displayName, ' is signed in');
-        TownHall.currentUser = user.uid;
-        // DownLoadCenter.downloadButtonHandler('user-download', User.download, 'isAdmin');
-        
-        eventHandler.readData('/townHalls/');
-        eventHandler.metaData();
-        eventHandler.readDataUsers();
-        $('.write-error').removeClass('hidden');
-        writeUserData(user.uid, user.displayName, user.email);
-      } else {
-        console.log(user.displayName, ' is still signed in');
-      }
 
-    } else {
-      updateEventView.signIn();
-      // No user is signed in.
-    }
-  });
 
-  // Sign in fuction for firebase
-  updateEventView.signIn = function signIn() {
-    firebase.auth().signInWithRedirect(provider);
-    firebase.auth().getRedirectResult().then(function (result) {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      // var token = result.credential.accessToken;
-      // The signed-in user info.
-      // var user = result.user;
-    }).catch(function (error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      console.log(errorCode, errorMessage);
-    });
-  };
 
   module.updateEventView = updateEventView;
 })(window);

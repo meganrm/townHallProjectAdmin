@@ -27,19 +27,6 @@
   TownHall.isCurrentContext = false;
   TownHall.isMap = false;
 
-  // FIREBASE METHODS
-  // Initialize Firebase
-  var config = {
-    apiKey: 'AIzaSyDwZ41RWIytGELNBnVpDr7Y_k1ox2F2Heg',
-    authDomain: 'townhallproject-86312.firebaseapp.com',
-    databaseURL: 'https://townhallproject-86312.firebaseio.com',
-    storageBucket: 'townhallproject-86312.appspot.com',
-    messagingSenderId: '208752196071'
-  };
-
-  firebase.initializeApp(config);
-  var firebasedb = firebase.database();
-  var provider = new firebase.auth.GoogleAuthProvider();
 
   // writes to townhall, can take a key for update
   TownHall.prototype.updateFB = function (key) {
