@@ -217,7 +217,7 @@
       $currentState.attr('data-total', total);
       var ele = new TownHall(snapshot.val());
       obj = {};
-      dataviz.recessProgress(ele, dataviz.membersEvents);
+      // dataviz.recessProgress(ele, dataviz.membersEvents);
       eventHandler.checkLastUpdated(ele);
       eventHandler.checkEndTime(ele);
       TownHall.allTownHallsFB[ele.eventId] = ele;

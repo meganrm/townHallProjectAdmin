@@ -80,7 +80,7 @@
         console.log(user.displayName, ' is signed in');
         TownHall.currentUser = user.uid;
         $('.write-error').removeClass('hidden');
-        if (user.email === 'andy.wilson@sierraclub.org' || user.email === 'sbaron@americanprogress.org' || user.email === 'meganrm@townhallproject.com') {
+        if (user.email === 'townhallproject2018@gmail.com' || user.email === 'andy.wilson@sierraclub.org' || user.email === 'sbaron@americanprogress.org' || user.email === 'meganrm@townhallproject.com') {
           writeUserData(user.uid, user.displayName, user.email, 'isPartner');
         } else {
           writeUserData(user.uid, user.displayName, user.email);

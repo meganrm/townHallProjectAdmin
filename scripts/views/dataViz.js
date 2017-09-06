@@ -57,7 +57,7 @@
   dataviz.recessProgress = function (townhall, memberSet) {
     var total;
     var newMember = false;
-    if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-09-04', []) && townhall.meetingType ==='Town Hall') {
+    if (townhall.meetingType ==='Town Hall') {
       if (!memberSet.has(townhall.Member)) {
         newMember = true;
         memberSet.add(townhall.Member);
