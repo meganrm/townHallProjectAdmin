@@ -17,11 +17,10 @@
     $total.text(updatedNoEvents);
   }
 
-  dataviz.getPastEvents = function(path, dateStart, dateEnd){
+  dataviz.getPastEvents = function(path, dateStart, dateEnd, memberSet){
     var ref = firebase.database().ref(path);
     ref.orderByChild('dateObj').startAt(dateStart).endAt(dateEnd).on('child_added', function(snapshot) {
-      console.log(snapshot.val().Date);
-      dataviz.recessProgress(snapshot.val());
+      dataviz.recessProgress(snapshot.val(), memberSet);
     });
   };
 
@@ -55,14 +54,13 @@
 
   dataviz.membersEvents = new Set();
 
-  dataviz.recessProgress = function (townhall) {
+  dataviz.recessProgress = function (townhall, memberSet) {
     var total;
     var newMember = false;
-
     if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-09-04', []) && townhall.meetingType ==='Town Hall') {
-      if (!dataviz.membersEvents.has(townhall.Member)) {
+      if (!memberSet.has(townhall.Member)) {
         newMember = true;
-        dataviz.membersEvents.add(townhall.Member);
+        memberSet.add(townhall.Member);
       }
       if (townhall.Party === 'Republican') {
         party = 'rep';
@@ -138,6 +136,7 @@
   dataviz.lookUpEvents = function(e){
     e.preventDefault()
     dataviz.reset()
+    dataviz.lookupMembers = new Set();
     var dateStart = moment($('#start-date').val()).startOf('day');
     var dateEnd = moment($('#end-date').val()).endOf('day');
     var start = dateStart.valueOf();
@@ -149,10 +148,8 @@
     for (var i = monthStart; i <= monthEnd; i++) {
       dates.push('2017-' + i)
     }
-    console.log(monthStart, monthEnd, dates);
-
     dates.forEach(function(date){
-      dataviz.getPastEvents('townHallsOld/' + date, start, end);
+      dataviz.getPastEvents('townHallsOld/' + date, start, end, dataviz.lookupMembers);
     })
   }
 
