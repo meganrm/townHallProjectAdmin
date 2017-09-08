@@ -3,6 +3,7 @@
 function errorReport(error, subject) {
   this.from = 'Town Hall Updates <update@updates.townhallproject.com>';
   this.to = 'Megan Riel-Mehan <meganrm@townhallproject.com>';
+  this.cc = 'Nathan Williams <nwilliams@townhallproject.com>';
   this.subject = subject? subject: 'Something has gone terribly wrong';
   if (typeof(error) === 'object') {
     var str='';
