@@ -112,11 +112,16 @@
     });
   };
 
+  adminSiteController.signOut = function() {
+    firebase.auth().signOut()
+  }
+
   $(document).ready(function () {
     $('#lookup-old-events-form').on('submit', eventHandler.lookupOldEvents);
     $('.sort').on('click', 'a', eventHandler.sortTable);
     $('.filter').on('click', 'a', eventHandler.filterTable);
     $('#filter-info').on('click', 'button.btn', eventHandler.removeFilter);
+    $('#signOut').on('click', adminSiteController.signOut)
     eventHandler.resetFilters();
     eventHandler.setupTypeaheads();
     if (location.hash) {

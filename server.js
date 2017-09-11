@@ -129,7 +129,7 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
     if (idObj && !idObj.indivisiblepath) {
       IndTownHall.prepTownHall(townhall);
     } else {
-      console.log('already added', idObj);
+      // console.log('already added', idObj);
     }
   });
 

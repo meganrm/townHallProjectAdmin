@@ -1,48 +1,54 @@
 function eventValidation() {
+  var https = require('https');
+  var google = require('googleapis');
 
   var firebasedb = require('../bin/setupFirebase.js');
   var ErrorReport = require('../bin/errorReporting.js');
   var moment = require('moment');
-
-  // geocodes an address
-  // TownHall.prototype.getLatandLog = function (address, type, key) {
-  //   var addressQuery = escape(address);
-  //   var addresskey = address.replace(/\W/g, '');
-  //   var options = {
-  //     hostname: 'maps.googleapis.com',
-  //     path: `/maps/api/geocode/json?address=${addressQuery}&key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM`,
-  //     method: 'GET',
-  //   };
-  //   var str = '';
-  //   var newTownHall = this;
-  //   var req = https.request(options, (res) => {
-  //     res.setEncoding('utf8');
-  //     res.on('data', (chunk) => {
-  //       str += chunk;
-  //     });
-  //     res.on('end', () => {
-  //       var r = JSON.parse(str);
-  //       if (!r.results[0]) {
-  //         console.log('no geocode results', newTownHall.eventId);
-  //       } else {
-  //         newTownHall.lat = r.results[0].geometry.location.lat;
-  //         newTownHall.lng = r.results[0].geometry.location.lng;
-  //         newTownHall.address = r.results[0].formatted_address.split(', USA')[0];
-  //         addresskey.trim();
-  //         update =  {
-  //             lat: newTownHall.lat,
-  //             lng: newTownHall.lng,
-  //             formatted_address: newTownHall.address,
-  //           }
-  //       }
-  //       updateEvent(townhall.eventId, update);
-  //     });
-  //   });
-  //   req.on('error', (e) => {
-  //     console.error('error requests', e, newTownHall.eventId);
-  //   });
-  //   req.end();
-  // };
+  function TownHall(opts) {
+    for (keys in opts) {
+      this[keys] = opts[keys];
+    }
+  }
+  //geocodes an address
+  TownHall.prototype.getLatandLog = function (address, type) {
+    var addressQuery = escape(address);
+    var addresskey = address.replace(/\W/g, '');
+    var options = {
+      hostname: 'maps.googleapis.com',
+      path: `/maps/api/geocode/json?address=${addressQuery}&key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM`,
+      method: 'GET',
+    };
+    var str = '';
+    var newTownHall = this;
+    var req = https.request(options, (res) => {
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => {
+        str += chunk;
+      });
+      res.on('end', () => {
+        var r = JSON.parse(str);
+        if (!r.results[0]) {
+          console.log('no geocode results', newTownHall.eventId);
+        } else {
+          newTownHall.lat = r.results[0].geometry.location.lat;
+          newTownHall.lng = r.results[0].geometry.location.lng;
+          newTownHall.address = r.results[0].formatted_address.split(', USA')[0];
+          addresskey.trim();
+          update =  {
+              lat: newTownHall.lat,
+              lng: newTownHall.lng,
+              formatted_address: newTownHall.address,
+            }
+        }
+        updateEvent(newTownHall.eventId, update, 'townHalls/');
+      });
+    });
+    req.on('error', (e) => {
+      console.error('error requests', e, newTownHall.eventId);
+    });
+    req.end();
+  };
 
 
 
@@ -125,6 +131,15 @@ function eventValidation() {
     var townhall = snapshot.val();
     dateTimeValidation(townhall, 'townHalls/');
   });
+
+  firebasedb.ref('townHalls/').on('child_added', function(snapshot){
+    var townhall = new TownHall(snapshot.val());
+
+    if (!townhall.lat && townhall.meetingType === 'Tele-Town Hall' && townhall.District === 'Senate') {
+      townhall.getLatandLog(townhall.State, 'state');
+    }
+  });
+
   firebasedb.ref('UserSubmission/').on('child_added', function(snapshot){
     var townhall = snapshot.val();
     dateTimeValidation(townhall, 'UserSubmission/');
