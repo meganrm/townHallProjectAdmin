@@ -162,6 +162,9 @@ function findSpecificMemberRequest(member_id) {
 
 function updateNewMembers(newPropublicaMembers) {
   newPropublicaMembers.forEach(function(new_propub_member) {
+    // store state value here too
+    // var state;
+
     var type;
     if (new_propub_member.chamber == "House") {
       type = "rep";

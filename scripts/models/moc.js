@@ -14,25 +14,31 @@
       firebase.database().ref('mocData/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){
           var memberobj = new Moc(member.val());
-          var name = memberobj.displayName;
-          var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
-          var days;
-          if (memberobj.lastUpdated) {
-            var now = moment();
-            var timeAgo = moment(memberobj.lastUpdated);
-            days = now.diff(timeAgo, 'days');
+          if (memberobj.in_office) {
+            var name = memberobj.displayName;
+            var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
+            var days;
+            if (memberobj.lastUpdated) {
+              dataviz.mocReportProgress(memberobj)
+              var now = moment();
+              var timeAgo = moment(memberobj.lastUpdated);
+              days = now.diff(timeAgo, 'days');
+            }
+            Moc.allMocsObjs[member.key] = memberobj;
+            allupdated.push({
+              id: member.key,
+              name: name,
+              chamber : memberobj.type,
+              party : memberobj.party,
+              state: memberobj.state,
+              lastUpdatedBy : memberobj.lastUpdatedBy,
+              lastUpdated : lastUpdated,
+              daysAgo: days,
+              missingMember: memberobj.missingMember
+            });
           }
-          Moc.allMocsObjs[member.key] = memberobj;
-          allupdated.push({
-            id: member.key,
-            name: name,
-            chamber : memberobj.type,
-            state: memberobj.state,
-            lastUpdatedBy : memberobj.lastUpdatedBy,
-            lastUpdated : lastUpdated,
-            daysAgo: days
-          });
         });
+        Moc.download()
         console.log(allupdated.length);
         allupdated.sort(function(a, b) {
           if (a.state < b.state ) {
@@ -99,6 +105,47 @@
       memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
     }
     return memberKey;
+  };
+
+  Moc.download = function(){
+    data = Object.keys(Moc.allMocsObjs).map(function(key){
+      return Moc.allMocsObjs[key]
+    })
+    // prepare CSV data
+    var csvData = new Array();
+    csvData.push('id, name, party, chamber, state, district, facebook_account');
+    data.forEach(function(item, index) {
+      csvData.push(
+        '"' + item.govtrack_id +
+      '","' + item.displayName +
+      '","' + item.party +
+      '","' + item.type +
+      '","' + item.state +
+      '","' + item.district +
+      '","' + item.facebook_account +
+
+      '"');
+    });
+
+    // download stuff
+    var fileName = 'mocs.csv';
+    var buffer = csvData.join('\n');
+    var blob = new Blob([buffer], {
+      'type': 'text/csv;charset=utf8;'
+    });
+    var link = document.createElement('a');
+
+    if(link.download !== undefined) { // feature detection
+      // Browsers that support HTML5 download attribute
+      link.setAttribute('href', window.URL.createObjectURL(blob));
+      link.setAttribute('download', fileName);
+    }
+    else {
+      // it needs to implement server side export
+      link.setAttribute('href', 'http://www.example.com/export');
+    }
+    link.innerHTML = 'Download Mocs';
+    document.getElementById('THP-downloads').appendChild(link);
   };
 
   module.Moc = Moc;

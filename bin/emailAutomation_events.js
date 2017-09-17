@@ -71,22 +71,9 @@
   TownHall.townHallbyDistrict = {};
   TownHall.senateEvents = {};
 
-  var admin = require('firebase-admin');
-  var firebasekey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n');
+  var firebasedb = require('../bin/setupFirebase.js');
+  var moment = require('moment')
 
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: 'townhallproject-86312',
-      clientEmail: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
-      privateKey: firebasekey,
-      databaseAuthVariableOverride: {
-        uid: 'read-only'
-      }
-    }),
-    databaseURL: 'https://townhallproject-86312.firebaseio.com'
-  });
-
-  var firebasedb = admin.database();
   // admin.database.enableLogging(true);
   TownHall.prints = {
     inPast: [],
@@ -109,38 +96,43 @@
 
   TownHall.prototype.inNextWeek = function(lastEmailed){
     var townhall = this;
-    var lastweekly = lastEmailed.weekly;
+    var lastweekly = moment(lastEmailed.weekly).endOf('day');
+    var nextweekly = moment(lastweekly).add(7, 'days');
+    var nextThursday = moment(lastweekly).add(14, 'days');
     var lastDaily = lastEmailed.daily;
-    var milsecToDays = (1000 * 60 * 60 * 24);
     var today = new Date().getDay();
-    var townhallDay = new Date(townhall.dateObj);
+    var townhallDay = moment(townhall.dateObj);
     var include = townhall.include();
-    var daysUntil = (townhallDay - lastweekly)/milsecToDays;
 
     if (townhall.dateObj) {
-      if (townhall.dateObj < Date.now()) {
+      if (townhall.dateObj < moment()) {
         // in past
         if (include) {
           TownHall.prints.inPast.push(`<li>${townhall.Date}</li>`);
         }
         return false;
       }
-      if (daysUntil > 8 ) {
-        if (include) {
-          TownHall.prints.notInNextWeek.push(`<li>${townhall.Date}, Days between event and last Thursday: ${daysUntil}</li>`);
-        }
+      if (today !== 4){
         // not in the next week
-        return false;
+        if (townhallDay.isAfter(nextweekly)) {
+          if (include) {
+            TownHall.prints.notInNextWeek.push(`<li>${townhall.Date}</li>`);
+          }
+          return false;
+        }
+        if (townhall.lastUpdated > lastDaily){
+          // if not Thursday, is the event new since last emailed?
+          TownHall.prints.changedToday.push(`<li>${townhall.Date}, ${townhall.meetingType}, include? ${include}</li>`);
+          return true;
+        }
       }
       // if Thursday
-      if (today === 4) {
-        TownHall.prints.isThursday.push(`<li>${townhall.Date}</li>`);
+      if (today === 4 && townhallDay.isBefore(nextThursday)) {
+        if (include) {
+          TownHall.prints.isThursday.push(`<li>${townhall.Date}}</li>`);
+        }
         return true;
-      // if not Thursday, is the event new since last emailed?
-      } else if (townhall.lastUpdated > lastDaily){
-        TownHall.prints.changedToday.push(`<li>${townhall.Date}, ${townhall.meetingType}, include? ${include}</li>`);
-        return true;
-      }
+      } else
       return false;
     }
   };
@@ -157,6 +149,13 @@
       break;
     case 'Tele-Town Hall':
       include = true;
+      break;
+    case 'Other':
+      if (townhall.iconFlag === 'in-person') {
+        include = true;
+      } else {
+        include = false;
+      }
       break;
     default:
       include = false;
@@ -175,6 +174,8 @@
     var title;
     if (this.repeatingEvent) {
       date = this.repeatingEvent;
+    }  else if (this.dateString) {
+      date = this.dateString;
     } else {
       date = this.Date;
     }

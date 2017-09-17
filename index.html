@@ -60,21 +60,24 @@
             <!-- <li><a class="hash-link" data-toggle="tab" href="#new-page">New Event</a></li> -->
             <!-- <li><a class="hash-link" data-toggle="tab" href="#location-errors-page">Location errors</a></li> -->
             <!-- <li><a class="hash-link" data-toggle="tab" href="#date-errors-page">Date errors</a></li> -->
-            <li><a class="hash-link" data-toggle="tab" href="#all-events-page">All public events</a></li>
-            <li><a class="hash-link" data-toggle="tab" href="#for-approval-page">Pending approval</a></li>
-            <li><a class="hash-link" data-toggle="tab" href="#moc-update">MOCs updated this week</a></li>
-            <li><a class="hash-link" data-toggle="tab" href="#moc-editor">MOC editor</a></li>
+            <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#all-events-page">All public events</a></li>
+            <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#for-approval-page">Pending approval</a></li>
+            <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#moc-update">MOCs updated this week</a></li>
+            <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#moc-editor">MOC editor</a></li>
             <!-- <li><a class="hash-link" data-toggle="tab" href="#to-archive-page">Past events</a></li> -->
-            <li><a class="hash-link" data-toggle="tab" href="#download-center">Download Center</a></li>
+            <li><a class="hash-link var-nav hidden admin partner" data-toggle="tab" href="#download-center">Download Center</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <button type="button" class="btn btn-default navbar-btn" id="signOut">Change sign-in</button>
           </ul>
         </div>
       </div>
     </nav><!-- end nav -->
   <div class="container">
     <div class="row">
-      <div class="col-sm-4">
+      <div class="col-sm-4 hidden">
         <button type="button" name="button" id="scroll-to-top" class="btn btn-white" style="visibility:hidden;"><i class="fa fa-chevron-up fa-4x" aria-hidden="true"></i></button>
-        <section class="session-data">
+        <section class="session-data ">
           <h4>Welcome </h4>
           <p>Edited this session:</p>
           <ul id="edited" class="list-group events-table">
@@ -87,16 +90,101 @@
           </div>
         </section>
       </div>
-      <div class="tab-content col-sm-8">
+      <div class="tab-content">
         <div role="tabpanel" class="tab-pane page active" id="home">
           <section class="">
               <h3 class="text-primary table-title text-center">Town Hall Admin Site</h3>
               <div class="">
                 <div class="row">
                   <div class="col-md-12">
-
                     <div class="metadata">
                     </div>
+                    <div class="lookup-old-events">
+                      <form class="form-inline" id="lookup-old-events-form">
+                        <div class="form-group">
+                          <label for="lookup-key">Key</label>
+                          <input type="text" class="form-control" id="lookup-key" placeholder="ex meetingType">
+                        </div>
+                        <div class="form-group">
+                          <label for="lookup-value">Value</label>
+                          <input type="text" class="form-control" id="lookup-value" placeholder="ex Town Hall">
+                        </div>
+                        <button type="submit" class="btn btn-default">Get Count</button>
+                      </form>
+                      <input type="text" name="name" value="0" readonly="" id="lookup-results">
+                    </div>
+                    <div class="">
+                      <form class="form-inline" id="progress-bar-form">
+                        <div class="form-group">
+                          <label for="start-date">Start date</label>
+                          <input type="date" class="form-control" id="start-date" placeholder="MM/DD/YYYY">
+                        </div>
+                        <div class="form-group">
+                          <label for="end-date">End date</label>
+                          <input type="date" class="form-control" id="end-date" placeholder="MM/DD/YYYY">
+                        </div>
+                        <button type="submit" class="btn btn-default">View results</button>
+                      </form>
+                      <h4>Members of Congress holding town halls</h4>
+                      <h4>Senate</h4>
+                      <div class="progress">
+                        <div class="progress-bar progress-bar-dem-no-events dem-senate" data-count=48  data-start=48>
+                          <span class="sr-only">Democratic no events</span>
+                        </div>
+                        <div class="progress-bar progress-bar-dem-has-events dem-aug-progress-senate" data-count=0>
+                          <span class="sr-only">Democratic progress</span>
+                        </div>
+                        <div class="progress-bar progress-bar-rep-has-events rep-aug-progress-senate" data-count=0>
+                          <span class="sr-only">Republican progress</span>
+                        </div>
+                        <div class="progress-bar progress-bar-rep-no-events rep-senate" data-count=52  data-start=52>
+                          <span class="sr-only">Republican no events</span>
+                        </div>
+                      </div>
+                      <h4>House</h4>
+                      <div class="progress">
+                        <div class="progress-bar progress-bar-dem-no-events dem-house" data-count=194 data-start=194>
+                          <span class="sr-only">Democratic progress</span>
+                        </div>
+                        <div class="progress-bar progress-bar-dem-has-events dem-aug-progress-house" data-count=0>
+                          <span class="sr-only">Democratic progress</span>
+                        </div>
+                        <div class="progress-bar progress-bar-rep-has-events rep-aug-progress-house" data-count=0>
+                          <span class="sr-only">Republican progress</span>
+                        </div>
+                        <div class="progress-bar progress-bar-rep-no-events rep-house" data-count=240 data-start=240>
+                          <span class="sr-only">Republican progress</span>
+                        </div>
+                      </div>
+                      <h4>Total number of town halls</h4>
+                      <dl class="dl-horizontal graph">
+                        <dt>Senate</dt>
+                        <dd>
+                          <div class="progress bar-graph">
+                            <div class="progress-bar progress-bar-dem-has-events dem-aug-total-senate" data-count=0 data-max=100>
+                              <span class="sr-only">Democratic progress</span>
+                            </div>
+                          </div>
+                          <div class="progress bar-graph">
+                            <div class="progress-bar progress-bar-rep-has-events rep-aug-total-senate" data-count=0 data-max=100>
+                              <span class="sr-only">Democratic progress</span>
+                            </div>
+                          </div>
+                        </dd>
+                        <dt>House</dt>
+                          <dd><div class="progress bar-graph">
+                            <div class="progress-bar progress-bar-dem-has-events dem-aug-total-house" data-count=0 data-max=100>
+                              <span class="sr-only">Democratic progress</span>
+                            </div>
+                          </div>
+                          <div class="progress bar-graph">
+                            <div class="progress-bar progress-bar-rep-has-events rep-aug-total-house" data-count=0 data-max=100>
+                              <span class="sr-only">Democratic progress</span>
+                            </div>
+                          </div>
+                        </dd>
+                      </dl>
+
                   </div>
                 </div>
               </div>
@@ -335,16 +423,74 @@
             </div>
             <div role="tabpanel" class="tab-pane page" id="moc-update">
               <section>
+                <h4>Senate</h4>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-dem-no-events dem-senate-report" data-count=48 data-start=48>
+                    <span class="sr-only">Democratic no events</span>
+                  </div>
+                  <div class="progress-bar progress-bar-dem-has-events dem-updated-senate" data-count=0>
+                    <span class="sr-only">Democratic progress</span>
+                  </div>
+                  <div class="progress-bar progress-bar-rep-has-events rep-updated-senate" data-count=0>
+                    <span class="sr-only">Republican progress</span>
+                  </div>
+                  <div class="progress-bar progress-bar-rep-no-events rep-senate-report" data-count=52 data-start=52>
+                    <span class="sr-only">Republican no events</span>
+                  </div>
+                </div>
+                <h4>House</h4>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-dem-no-events dem-house-report" data-count=194 data-start=194>
+                    <span class="sr-only">Democratic progress</span>
+                  </div>
+                  <div class="progress-bar progress-bar-dem-has-events dem-updated-house" data-count=0>
+                    <span class="sr-only">Democratic progress</span>
+                  </div>
+                  <div class="progress-bar progress-bar-rep-has-events rep-updated-house" data-count=0>
+                    <span class="sr-only">Republican progress</span>
+                  </div>
+                  <div class="progress-bar progress-bar-rep-no-events rep-house-report" data-count=240 data-start=240>
+                    <span class="sr-only">Republican progress</span>
+                  </div>
+                </div>
                 <h3 class="text-primary table-title text-center">MOC report</h3>
-                <div>
-                  <ul id="moc-report-not-updated" class="list-group events-table col-sm-3">
-                  </ul><!--end table-->
-                  <ul id="moc-report-2" class="list-group events-table col-sm-3">
-                  </ul><!--end table-->
-                  <ul id="moc-report-1" class="list-group events-table col-sm-3">
-                  </ul><!--end table-->
-                  <ul id="moc-report-0" class="list-group events-table col-sm-3">
-                  </ul><!--end table-->
+                <nav class="navbar navbar-default">
+                  <ul class="nav navbar-nav navbar-right btn-group">
+                    <li class="nav-item dropdown filter-button-group btn-group">
+                      <a href="#" class="btn btn-xs dropdown-toggle navbar-btn btn-group mm-btn-group" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Party <span class="caret"></span></a>
+                      <ul class="dropdown-menu button-group" data-filter-group="party">
+                        <li class="downdown-title">Filter by party</li>
+                        <li role="separator" class="divider"></li>
+                        <li data-filter=".Democratic" id="Democratic" class="btn dropdown-item btn-filter btn-white">Democratic</li>
+                        <li data-filter=".Republican" id="Republican" class="btn dropdown-item btn-filter btn-white">Republican</li>
+                        <!-- <li data-filter=".Independent" id="Independent" class="btn dropdown-item btn-filter btn-white">Independent</li> -->
+                        <li data-filter="" id="All" class="btn dropdown-item btn-filter btn-white" >All</li>
+                      </ul>
+                    </li>
+                    <li class=" nav-item dropdown filter-button-group btn-group">
+                      <a href="#" class="btn btn-xs dropdown-toggle navbar-btn btn-group mm-btn-group" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Chamber <span class="caret"></span></a>
+                      <ul class="dropdown-menu button-group" data-filter-group="chamber">
+                        <li class="downdown-title">Filter by chamber</li>
+                        <li role="separator" class="divider"></li>
+                        <li class="btn dropdown-item btn-filter btn-white" data-filter=".sen">Senate</li>
+                        <li class="btn dropdown-item btn-filter btn-white" data-filter=".rep">House</li>
+                        <li class="btn dropdown-item btn-filter btn-white" data-filter="" id="All" >All</li>
+                      </ul>
+                    </li>
+                    <li class=" nav-item dropdown filter-button-group btn-group">
+                      <a href="#" class="btn btn-xs dropdown-toggle navbar-btn btn-group mm-btn-group" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Time frame <span class="caret"></span></a>
+                      <ul class="dropdown-menu button-group" data-filter-group="chamber">
+                        <li class="downdown-title">Filter by time</li>
+                        <li role="separator" class="divider"></li>
+                        <li class="btn dropdown-item btn-filter btn-white" data-filter=".daysAgo-0">Today</li>
+                        <li class="btn dropdown-item btn-filter btn-white" data-filter=".daysAgo">Recently</li>
+                        <li class="btn dropdown-item btn-filter btn-white" data-filter=".Never">Never</li>
+                        <li class="btn dropdown-item btn-filter btn-white" data-filter="" id="All" >All</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </nav>
+                <div class="grid events-table ">
                 </div>
               </section>
             </div>
@@ -383,31 +529,18 @@
             <div role="tabpanel" class="tab-pane page" id="download-center">
               <section class="">
                 <h3 class="text-primary table-title text-center">Download Center</h3>
-                <ul id="ACLU-buttons">
-                  <button type="button" name="button" class="btn hidden" id="ACLU-download">Click to compile ACLU data</button>
-                  <button type="button" name="button" class="btn hidden" id="user-download">Click to compile user data</button>
+                <h4>For our partners</h4>
+                <!-- <div class="form-group">
+                  <label for="dateInput">Download events updated or added after:</label>
+                  <input type="text" class="form-control" id="dateInput" placeholder="DD/MM/YYYY">
+                  <span id="helpBlock" class="help-block">If blank will download all the events currenlty on the site.</span>
+                </div> -->
+                <ul id="ACLU-buttons" class="list-inline">
                 </ul>
-                <div class="row">
-                  <h4>Congress composition </h4>
-                  <div class="progress">
-                    <div class="progress-bar progress-bar-primary" style="width:45%">
-                      <span>Democratic</span>
-                    </div>
-                    <div class="progress-bar progress-bar-warning" style="width:55%">
-                      <span>Republican</span>
-                    </div>
-                  </div>
+                <h4>THP Downloads</h4>
+                <ul id="THP-downloads" class="list-inline">
+                </ul>
 
-                  <h4>August Recess Progress</h4>
-                  <div class="progress">
-                    <div class="progress-bar progress-bar-primary dem-aug-progress" data-count=0>
-                      <span class="sr-only">Democratic progress</span>
-                    </div>
-                    <div class="progress-bar progress-bar-warning rep-aug-progress" data-count=0>
-                      <span class="sr-only">Republican progress</span>
-                    </div>
-                  </div>
-                </div>
                 <h4>Missing Member Flier</h4>
                 <div class="">
                   <div class="form-group col-md-12" id="member-form-group">
@@ -448,21 +581,29 @@
     <script src="/node_modules/moment/min/moment.min.js"></script>
     <script src="/vendor/scripts/bootstrap.min.js"></script>
     <script src="/vendor/scripts/bootstrap3-typeahead.min.js"></script>
+    <script src="/vendor/scripts/page.js"></script>
     <script src="/vendor/scripts/tether.js"></script>
+    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
     <script src="/node_modules/handlebars/dist/handlebars.js"></script>
-    <script src="templates.js"></script>
+    <script src="/templates.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
     <!-- Script Files -->
+    <script src="/scripts/data/states.js"></script>
+    <script src="/scripts/data/users.js"></script>
+
+    <script src="/scripts/controllers/routes.js"></script>
+    <script src="/scripts/controllers/adminSiteController.js"></script>
+
     <script src="/scripts/models/event0.js"></script>
     <script src="/scripts/models/moc.js"></script>
     <script src="/scripts/models/downloadingEvents.js"></script>
-    <script src="/scripts/models/downloadingUsers.js"></script>
-    <script src="/scripts/models/helperFunction.js"></script>
+    <script src="/scripts/models/capEvents.js"></script>
+    <script src="/scripts/models/User.js"></script>
 
-    <script src="/scripts/data/states.js"></script>
     <script src="/scripts/views/eventView.js"></script>
+    <script src="/scripts/views/dataViz.js"></script>
     <script src="/scripts/views/updatingEventsView.js"></script>
-    <script src="/scripts/views/downloadCenter.js"></script>
+    <script src="/scripts/views/downloadCenterView.js"></script>
 
     <script src="/scripts/views/mocReportView.js"></script>
     <script src="/scripts/views/mocEditorView.js"></script>

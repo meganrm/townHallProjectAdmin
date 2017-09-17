@@ -6,40 +6,7 @@
     }
   }
 
-//   firebase.database().ref('townHalls/').once('value').then(function(snapshot){
-//     snapshot.forEach(function(townHall){
-// 	     if (townHall.val().meetingType ==='Town Hall' || townHall.val().meetingType ==='Ticketed Event'){
-// 		       firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'in-person'})
-//          } else if (townHall.val().meetingType ==='Empty Chair Town Hall' || townHall.val().meetingType ==='Adopt-A-District/State'){
-//            firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'activism'})
-//
-//          } else if (townHall.val().meetingType ==='Office Hours') {
-//            firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'staff'})
-//
-//          } else if (townHall.val().meetingType ==='Tele-Town Hall') {
-//            firebase.database().ref('townHalls/' + townHall.key).update({iconFlag: 'tele'})
-//
-//          } else {
-//            console.log(townHall.val());
-//          }
-// })
-// })
-// function updatedOldData (oldKey, newKey, dateKey) {
-//   firebase.database().ref('/townHallsOld/' + dateKey).once('value').then(function(snapshot) {
-//       snapshot.forEach(function(oldTownHall) {
-//           townHall = oldTownHall.val()
-//           if (townHall[oldValue]) {
-//               var value  = townHall[oldValue]
-//               var eventID = oldTownHall.val().eventId;
-//               firebase.database().ref(`/townHallsOld/ ${dateKey}/${townHall[eventID]}`).update({ newKey: value });
-//               console.log("party: " + party);
-//           } else {
-//               //stateName = ""
-//               console.log('no "Party" property')
-//           }
-//       })
-//   })
-// }
+
 
 
   // Global data stete
@@ -60,19 +27,6 @@
   TownHall.isCurrentContext = false;
   TownHall.isMap = false;
 
-  // FIREBASE METHODS
-  // Initialize Firebase
-  var config = {
-    apiKey: 'AIzaSyDwZ41RWIytGELNBnVpDr7Y_k1ox2F2Heg',
-    authDomain: 'townhallproject-86312.firebaseapp.com',
-    databaseURL: 'https://townhallproject-86312.firebaseio.com',
-    storageBucket: 'townhallproject-86312.appspot.com',
-    messagingSenderId: '208752196071'
-  };
-
-  firebase.initializeApp(config);
-  var firebasedb = firebase.database();
-  var provider = new firebase.auth.GoogleAuthProvider();
 
   // writes to townhall, can take a key for update
   TownHall.prototype.updateFB = function (key) {
@@ -91,9 +45,30 @@
     });
   };
 
+  TownHall.getOldData = function getOldData (key, value, dateKey) {
+    var db = firebase.database();
+    var ref = db.ref('/townHallsOld/' + dateKey);
+    var totals = new Set();
+    return new Promise (function(resolve, reject){
+      ref.once('value').then(function(snapshot) {
+        snapshot.forEach(function(oldTownHall) {
+          townHall = oldTownHall.val();
+          if (townHall[key] === value) {
+            totals.add(townHall);
+          }
+        });
+        resolve(totals);
+      });
+    });
+  };
+
   TownHall.prototype.updateUserSubmission = function (key) {
     var newEvent = this;
+    key = key? key : newEvent.eventId;
     return new Promise(function (resolve, reject) {
+      if (!key) {
+        reject('needs key');
+      }
       firebase.database().ref('/UserSubmission/' + key).update(newEvent);
       resolve(newEvent);
     });
@@ -246,7 +221,7 @@
         if (!response.timeZoneName) {
           reject('no timezone results', id, response);
         } else {
-          console.log(response);
+          // console.log(response);
           newTownHall.zoneString = response.timeZoneId;
           var timezoneAb = response.timeZoneName.split(' ');
           newTownHall.timeZone = timezoneAb.reduce(function (acc, cur) {
@@ -257,7 +232,7 @@
             var hawaiiTime = 'UTC-1000';
           }
           var zone = hawaiiTime ? hawaiiTime : newTownHall.timeZone;
-          console.log(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone);
+          // console.log(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone);
           newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone).getTime();
           resolve(newTownHall);
         }

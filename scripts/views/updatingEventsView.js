@@ -281,10 +281,9 @@
 
   updateEventView.changeMeetingType = function (event) {
     event.preventDefault();
-    console.log(this);
     $form = $(this).parents('form');
     var value = $(this).attr('data-value');
-    $form.find('#meetingType').val(value);
+    $form.find('#meetingType').val(value).addClass('edited');
     $form.find('#meetingType').change();
   };
 
@@ -306,38 +305,54 @@
     $form.find('#iconFlag').change();
   };
 
-  updateEventView.meetingTypeChanged = function (event) {
-    event.preventDefault();
-    var thisTownHall;
-    var $input = $(this);
-    console.log($input);
-    var $form = $input.parents('form');
-    var value = $input.val();
-    var $listgroup = $(this).parents('.list-group-item');
-    var $location = $form.find('.location-data');
-    $input.addClass('edited');
-    var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
-    var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
-    var defaultLocationTemplate = Handlebars.getTemplate('generalinputs');
-    if ($form.attr('id')) {
-      thisTownHall = TownHall.allTownHallsFB[$form.attr('id').split('-form')[0]];
-    } else {
-      thisTownHall = TownHall.currentEvent;
-    }
-    switch (value.slice(0, 4)) {
-    case 'Tele':
-      $location.html(teleInputsTemplate(thisTownHall));
-      updateEventView.updatedView($form, $listgroup);
+  updateEventView.showHideMeetingTypeFields = function(value, $form) {
+    switch (value) {
+    case 'Tele-Town Hall':
+      $form.find('.general-inputs').addClass('hidden');
+      $form.find('.tele-inputs').removeClass('hidden');
+      $form.find('#iconFlag').val('tele').addClass('edited');
+      //TODO: regeocode
+      // newEventView.geoCodeOnState();
       break;
-    case 'Tick':
-      $location.html(ticketInputsTemplate(thisTownHall));
-      updateEventView.updatedView($form, $listgroup);
+    case 'Adopt-A-District/State':
+      $form.find('.general-inputs').removeClass('hidden');
+      $form.find('.adopter-data').removeClass('hidden');
+      $form.find('#iconFlag').val('activism').addClass('edited');
+      // setupTypeaheads('#districtAdopter');
+      break;
+    case 'Ticketed Event':
+      $form.find('#iconFlag').val('in-person').addClass('edited');
+      $form.find('.general-inputs').removeClass('hidden');
+      break;
+    case 'Office Hours':
+      $form.find('#iconFlag').val('staff').addClass('edited');
+      $form.find('.general-inputs').removeClass('hidden');
+      break;
+    case 'Town Hall':
+      $form.find('#iconFlag').val('in-person').addClass('edited');
+      $form.find('.general-inputs').removeClass('hidden');
+      break;
+    case 'Empty Chair Town Hall':
+      $form.find('#iconFlag').val('activism').addClass('edited');
+      $form.find('.general-inputs').removeClass('hidden');
       break;
     default:
-      $location.html(defaultLocationTemplate(thisTownHall));
-      updateEventView.updatedView($form, $listgroup);
+      $form.find('.general-inputs').removeClass('hidden');
     }
   };
+
+  updateEventView.meetingTypeChanged = function (event) {
+    event.preventDefault();
+    var $form = $(this).parents('form');
+    var value = $(this).val();
+    $form.find('.non-standard').addClass('hidden');
+    $form.find('#meetingType-error').addClass('hidden');
+    $form.find('#meetingType').parent().removeClass('has-error');
+    var $listgroup = $(this).parents('.list-group-item');
+    updateEventView.showHideMeetingTypeFields(value, $form);
+    updateEventView.updatedView($form, $listgroup);
+  };
+
   updateEventView.loadOldEvents = function() {
   };
 
@@ -373,51 +388,10 @@
     }
   });
 
-  function writeUserData(userId, name, email) {
-    firebase.database().ref('users/' + userId).update({
-      username: name,
-      email: email
-    });
-  }
+  // DownLoadCenter.downloadButtonHandler('user-download', User.download, 'isAdmin');
 
-  firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-    // User is signed in.
-      if (user.uid !== TownHall.currentUser) {
-        console.log(user.displayName, ' is signed in');
-        TownHall.currentUser = user.uid;
-        DownLoadCenter.downloadButtonHandler('user-download', User.download, 'isAdmin')
-        DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download)
-        eventHandler.readData('/townHalls/');
-        eventHandler.metaData();
-        eventHandler.readDataUsers();
-        $('.write-error').removeClass('hidden');
-        writeUserData(user.uid, user.displayName, user.email);
-      } else {
-        console.log(user.displayName, ' is still signed in');
-      }
 
-    } else {
-      updateEventView.signIn();
-      // No user is signed in.
-    }
-  });
 
-  // Sign in fuction for firebase
-  updateEventView.signIn = function signIn() {
-    firebase.auth().signInWithRedirect(provider);
-    firebase.auth().getRedirectResult().then(function (result) {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      // var token = result.credential.accessToken;
-      // The signed-in user info.
-      // var user = result.user;
-    }).catch(function (error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      console.log(errorCode, errorMessage);
-    });
-  };
 
   module.updateEventView = updateEventView;
 })(window);

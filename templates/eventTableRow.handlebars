@@ -40,6 +40,7 @@
             <li><a data-value="Tele-Town Hall" href="#">Tele-Town Hall</a></li>
             <li><a data-value="Ticketed Event" href="#">Ticketed Event</a></li>
             <li><a data-value="Empty Chair Town Hall" href="#">Empty Chair Town Hall</a></li>
+            <li><a data-value="Adopt-A-District/State" href="#">Adopt-A-District/State</a></li>
             <li><a data-value="DC Event" href="#">DC Event</a></li>
             <li><a data-value="Office Hours" href="#">Office Hours</a></li>
             <li><a data-value="Other" href="#">Other</a></li>
@@ -60,27 +61,39 @@
         </div><!-- /btn-group -->
       </div><!-- /input-group -->
     </div>
+    <section class="adopter-data non-standard hidden">
+      <div class="form-group col-md-12" id="adopter-member-form-group">
+        <label for="districtAdopter">MOC appearing at event (adopter)</label>
+        <input type="text" class="form-control input-underline" id="districtAdopter" placeholder="Full name" value="{{adopter-member-form-group}}" autocomplete="off">
+        <span id="adopter-member-help-block" class="help-block">Only first name and last name, not titles</span>
+      </div>
+    </section>
     <div class="location-data">
       <div class="form-group">
         <label class="sr-only" for="eventName">Event Title</label>
         <input type="text" class="form-control event-input wide" id="eventName" placeholder="Event Title" value="{{eventName}}">
       </div>
-      <div class="form-group">
+      <div class="form-group general-inputs">
         <label class="sr-only" for="Location">Location</label>
         <input type="text" class="form-control event-input wide" id="Location" placeholder="Location" value="{{Location}}">
       </div>
-      <div class="input-group">
-          <input type="text" class="form-control event-input wide" id="address" placeholder="Address" value="{{address}}">
-          <span class="input-group-btn">
-            <button class="btn btn-default disabled" type="button" id="geocode-button">GeoCode!</button>
-          </span>
+      <div class="input-group general-inputs">
+        <input type="text" class="form-control event-input wide" id="address" placeholder="Address" value="{{address}}">
+        <span class="input-group-btn">
+          <button class="btn btn-default disabled" type="button" id="geocode-button">GeoCode!</button>
+        </span>
       </div><!-- /input-group -->
-      <div class="form-group">
+      <div class="form-group general-inputs">
         <label class="sr-only" for="addressType">Address Type</label>
         <input type="text" class="" id="addressType" placeholder="Address type" value="street" readonly>
       </div>
-
-      <div class="form-group">
+      <div class="text-info non-standard tele-inputs hidden">
+      <div class="form-group col-md-12">
+        <label class="" for="phoneNumber">Phone Number format: (555) 555-5555</label>
+        <input type="tel" class="form-control" id="phoneNumber" placeholder="Phone Number" value="{{phoneNumber}}">
+        <span id="phoneNumber-error" class="help-block error-message hidden">Please enter a valid phone number</span>
+      </div>
+      <div class="form-group general-inputs">
         <label class="sr-only" for="locationCheck">Location Check</label>
         <input type="text" class="text-success" id="locationCheck" placeholder="please geocode" {{#if lat}}value="Location is valid"{{/if }} readonly>
       </div>

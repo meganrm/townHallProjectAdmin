@@ -14,7 +14,7 @@
   //     }
   //   })
   // })
-  function setupTypeaheads() {
+  eventHandler.setupTypeaheads = function setupTypeaheads() {
     var typeaheadConfig = {
       fitToElement: true,
       delay: 250,
@@ -105,37 +105,34 @@
     eventHandler.renderTableWithArray(data, $table);
   };
 
+  eventHandler.lookupOldEvents = function(event){
+    event.preventDefault();
+    var currentMonth = moment().get('month');
+    var key = $('#lookup-key').val();
+    var value = $('#lookup-value').val();
+    var dates = [];
+    for (var i = 0; i < currentMonth + 1; i++) {
+      dates.push('2017-' + i);
+    }
+    console.log(key, value, dates);
+    var totalCount = 0;
+    dates.forEach(function(date, index){
+      TownHall.getOldData(key, value, date).then(function(returnedSet){
+        totalCount = totalCount + returnedSet.size;
+        if (index + 1 === dates.length) {
+          console.log(totalCount);
+          $('#lookup-results').val(totalCount);
+        }
+      });
+    });
+  };
+
 // url hash for direct links to subtabs
 // slightly hacky routing
-  $(document).ready(function () {
-    $('.sort').on('click', 'a', eventHandler.sortTable);
-    $('.filter').on('click', 'a', eventHandler.filterTable);
-    $('#filter-info').on('click', 'button.btn', eventHandler.removeFilter);
-    eventHandler.resetFilters();
-    setupTypeaheads();
 
-    if (location.hash) {
-      $('a[href=\'' + location.hash + '\']').tab('show');
-    } else {
-      TownHall.isMap = true;
-    }
-    $('nav').on('click', '.hash-link', function onClickGethref() {
-      var hashid = this.getAttribute('href');
-      if (hashid === '#home' && TownHall.isMap === true) {
-        history.replaceState({}, document.title, '.');
-      } else {
-        location.hash = this.getAttribute('href');
-      }
-      $('[data-toggle="popover"]').popover('hide');
-    });
-  });
 
   eventHandler.metaData = function () {
-    metaDataObj = new TownHall();
-    metaDataObj.topZeroResults = [];
-    metaDataObj.total = TownHall.allTownHalls.length;
-    var metaDataTemplate = Handlebars.getTemplate('metaData');
-    $('.metadata').html(metaDataTemplate(metaDataObj));
+
   };
 
   eventHandler.checkTime = function (time) {
@@ -204,34 +201,23 @@
       console.log('no start time', ele.eventId);
     }
   };
-
-  eventHandler.recessProgress = function (townhall) {
-    var percent = 1/535 * 100;
-    var current;
-    var updated;
-    if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-08-04', [])) {
-      if (townhall.Party === 'Democratic') {
-        current = parseInt($('.dem-aug-progress').attr('data-count'));
-        updated = current + percent;
-        $('.dem-aug-progress').attr('data-count', updated);
-        $('.dem-aug-progress').width(updated + '%');
-      } else {
-        current = parseInt($('.rep-aug-progress').attr('data-count'));
-        updated = current + percent;
-        $('.rep-aug-progress').attr('data-count', updated);
-        $('.rep-aug-progress').width(updated + '%');
-      }
+  eventHandler.renderNav = function(flag) {
+    if (!flag) {
+      $('.var-nav').addClass('hidden');
+      return
     }
-  };
+    $('.hash-link.' + flag).removeClass('hidden');
+  }
 
   eventHandler.readData = function (path) {
+
     $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;
       $currentState.attr('data-total', total);
       var ele = new TownHall(snapshot.val());
       obj = {};
-      eventHandler.recessProgress(ele);
+      // dataviz.recessProgress(ele, dataviz.membersEvents);
       eventHandler.checkLastUpdated(ele);
       eventHandler.checkEndTime(ele);
       TownHall.allTownHallsFB[ele.eventId] = ele;
@@ -239,47 +225,20 @@
       TownHall.addFilterIndexes(ele);
       eventHandler.checkTimeFormat(ele);
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
-      var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
-      var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
-      if (ele.timeStart24 && ele.timeEnd24) {
-        if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
-          console.log('24 hour time error: ', ele.eventId);
-        } else {
-          ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
-          ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
-        }
-      }
-      if (ele.yearMonthDay) {
-        var month = ele.yearMonthDay.split('-')[1];
-        var day = ele.yearMonthDay.split('-')[2];
-        if (!month || !day) {
-          console.log('date error', ele.eventId);
-        } else {
-          if (month.length === 1) {
-            month = 0 + month;
-          }
-          if (day.length === 1) {
-            day = 0 + day;
-          }
-          ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
-        }
-      }
 
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {
-        console.log('missing meeting type: ', ele.eventId);
+        console.log('no meeting type', ele);
       } else {
-        switch (ele.meetingType.slice(0, 4)) {
-        case 'Tele':
-          $toAppend.find('.location-data').html(teleInputsTemplate(ele));
-          break;
-        case 'Tick':
-          $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
-          break;
-        }
+        updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
       }
       $('#all-events-table').append($toAppend);
     });
+    firebase.database().ref(path).once('value').then(function(snapshot){
+      DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download, false);
+      DownLoadCenter.downloadButtonHandler('CAP-download', CSVTownHall.download, false, 'CAP CSV download');
+      DownLoadCenter.downloadButtonHandler('SC-download', CSVTownHall.download, false, 'Sierra Club CSV download');
+    })
     $('[data-toggle="tooltip"]').tooltip();
   };
 
@@ -290,51 +249,33 @@
       obj = {};
       TownHall.allTownHallsFB[ele.eventId] = ele;
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
-      var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
-      var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
       var approveButtons = Handlebars.getTemplate('approveButtons');
 
-      if (ele.timeStart24 && ele.timeEnd24) {
-        if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
-          console.log(ele.eventId);
-        } else {
-          ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
-          ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
-        }
+      if (!ele.zoneString && ele.lat) {
+        ele.validateZone(ele.eventId).then(function(returnedTH){
+          TownHall.allTownHallsFB[ele.eventId] = returnedTH;
+          returnedTH.updateUserSubmission(ele.eventId).then(function(updated){
+          });
+        });
       }
 
-      if (ele.yearMonthDay) {
-        var month = ele.yearMonthDay.split('-')[1];
-        var day = ele.yearMonthDay.split('-')[2];
-        if (month && month.length === 1) {
-          month = 0 + month;
-        }
-        if (day && day.length === 1) {
-          day = 0 + day;
-        }
-        ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
-      }
       ele.lastUpdatedHuman = new Date(ele.lastUpdated).toDateString();
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {
         console.log('no meeting type', ele);
       } else {
-        switch (ele.meetingType.slice(0, 4)) {
-        case 'Tele':
-          $toAppend.find('.location-data').html(teleInputsTemplate(ele));
-          break;
-        case 'Tick':
-          $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
-          break;
-        }
+        updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
+      }
+      if (!ele.lat) {
+        $toAppend.find('#geocode-button').removeClass('disabled');
+        $toAppend.find('#geocode-button').addClass('btn-blue');
+        $toAppend.find('#locationCheck').val('');
       }
       $toAppend.find('.btns').html(approveButtons(ele));
       $('#for-approval').append($toAppend);
     });
-    $('[data-toggle="tooltip"]').tooltip();
   };
 
-  $('');
 
   module.eventHandler = eventHandler;
 })(window);
