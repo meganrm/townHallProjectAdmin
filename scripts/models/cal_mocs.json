@@ -1,0 +1,697 @@
+{
+  "cal_moc": [
+    {
+      "name": "Mark DeSaulnier",
+      "townHalls": [
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Sat, Feb 18, 2017"
+        },
+        {
+          "date": "Thu, Feb 23, 2017"
+        },
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Thu, Feb 23, 2017"
+        },
+        {
+          "date": "Thu, Feb 23, 2017"
+        },
+        {
+          "date": "Thu, Feb 23, 2017"
+        },
+        {
+          "date": "Sat Apr 08 2017"
+        },
+        {
+          "date": "Tue Apr 11 2017"
+        },
+        {
+          "date": "Wed Apr 12 2017"
+        },
+        {
+          "date": "Thu May 11 2017"
+        },
+        {
+          "date": "Tue May 30 2017"
+        },
+        {
+          "date": "Wed Aug 09 2017"
+        }
+      ]
+    },
+    {
+      "name": "Tom McClintock",
+      "townHalls": [
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Tue, Feb 21, 2017"
+        },
+        {
+          "date": "Tue, Feb 21, 2017"
+        },
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Tue, Feb 21, 2017"
+        },
+        {
+          "date": "Tue, Feb 21, 2017"
+        },
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Sat, Mar 4, 2017"
+        },
+        {
+          "date": "Sat Apr 08 2017"
+        },
+        {
+          "date": "Mon Jun 19 2017"
+        }
+      ]
+    },
+    {
+      "name": "Mike Thompson",
+      "townHalls": [
+        {
+          "date": "Sat, February 18, 2017"
+        },
+        {
+          "date": "Sat, Feb 18, 2017"
+        },
+        {
+          "date": "Tue, Feb 21, 2017"
+        },
+        {
+          "date": "Sat, Feb 25, 2017"
+        },
+        {
+          "date": "Tue, Feb 21, 2017"
+        },
+        {
+          "date": "Sat, Feb 25, 2017"
+        },
+        {
+          "date": "Sat, Apr 1, 2017"
+        },
+        {
+          "date": "Thu Apr 20 2017"
+        },
+        {
+          "date": "Tue Apr 18 2017"
+        },
+        {
+          "date": "Wed Apr 19 2017"
+        },
+        {
+          "date": "Wed Apr 19 2017"
+        },
+        {
+          "date": "Mon Jun 19 2017"
+        },
+        {
+          "date": "Tue Aug 08 2017"
+        },
+        {
+          "date": "Tue Aug 01 2017"
+        },
+        {
+          "date": "Wed Aug 02 2017"
+        },
+        {
+          "date": "Wed Aug 02 2017"
+        }
+      ]
+    },
+    {
+      "name": "Judy Chu",
+      "townHalls": [
+        {
+          "date": "Sat, Feb 18, 2017"
+        },
+        {
+          "date": "Sat, Feb 18, 2017"
+        },
+        {
+          "date": "Thu Apr 20 2017"
+        },
+        {
+          "date": "Sun Apr 23 2017"
+        }
+      ]
+    },
+    {
+      "name": "Lucille Roybal-Allard",
+      "townHalls": [
+        {
+          "date": "Sat, Feb 18, 2017"
+        }
+      ]
+    },
+    {
+      "name": "Barbara Lee",
+      "townHalls": [
+        {
+          "date": "Sat, Feb 18, 2017"
+        },
+        {
+          "date": "Mon, Mar 13, 2017"
+        },
+        {
+          "date": "Sun May 21 2017"
+        }
+      ]
+    },
+    {
+      "name": "Tony Cárdenas",
+      "townHalls": [
+        {
+          "date": "Tue, Feb 21, 2017"
+        },
+        {
+          "date": "Tue, Feb 21, 2017"
+        },
+        {
+          "date": "Tue, Feb 21, 2017"
+        }
+      ]
+    },
+    {
+      "name": "Ro Khanna",
+      "townHalls": [
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Sat, Mar 25, 2017"
+        },
+        {
+          "date": "Sat, Mar 25, 2017"
+        },
+        {
+          "date": "Sun Apr 23 2017"
+        },
+        {
+          "date": "Sun May 07 2017"
+        },
+        {
+          "date": "Sun Jul 30 2017"
+        }
+      ]
+    },
+    {
+      "name": "Adam Schiff",
+      "townHalls": [
+        {
+          "date": "Fri, Feb 24, 2017"
+        },
+        {
+          "date": "Fri, Feb 24, 2017"
+        },
+        {
+          "date": "Fri, Feb 24, 2017"
+        },
+        {
+          "date": "Fri, Feb 24, 2017"
+        }
+      ]
+    },
+    {
+      "name": "Salud Carbajal",
+      "townHalls": [
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Mon Apr 17 2017"
+        }
+      ]
+    },
+    {
+      "name": "Nanette Barragan",
+      "townHalls": [
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Wed Apr 19 2017"
+        }
+      ]
+    },
+    {
+      "name": "Jackie Speier",
+      "townHalls": [
+        {
+          "date": "Sat, Feb 25, 2017"
+        },
+        {
+          "date": "Sat, Feb 25, 2017"
+        },
+        {
+          "date": "Sat Jul 15 2017"
+        }
+      ]
+    },
+    {
+      "name": "Jared Huffman",
+      "townHalls": [
+        {
+          "date": "Wed, Feb 22, 2017"
+        },
+        {
+          "date": "Thu, Feb 23, 2017"
+        },
+        {
+          "date": "Mon, Mar 6, 2017"
+        },
+        {
+          "date": "Mon, Mar 13, 2017"
+        },
+        {
+          "date": "Sat, Mar 18, 2017"
+        },
+        {
+          "date": "Mon Apr 10 2017"
+        },
+        {
+          "date": "Wed Apr 19 2017"
+        },
+        {
+          "date": "Tue May 09 2017"
+        },
+        {
+          "date": "Mon Jun 19 2017"
+        }
+      ]
+    },
+    {
+      "name": "Karen Bass",
+      "townHalls": [
+        {
+          "date": "Mon, Feb 27, 2017"
+        }
+      ]
+    },
+    {
+      "name": "Lou Correa",
+      "townHalls": [
+        {
+          "date": "Fri, Feb 24, 2017"
+        },
+        {
+          "date": "Wed Apr 19 2017"
+        }
+      ]
+    },
+    {
+      "name": "Anna Eshoo",
+      "townHalls": [
+        {
+          "date": "Sat, Mar 4, 2017"
+        },
+        {
+          "date": "Sat, Mar 4, 2017"
+        },
+        {
+          "date": "Sat, Mar 4, 2017"
+        },
+        {
+          "date": "Sat, Mar 4, 2017"
+        },
+        {
+          "date": "Sat, Mar 4, 2017"
+        },
+        {
+          "date": "Sun, Mar 5, 2017"
+        },
+        {
+          "date": "Sat Apr 01 2017"
+        },
+        {
+          "date": "Sat, Apr 22, 2017"
+        },
+        {
+          "date": "Sat, Apr 1, 2017"
+        },
+        {
+          "date": "Sat Jun 10 2017"
+        },
+        {
+          "date": "Sat Jul 22 2017"
+        }
+      ]
+    },
+    {
+      "name": "Scott Peters",
+      "townHalls": [
+        {
+          "date": "Mon, Mar 13, 2017"
+        },
+        {
+          "date": "Mon, Mar 13, 2017"
+        },
+        {
+          "date": "Mon, Mar 13, 2017"
+        },
+        {
+          "date": "Tue Mar 14 2017"
+        },
+        {
+          "date": "Tue Apr 18 2017"
+        }
+      ]
+    },
+    {
+      "name": "Susan Davis",
+      "townHalls": [
+        {
+          "date": "Sat, Mar 11, 2017"
+        },
+        {
+          "date": "Mon Jun 19 2017"
+        },
+        {
+          "date": "Mon Jun 19 2017"
+        },
+        {
+          "date": "Sat Jun 24 2017"
+        }
+      ]
+    },
+    {
+      "name": "Steve Knight",
+      "townHalls": [
+        {
+          "date": "Sat, Mar 4, 2017"
+        },
+        {
+          "date": "Sat, Mar 4, 2017"
+        },
+        {
+          "date": "Tue Apr 18 2017"
+        }
+      ]
+    },
+    {
+      "name": "Zoe Lofgren",
+      "townHalls": [
+        {
+          "date": "Sat, Mar 4, 2017"
+        },
+        {
+          "date": "Sun, Mar 12, 2017"
+        },
+        {
+          "date": "Sat, Mar 25, 2017"
+        },
+        {
+          "date": "Sun, Mar 12, 2017"
+        }
+      ]
+    },
+    {
+      "name": "Duncan Hunter",
+      "townHalls": [
+        {
+          "date": "Sat, Mar 11, 2017"
+        }
+      ]
+    },
+    {
+      "name": "Norma Torres",
+      "townHalls": [
+        {
+          "date": "Sat, Mar 25, 2017"
+        },
+        {
+          "date": "Sat, Mar 25, 2017"
+        }
+      ]
+    },
+    {
+      "name": "Alan Lowenthal",
+      "townHalls": [
+        {
+          "date": "Mon, Mar 13, 2017"
+        },
+        {
+          "date": "Mon, Mar 13, 2017"
+        }
+      ]
+    },
+    {
+      "name": "Doug LaMalfa",
+      "townHalls": [
+        {
+          "date": "Sat, Mar 18, 2017"
+        },
+        {
+          "date": "Mon Apr 17 2017"
+        },
+        {
+          "date": "Wed Apr 19 2017"
+        },
+        {
+          "date": "Mon Aug 07 2017"
+        }
+      ]
+    },
+    {
+      "name": "Darrell Issa",
+      "townHalls": [
+        {
+          "date": "Sat, Mar 11, 2017"
+        },
+        {
+          "date": "Sat, Mar 11, 2017"
+        },
+        {
+          "date": "Sat Jun 03 2017"
+        }
+      ]
+    },
+    {
+      "name": "Nancy Pelosi",
+      "townHalls": [
+        {
+          "date": "Sat Mar 25 2017"
+        }
+      ]
+    },
+    {
+      "name": "Brad Sherman",
+      "townHalls": [
+        {
+          "date": "Sat, Apr 22, 2017"
+        },
+        {
+          "date": "Sat Apr 22 2017"
+        }
+      ]
+    },
+    {
+      "name": "Jimmy Panetta",
+      "townHalls": [
+        {
+          "date": "Sat Apr 01 2017"
+        },
+        {
+          "date": "Sat, Apr 1, 2017"
+        }
+      ]
+    },
+    {
+      "name": "Jerry McNerney",
+      "townHalls": [
+        {
+          "date": "Sat Apr 08 2017"
+        }
+      ]
+    },
+    {
+      "name": "Linda Sanchez",
+      "townHalls": [
+        {
+          "date": "Tue Apr 11 2017"
+        }
+      ]
+    },
+    {
+      "name": "Grace Napolitano",
+      "townHalls": [
+        {
+          "date": "Fri Apr 14 2017"
+        }
+      ]
+    },
+    {
+      "name": "Jeff Denham",
+      "townHalls": [
+        {
+          "date": "Mon Apr 17 2017"
+        },
+        {
+          "date": "Tue May 09 2017"
+        }
+      ]
+    },
+    {
+      "name": "John Garamendi",
+      "townHalls": [
+        {
+          "date": "Wed Apr 19 2017"
+        },
+        {
+          "date": "Thu Apr 20 2017"
+        },
+        {
+          "date": "Thu Apr 20 2017"
+        },
+        {
+          "date": "Wed Apr 19 2017"
+        },
+        {
+          "date": "Tue May 09 2017"
+        },
+        {
+          "date": "Tue May 09 2017"
+        },
+        {
+          "date": "Tue May 09 2017"
+        },
+        {
+          "date": "Fri Jul 21 2017"
+        }
+      ]
+    },
+    {
+      "name": "Pete Aguilar",
+      "townHalls": [
+        {
+          "date": "Tue Apr 18 2017"
+        }
+      ]
+    },
+    {
+      "name": "Eric Swalwell",
+      "townHalls": [
+        {
+          "date": "Sat Apr 22 2017"
+        },
+        {
+          "date": "Sat Aug 05 2017"
+        },
+        {
+          "date": "Sat Aug 05 2017"
+        }
+      ]
+    },
+    {
+      "name": "Dianne Feinstein",
+      "townHalls": [
+        {
+          "date": "Mon Apr 17 2017"
+        },
+        {
+          "date": "Thu Apr 20 2017"
+        },
+        {
+          "date": "Mon Apr 17 2017"
+        }
+      ]
+    },
+    {
+      "name": "Kamala Harris",
+      "townHalls": [
+        {
+          "date": "Fri Apr 21 2017"
+        }
+      ]
+    },
+    {
+      "name": "Ted Lieu",
+      "townHalls": [
+        {
+          "date": "Thu Apr 20 2017"
+        },
+        {
+          "date": "Mon Apr 24 2017"
+        }
+      ]
+    },
+    {
+      "name": "Julia Brownley",
+      "townHalls": [
+        {
+          "date": "Wed Apr 19 2017"
+        }
+      ]
+    },
+    {
+      "name": "Nanette Barragán",
+      "townHalls": [
+        {
+          "date": "Mon May 15 2017"
+        }
+      ]
+    },
+    {
+      "name": "Ami Bera",
+      "townHalls": [
+        {
+          "date": "Thu Jun 01 2017"
+        }
+      ]
+    },
+    {
+      "name": "Stephen Knight",
+      "townHalls": [
+        {
+          "date": "Thu Jun 01 2017"
+        }
+      ]
+    },
+    {
+      "name": "Juan Vargas",
+      "townHalls": [
+        {
+          "date": "Mon Jul 10 2017"
+        }
+      ]
+    },
+    {
+      "name": "Raul Ruiz",
+      "townHalls": [
+        {
+          "date": "Mon Jul 10 2017"
+        }
+      ]
+    },
+    {
+      "name": "Doris Matsui",
+      "townHalls": [
+        {
+          "date": "Sat Aug 05 2017"
+        }
+      ]
+    }
+  ]
+}
