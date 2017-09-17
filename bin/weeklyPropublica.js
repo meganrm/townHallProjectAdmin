@@ -1,3 +1,9 @@
+#!/usr/bin/env node
+
+
+var firebasedb = require('../bin/setupFirebase.js');
+var ErrorReport = require('../bin/errorReporting.js');
+
 function WeeklyPropublicaUpdate(opts) {
   for (keys in opts) {
     this[keys] = opts[keys];
@@ -16,8 +22,9 @@ function Moc(opts) {
     this[keys] = opts[keys];
   }
   this.propublica_id = opts.member_id;
-  if (parseInt(opts.facebook_account)) {
-    this.facebook_account = parseInt(opts.facebook_account);
+  this.propublica_facebook = opts.facebook_account;
+  if (parseInt(this.propublica_facebook)) {
+    this.propublica_facebook = parseInt(this.propublica_facebook);
   }
   if (opts.current_party && opts.current_party.toLowerCase() === "d") {
     this.party = "Democratic";
@@ -29,6 +36,8 @@ function Moc(opts) {
   if (opts.state) {
     this.stateName = statesAb[opts.state];
   }
+  delete this.roles;
+  delete this.facebook_account;
   delete this.member_id;
   delete this.current_party;
 }
@@ -40,26 +49,25 @@ function loadNewMembersRequest() {
       hostname: "api.propublica.org",
       path: "/congress/v1/members/new.json",
       headers: {
-        "User-Agent": {
           "X-API-Key": "CGreQp3d95C4FLYHkCZRph5Hhs9nqfRCdJNlrxHL"
-        }
       },
       method: "GET"
     };
 
     const req = https.request(options, res => {
-      console.log("statusCode:", res.statusCode);
-      console.log("headers:", res.headers);
-
       res.on("data", d => {
-        process.stdout.write(d);
-        resolve(d);
+        // process.stdout.write(d);
+        var r = JSON.parse(d);
+        if (r['results'][0]['members']) {
+          resolve(r['results'][0]['members']);
+        } else {
+          reject('no data came back from propublica/new')
+        }
       });
     });
 
     req.on("error", e => {
-      console.error(e);
-      reject(e);
+      console.error('error on request', e);
     });
     req.end();
   });
@@ -71,25 +79,29 @@ function findSpecificMemberRequest(member_id) {
       hostname: "api.propublica.org",
       path: "/congress/v1/members/" + member_id + ".json",
       headers: {
-        "User-Agent": {
           "X-API-Key": "CGreQp3d95C4FLYHkCZRph5Hhs9nqfRCdJNlrxHL"
-        }
       },
       method: "GET"
     };
-
+    var str = '';
     const req = https.request(options, res => {
-      console.log("statusCode:", res.statusCode);
-      console.log("headers:", res.headers);
-
-      res.on("data", d => {
-        process.stdout.write(d);
-        resolve(d);
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => {
+        str += chunk;
+      });
+      res.on('end', () => {
+        var r = JSON.parse(str);
+        var member = r['results'][0];
+        if (member) {
+          resolve(member);
+        } else {
+          reject('no data came back from propublica/members')
+        }
       });
     });
 
     req.on("error", e => {
-      console.error(e);
+      console.error('error getting ', e);
       reject(e);
     });
     req.end();
@@ -112,38 +124,49 @@ function updateNewMembers(newPropublicaMembers) {
         member.type = type;
         // check mocData for matches
         var path = "/mocData/" + existing_propub_member.govtrack_id;
-        firebase.database().ref(path).once("value").then(function(snapshot) {
+        firebasedb.ref(path).once("value").then(function(snapshot) {
           if (!snapshot.exists()) {
             // if no match
             // update an entirely new member
             member.displayName = member.first_name + " " + member.last_name;
-            // firebase.database().ref(path).update(member).then(function(done){
+            member.state = new_propub_member.state;
+            member.district = new_propub_member.district;
+            member.stateName = statesAb[new_propub_member.state];
+            // firebasedb.ref(path).update(member).then(function(done){
             //   console.log(done);
             // });
-            console.log(member);
-
-            var mocIDPath =
-              "/mocID/" + member.last_name + "_" + member.first_name;
+            var lastname = member.last_name.replace(/\W/g, '')
+            var firstname = member.first_name.replace(/\W/g, '')
+            var memberKey = lastname.toLowerCase() + '_' + firstname.toLowerCase();
+            var mocIDPath = "/mocID/" + memberKey;
+            var memberIDObject = {
+              id : member.govtrack_id,
+              nameEntered: member.displayName
+            }
             // ADD NEW MEMBER INFO TO mocID/
-            // firebase.database().ref(mocIDPath).update(id : existing_propub_member.govtrack_id, nameEntered: member.displayName).then(function(done){
+            // firebasedb.ref(mocIDPath).update(memberIDObject)
+            // .then(function(done){
             //   console.log("Added member to mocID/ endpoint " + done);
+            // }).catch(function(error){
+            //   errorEmail = new ErrorReport(member.govtrack_id + ':' error, 'Could not save a new mocID');
+            //   error.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
             // });
           } else {
             // if match - update only fields that may change (social media)
-            console.log(member);
-            // firebase.database().ref(path).update(
-            // { facebook_account : member.facebook_account,
-            //   in_office : member.in_office,
-            //   youtube_account : member.youtube_account,
-            //   twitter_account : member.twitter_account}).then(function(done){
+            console.log('existing member', member.govtrack_id);
+            // firebasedb.ref(path).update(member).then(function(done){
             //   console.log(done);
+            // }).catch(function(error){
+            //   errorEmail = new ErrorReport(member.govtrack_id + ':' error, 'Could not find propublica member');
+            //   error.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
             // });
           }
           console.log("---------");
         });
       })
       .catch(function(error) {
-        console.log("error ", error);
+        errorEmail = new ErrorReport(member.govtrack_id + ':' + error, 'Could not update existing moc');
+        error.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
       });
   });
 }
@@ -152,11 +175,14 @@ WeeklyPropublicaUpdate.getUpdate = function() {
   // call propublica 'new members' api endpoint
   loadNewMembersRequest()
     .then(function(newMembers) {
+      console.log('got all new members');
       updateNewMembers(newMembers);
     })
     .catch(function(error) {
       console.log("Uh oh, something went wrong getting new members ", error);
     });
 };
+
+WeeklyPropublicaUpdate.getUpdate();
 
 module.exports = WeeklyPropublicaUpdate;

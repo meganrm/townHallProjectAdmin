@@ -1,4 +1,3 @@
-
 (function(module) {
     
       function Moc(opts) {

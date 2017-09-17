@@ -14,4 +14,7 @@ admin.initializeApp({
   databaseURL: 'https://townhallproject-86312.firebaseio.com'
 });
 
+<<<<<<< HEAD
+=======
 module.exports = admin.database();
+>>>>>>> b41044492941ce799419b707bbaf29940ba103c3
