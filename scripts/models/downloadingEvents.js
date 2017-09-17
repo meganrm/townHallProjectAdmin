@@ -42,7 +42,7 @@
 
     // prepare CSV data
     var csvData = new Array();
-    csvData.push('"Title","Venue", "Address", "City", "State", "Zip","Categories","Date","Description","Time","Host", "Directions"');
+    csvData.push('"Title","Venue","Address","City","State","Zip","Categories","Date","Description","Time","Host","Directions"');
     data.forEach(function(item, index) {
       csvData.push(
         '"' + item.Title +
@@ -77,7 +77,8 @@
       // it needs to implement server side export
       link.setAttribute('href', 'http://www.example.com/export');
     }
-    link.innerHTML = 'ACLU download CSV of Data';
+    link.setAttribute('class', 'btn btn-blue')
+    link.innerHTML = 'ACLU CSV Download';
     document.getElementById('ACLU-buttons').appendChild(link);
   };
 

@@ -3,25 +3,14 @@ var admin = require('firebase-admin');
 var request = require('request-promise'); // NB:  This is isn't the default request library!
 
 var eventbriteToken = process.env.EVENTBRITE_TOKEN;
-var facebookToken = process.env.FACEBOOK_TOKEN;
-var firebaseKey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n');
 var statesAb = require('../bin/stateMap.js');
+var firebasedb = require('../bin/setupFirebase.js');
+
 var moment = require('moment');
-
-admin.initializeApp({
-  credential: admin.credential.cert({
-    projectId: 'townhallproject-86312',
-    clientEmail: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
-    privateKey: firebaseKey
-  }),
-  databaseURL: 'https://townhallproject-86312.firebaseio.com'
-});
-
-var firebasedb = admin.database();
-// admin.database.enableLogging(true);
 
 // Get list of existing townhalls so we don't submit duplicates
 var existingTownHallIds = [];
+
 firebasedb.ref('/townHallIds/').once('value').then(function(snapshot){
   snapshot.forEach(node => {
     existingTownHallIds.push(node.val().eventId);
@@ -41,9 +30,9 @@ function getFacebookEvents(MoCs) {
   var startDate = Math.floor(new Date() / 1000); //Needs to be in Unix timestamp form
   Object.keys(MoCs).forEach(id => {
     let MoC = MoCs[id];
-    if (MoC.hasOwnProperty('facebook') && MoC.facebook) {
+    if (MoC.hasOwnProperty('facebook') && MoC.facebook_account) {
       facebookPromises.push(
-        createFacebookQuery(MoC.facebook, startDate).then(res => {
+        createFacebookQuery(MoC.facebook_account, startDate).then(res => {
           // Create references to MoCs for easy data lookup later
           res.data.forEach(event => event.MoC = MoC);
           return res.data;
@@ -149,13 +138,19 @@ function createEventbriteQuery(queryTerm) {
 }
 
 function transformFacebookTownhall(event) {
+  var district;
+  if (event.MoC.type === 'sen') {
+    district = 'Senate';
+  } else {
+    district = event.MoC.state + '-' + event.MoC.district;
+  }
   let start = new Date(event.start_time);
   var townhall = {
     eventId: 'fb_' + event.id,
     Member: event.MoC.displayName,
     govtrack_id: event.MoC.govtrack_id,
     Party: event.MoC.party,
-    District: event.MoC.state + '-' + event.MoC.district,
+    District: district,
     State: statesAb[event.MoC.state],
     stateName: statesAb[event.MoC.state],
     state: event.MoC.state,
@@ -164,7 +159,7 @@ function transformFacebookTownhall(event) {
     link: 'https://www.facebook.com/events/' + event.id + '/',
     linkName: 'Facebook Link',
     dateObj: Date.parse(start),
-    dateString: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
+    dateString: moment.parseZone(event.start_time).format('ddd, MMM D YYYY'),
     Date: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
     Time: moment.parseZone(event.start_time).format('LT'),
     timeStart24: moment.parseZone(event.start_time).format('HH:mm:ss'),
@@ -216,3 +211,5 @@ function transformEventbriteTownhall(event) {
 
   return townhall;
 }
+
+module.exports = eventScraping;
