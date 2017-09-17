@@ -182,5 +182,7 @@ WeeklyPropublicaUpdate.getUpdate = function() {
       console.log("Uh oh, something went wrong getting new members ", error);
     });
 };
+
 WeeklyPropublicaUpdate.getUpdate();
+
 module.exports = WeeklyPropublicaUpdate;
