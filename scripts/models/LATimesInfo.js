@@ -21,11 +21,11 @@ function TownHall(date) {
 // function to get meta data
 function getCalData(dateList) {
     return new Promise(function(resolve, reject) {
-        var date_key;
+        let date_key;
         var mem_exists;
 
         for (var i = 0; i < date_list.length; i++) {
-            var date_key = date_list[i];
+            let date_key = date_list[i];
             firebase.database().ref('/townHallsOld/' + date_key).once('value').then(function(snapshot) {
                 snapshot.forEach(function(oldTownHall) {
                     town_hall = oldTownHall.val();

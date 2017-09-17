@@ -1,20 +1,79 @@
-// update 'mocData/' 
-// if member doesn't exists - update (add) entire moc (hold this in construct obj)
-// otherwise (if member displayName already exists in mocData/) 
-// update propublica_id, type, party (whichever needs to be updated)
-
-
 (function(module) {
-
-    function Moc() {
+    
+    var states_obj = {
+                    AL: "Alabama",
+                    AK: "Alaska",
+                    AS: "American Samoa",
+                    AZ: "Arizona",
+                    AR: "Arkansas",
+                    CA: "California",
+                    CO: "Colorado",
+                    CT: "Connecticut",
+                    DE: "Delaware",
+                    DC: "District of Columbia",
+                    FM: "Federated States of Micronesia",
+                    FL: "Florida",
+                    GA: "Georgia",
+                    GU: "Guam",
+                    HI: "Hawaii",
+                    ID: "Idaho",
+                    IL: "Illinois",
+                    IN: "Indiana",
+                    IA: "Iowa",
+                    KS: "Kansas",
+                    KY: "Kentucky",
+                    LA: "Louisiana",
+                    ME: "Maine",
+                    MH: "Marshall Islands",
+                    MD: "Maryland",
+                    MA: "Massachusetts",
+                    MI: "Michigan",
+                    MN: "Minnesota",
+                    MS: "Mississippi",
+                    MO: "Missouri",
+                    MT: "Montana",
+                    NE: "Nebraska",
+                    NV: "Nevada",
+                    NH: "New Hampshire",
+                    NJ: "New Jersey",
+                    NM: "New Mexico",
+                    NY: "New York",
+                    NC: "North Carolina",
+                    ND: "North Dakota",
+                    MP: "Northern Mariana Islands",
+                    OH: "Ohio",
+                    OK: "Oklahoma",
+                    OR: "Oregon",
+                    PW: "Palau",
+                    PA: "Pennsylvania",
+                    PR: "Puerto Rico",
+                    RI: "Rhode Island",
+                    SC: "South Carolina",
+                    SD: "South Dakota",
+                    TN: "Tennessee",
+                    TX: "Texas",
+                    UT: "Utah",
+                    VT: "Vermont",
+                    VI: "Virgin Islands",
+                    VA: "Virginia",
+                    WA: "Washington",
+                    WV: "West Virginia",
+                    WI: "Wisconsin",
+                    WY: "Wyoming"
+    }
+    
+    function Moc(govtrack_id, propublica_id, isCurrent, displayName, type, party, facebook, stateName) {
+        this.govtrack_id  = govtrack_id;
         this.propublica_id = propublica_id;
+        this.isCurrent = isCurrent;
         this.displayName = displayName;
         this.type = type;
         this.party = party;
+        this.facebook = facebook;
+        this.stateName = stateName;
     }
 
     function propublicaUpdate() {
-
         // api call to ProPublica (accepted parameters : 'senate' or 'house')
         function loadPropublicaData(hoc) {
             return new Promise(function(resolve, reject) {
@@ -36,103 +95,122 @@
             })
         }
 
+        var type = "";
         // have to call propublica api twice (once for senators, once for representatives)
         loadPropublicaData("senate").then(function (value) {
+            type = "sen";
             var senators = value;
-            getHOCValues(senators);
+            updateHocValues(senators, type);
         }).catch(function() {
             console.log("error with retrieving senator values");
         });
 
         loadPropublicaData("house").then(function (value) {
+            type = "rep";
             var representatives = value;
-            getHOCValues(representatives);
+            updateHocValues(representatives, type);
         }).catch(function() {
             console.log("error with retrieving representative values.");
         });
 
-        function getHOCValues(hoc) {
-            var currentHOC = hoc;
-            currentHOC.forEach(function(propub_member) {
-                // is_match = false;
-                //  property values
-                propub_display_name = propub_member.first_name + " " + propub_member.last_name;
-                propublica_id = propub_member.id;
-                propub_type = propub_member.type;
-                propub_party = getParty(propub_member.party);
+        function updateHocValues(hoc, type) {
+            var repArray = hoc;
+            var mocdata_match;
+            var propub_moc_obj;
+            repArray.forEach(function(propub_member) {
+                mocdata_match = "";
 
-                // update moc obj
-                var propub_moc_obj = Moc(propublica_id, 
-                                  propub_display_name, 
-                                  propub_type, 
-                                  propub_party);
+                // function returns propub_moc_obj
+                propub_moc_obj = buildUpdateObj(propub_member);
+                // find match to mocData 
+                firebase.database().ref('/mocData/' + propub_moc_obj.govtrack_id).once('value').then(function(snapshot) {
+                    mocdata_match = snapshot.val();
+                })
                 
-                // find match to mocData --> should return a 'mocData/' key or nothing
-                var mocdata_match = findMatch(propub_moc_obj);
-
-                if (typeof mocdata_match !== 'undefined') { // update specific object [or return a key - to update 'mocData/' at that key]
-                    // update mocdata_match with propub_moc_obj values needed
-                    // update propublica_id
-                    // updateObj("mocData/" + mocdata_match.govtrack_id, 'propublica_id', propub_moc_obj.propublica_id);
-                    // update party
-                    if (!mocdata_match.party) {
-                        // updateObj("mocData/" + mocdata_match.govtrack_id, 'party', propub_moc_obj.party);
-                        console.log("party : ", propub_moc_obj.party);
+                console.log(mocdata_match);
+                if (mocdata_match !== "") {
+                    console.log("Values to update on existing member:")
+                    // forEach property of propub_moc_obj
+                    for (property in propub_moc_obj) {
+                        if (!mocdata_match[property] ||
+                            mocdata_match[property] !== propub_moc_obj[property]
+                            && propub_moc_obj[property] !== null 
+                            && property !== 'displayName')
+                            console.log(property, " : ", propub_moc_obj[property])
+                            // updateObj("mocData/" + mocdata_match.govtrack_id, property, propub_moc_obj[property]); 
                     }
-                    // update type
-                    if (!mocdata_match.type) {
-                        // updateObj("mocData/" + mocdata_match.govtrack_id, 'type', propub_moc_obj.type);
-                        console.log("type : ", propub_moc_obj.type);
-                    }
-                    if (!mocdata_match.displayName) {
-                        // updateObj("mocData/" + mocdata_match.govtrack_id, 'displayName', propub_moc_obj.displayName);
-                        console.log("type : ", propub_moc_obj.displayName);
-                    }
-                } else {        // build new moc in mocData/
-                    // update 'mocData/' with propub_moc_obj
-                    // add object?
-                    //updateObj("mocData/", NOT SURE, propub_moc_obj)
-                    console.log("Entire obj update: ", propub_moc_obj)
+                    console.log("---------------------");
+                } else {
+                    console.log("Update Entire Object in 'mocData/': ", propub_moc_obj);
                 }
-
             });
         }
 
         // find match between propublica and mocData
         function findMatch(pro_moc_obj) {
-            firebase.database().ref('/mocData/').once('value').then(function(snapshot) {
-                snapshot.forEach(function(moc) {
-                    member = moc.val();
-
-                    if (typeof member['displayName'] !== null && member['displayName'] == pro_moc_obj.displayName) {
-                        return member;
+            var match = false;
+            return new Promise(function(resolve, reject) {
+                firebase.database().ref('/mocData/').once('value').then(function(snapshot) {
+                    snapshot.forEach(function(moc) {
+                        member = moc.val();
+                        match = false;
+                        if (member['govtrack_id'] == pro_moc_obj.govtrack_id) {
+                            match = true;
+                            resolve(member); 
+                        } 
+                    })
+                    if (!match) {
+                        reject();
                     }
                 })
             })
         }
 
-        // update functions //
+        function buildUpdateObj(propub_member) {
+            //  property values
+            propublica_govtrack = parseInt(propub_member.govtrack_id);
+            propublica_id = propub_member.id;
+            propub_isCurrent = propub_member.in_office;
+            propub_display_name = propub_member.first_name + " " + propub_member.last_name;
+            propub_type = type;
+            propub_party = getParty(propub_member.party);
+            propub_facebook = propub_member.facebook_account;
+            propub_stateName = getValueByKey(states_obj, propub_member.state);
 
-        // update propublica id
-        function updateMocPropubId(member, propublica_id) {
-            console.log("{ displayName: " + member.displayName + ", propublica_id" + ": " + propublica_id + "}");
-            // I need moc key from mocData ****
-            // updateObj(`/mocData/${member.key}`, "propublica_id", propublica_id);
+            // update moc obj
+            var obj = new Moc(propublica_govtrack,
+                                propublica_id, 
+                                propub_isCurrent, 
+                                propub_display_name,
+                                propub_type, 
+                                propub_party,
+                                propub_facebook,
+                                propub_stateName);
+            return obj;
         }
 
-        // helper functions
-        function updateObj(path, key, value) {
-            firebase.database().ref(path).update({ key : value })
+        // update object
+        function updateObj(path, key_val, val) {
+            obj = {};
+            obj[key_val] = val;
+            firebase.database().ref(path).update(obj);
         }
 
-        function getParty(propub_party) {
-            if (propub_party == "R") {
+        function getParty(current_party) {
+            if (current_party == "R") {
                 return "Republican";
-            } else if (propub_party == "D") {
+            } else if (current_party == "D") {
                 return "Democratic";
-            } else if (propub_party == "I") {
+            } else if (current_party == "I") {
                 return "Independent";
             }
+        }
+
+        // get object value from key
+        function getValueByKey(object, key) {
+            return Object.values(object).find(function (value) {
+                return value === object[key];
+            })
         }
         
     }

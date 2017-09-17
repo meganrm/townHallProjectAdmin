@@ -80,11 +80,17 @@
         }
 
         // // look through MOC objects 
-        // firebase.database().ref('mocData/').once('value').then(function(snapshot) {
-        //     snapshot.forEach(function(member) {
-        //         console.log(member.val());
-        //     })
-        // })
+        firebase.database().ref('mocData/').once('value').then(function(snapshot) {
+            snapshot.forEach(function(member) {
+                console.log(member.val());
+            })
+        })
+
+        firebase.database().ref('mocID/').once('value').then(function (snapshot) {
+            snapshot.forEach(function(member) {
+                console.log(member.key)
+            })
+        })
 
         // // Looking through townHallsOld
         firebase.database().ref('/townHallsOld/').once('value').then(function(snapshot) {
@@ -501,3 +507,15 @@ norman_ralph
 
 
 
+Updates to 'townHallsOld/' 
+-stateName
+-state
+-district
+-party
+-govtrack_id
+-iconFlag (this is just added, values are not defined - I noticed that meetingType values didn't exactly match, so let me know how you would like them filled)
+
+mocData/ updates
+-stateName
+
+For first pass, if you run this code you will get all the changes in the output of the console to double check, all of the actual update calls are commented out for now, so that I can incorporate any more changes before making the updated to firebase.

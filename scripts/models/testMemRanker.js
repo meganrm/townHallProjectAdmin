@@ -8,12 +8,14 @@
 // DC Event
 // (just blank)
 
+
 // Goal:
-// (also think about ranking by parameter - town halls or office hours, etc)
+// be able to sort by given field of interest
+// ex. --> town hall, ticketed event, etc.
 //
 // Participation Activity Rankings for U.S. States
 //
-// Colorado [Rank 1]
+// Ro Khanna [Rank 1]
 // -Town Hall             : 160
 // -Ticketed Event        : 79
 // -Tele-Town Hall        : 100
@@ -22,7 +24,7 @@
 // -Other                 : 24
 // Total:                 : 300
 // ----------------------------
-// California [Rank 2]
+// Rodney Davis [Rank 2]
 // -Town Hall             : 147
 // -Ticketed Event        : 70
 // -Tele-Town Hall        : 100
@@ -31,7 +33,7 @@
 // -Other : 24
 // Total:                 : 280
 // ----------------------------
-// Washington [Rank 3]
+// Bill Foster [Rank 3]
 // -TownHall              : 120
 // -Ticketed Event        : 85
 // -Tele-Town Hall        : 111
@@ -44,13 +46,13 @@
 // var date_list = ['2017-0', '2017-1', '2017-2', '2017-3', '2017-4', '2017-5', '2017-6', '2017-7'];
 var date_list = ["2017-0", "2017-1", "2017-4", "2017-7"];
 
-var states_obj = {
-  states_array: []
+var members_obj = {
+  members_array: []
 };
 
 // build state report object
 // may not need all those parameters
-function StateReport(
+function MemberReport(
   name,
   rank,
   totalEvents,
@@ -72,12 +74,12 @@ function StateReport(
   this.other = other;
 }
 
-function getMetaData(date_list) {
-  return new Promise(function(resolve, reject) {
+function getMetaData(dateList) {
     var mem_exists;
+    let promises = [];
 
-    for (var j = 0; j < date_list.length; j++) {
-      let date_key = date_list[j];
+    for (var j = 0; j < dateList.length; j++) {
+      let date_key = dateList[j];
       firebase
         .database()
         .ref("/townHallsOld/" + date_key)
@@ -87,16 +89,21 @@ function getMetaData(date_list) {
             town_hall = oldTownHall.val();
             mem_exists = false;
 
-            for (var k = 0; k < states_obj.states_array.length; k++) {
-              if (states_obj.states_array[k].name === town_hall.State) {  // once updated, this will be 'stateName'
+
+            // evaluate if member exists and set to current_state_report //
+            let current_state_report = getCurrentReport();
+
+            for (var k = 0; k < members_obj.members_array.length; k++) {
+              if (members_obj.members_array[k].name === town_hall.Member) {
+                // once updated, this will be 'stateName'
                 mem_exists = true;
-                current_state_report = states_obj.states_array[k];
+                current_state_report = members_obj.members_array[k];
               }
             }
 
             if (mem_exists === false) {
-              current_state_report = new StateReport(
-                town_hall.State,
+              current_state_report = new MemberReport(
+                town_hall.Member,
                 0,
                 0,
                 0,
@@ -106,64 +113,75 @@ function getMetaData(date_list) {
                 0,
                 0
               );
-              states_obj.states_array.push(current_state_report);
+              members_obj.members_array.push(current_state_report);
+            }
+            ////////////////////////////////////////////////
+
+
+
+
+            // add meta data information to memberReport object //
+            addEventToReport(town_hall, current_state_report);
+
+            if (town_hall.meetingType) {
+              current_state_report.totalEvents++;
             }
 
             switch (town_hall.meetingType) {
               case "Town Hall":
                 current_state_report.townHall++;
-                current_state_report.totalEvents++;
                 break;
               case "Ticketed Event":
                 current_state_report.ticketedEvent++;
-                current_state_report.totalEvents++;
                 break;
               case "Tele-Town Hall":
                 current_state_report.teleTownHall++;
-                current_state_report.totalEvents++;
                 break;
               case "Office Hours":
                 current_state_report.officeHour++;
-                current_state_report.totalEvents++;
                 break;
               case "Empty Chair Town Hall":
                 current_state_report.emptyChair++;
-                current_state_report.totalEvents++;
-                break;
-              case "Other":
-                // console.log(town_hall.meetingType);
-                current_state_report.other++;
-                current_state_report.totalEvents++;
                 break;
               default:
+                // console.log(town_hall.meetingType);
+                current_state_report.other++;
                 break;
             }
+            //////////////////////////////////////////////////
+
+            // push current report to some array
+
           });
         });
     }
-    resolve(states_obj);
-  });
+  // return list of all reports 
+  Promise.all(promises);
 }
 
 // function to calculate rank
-function rankStates(statesObj) {
+function rankStates(membersObj) {
   // create new array with 'ranking'
   // in order of most to least number
-  // of events by state
+  // of events by member
   // return new Promise(function(resolve, reject) {
 
-  // states_obj.states_array.sort(function(a, b){
-  //   return b.totalEvents - a.totalEvents;
-  // });
+    // members_obj.members_array.sort(function(a, b){
+    //   return b.totalEvents - a.totalEvents;
+    // });
 
-  console.log(statesObj);
-  console.log(statesObj.states_array.length);
+  //   members_obj.members_array.sort(function(a, b){
+  //     return b.townHall - a.townHall;
+  //   });
+
+  console.log(membersObj);
+  console.log(membersObj.members_array.length);
 
   // });
 }
 
 // display output function
-function outputReport(orderedStates) {
+function outputReport(orderedMembers) {
   // format string output
   // based on design at top
   // output for each
@@ -171,8 +189,8 @@ function outputReport(orderedStates) {
 }
 
 getMetaData(date_list)
-  .then(function(states) {
-    rankStates(states);
+  .then(function(members) {
+    rankStates(members);
   })
   .catch(function(error) {
     console.log("something went wrong ", error);
