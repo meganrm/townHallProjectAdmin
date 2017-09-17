@@ -94,7 +94,7 @@ function eventValidation() {
     } else if (!townhall.repeatingEvent) {
       if (needsGeoCode(townhall)) {
         error = new ErrorReport(path + townhall.eventId, 'Needs geocode');
-        error.sendEmail();
+        error.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>', 'Nathan Williams <nwilliams@townhallproject.com>');
       }
       if (!dateValid(townhall.yearMonthDay)) {
         console.log('date', townhall);
