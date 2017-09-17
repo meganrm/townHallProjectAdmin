@@ -27,6 +27,9 @@ var moment = require('moment');
 var firebasedb = require('./bin/setupFirebase.js');
 var request = require('request');
 var errorReport = require('./bin/errorReporting.js');
+var eventValid = require('./bin/eventValidation.js');
+
+eventValid();
 
 IndTownHall.prototype.submitEvent = function submitEvent(eventID) {
   var townHall = this;
@@ -116,7 +119,6 @@ IndTownHall.prepTownHall = function(townhall){
     }
   }
 };
-
 firebasedb.ref('townHalls/').on('child_added', function(snapshot){
   var townhall = snapshot.val();
   firebasedb.ref(`townHallIds/${townhall.eventId}`).once('value').then(function(ele){
@@ -127,7 +129,7 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
     if (idObj && !idObj.indivisiblepath) {
       IndTownHall.prepTownHall(townhall);
     } else {
-      console.log('already added');
+      // console.log('already added', idObj);
     }
   });
 

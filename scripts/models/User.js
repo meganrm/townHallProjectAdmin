@@ -1,23 +1,38 @@
 (function (module) {
 
-  function User(cur, key) {
-    this.userid = key;
-    this.email = cur.email;
-    this.username = cur.username;
-    if (cur.mocs) {
-      var user = this
-      user.num = Object.keys(cur.mocs).length
-      console.log(user.num);
-      Object.keys(cur.mocs).forEach(function(id, i){
-        govtrack_id = parseInt(id);
-        if (govtrack_id) {
-          user['moc_id_' + i] = govtrack_id;
-          user['moc_name_' + i] = Moc.allMocsObjs[govtrack_id].displayName;
-        }
-      })
-    } else {
-      this.num = 0;
+  function User(opts) {
+    for (keys in opts) {
+      this[keys] = opts[keys];
     }
+  }
+
+  User.prototype.assignMoc = function(mocID){
+    var user = this;
+    var ref = firebase.database().ref('users/' + user.ID + '/mocs/' + mocID + '/lastUpdated')
+    ref.once('value').then(function(snapshot){
+      if (parseInt(snapshot.val()) && moment(snapshot.val()).isValid()){
+        lastUpdated = snapshot.val()
+        console.log('lastUpdated', lastUpdated);
+      } else {
+        lastUpdated = ''
+      }
+      console.log('users/' + user.ID + '/mocs/' + mocID,{lastUpdated : lastUpdated});
+      firebase.database().ref('users/' + user.ID + '/mocs/' + mocID).update({lastUpdated : lastUpdated})
+    })
+  }
+
+  function readResearcherAssignments(array) {
+    array.forEach(function(ele){
+      if (ele.ID) {
+        var user = new User(ele)
+        for (var i = 0; i < 9; i++) {
+          if (user['isAssigned_' + i] === 'yes') {
+            var mocID = user['moc_id_' + i]
+            user.assignMoc(mocID)
+          }
+        }
+      }
+    })
   }
 
   User.getUser = function(userID){
@@ -31,6 +46,7 @@
       })
     });
   }
+
   User.download = function(){
     var users = []
     var maxLength = 0

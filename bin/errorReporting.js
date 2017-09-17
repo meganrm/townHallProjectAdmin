@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-function errorReport(error) {
+function errorReport(error, subject) {
   this.from = 'Town Hall Updates <update@updates.townhallproject.com>';
   this.to = 'Megan Riel-Mehan <meganrm@townhallproject.com>';
-  this.subject = 'Something has gone terribly wrong';
+  this.cc = 'Nathan Williams <nwilliams@townhallproject.com>';
+  this.subject = subject? subject: 'Something has gone terribly wrong';
   if (typeof(error) === 'object') {
     var str='';
     Object.keys(error).forEach(function(key){
@@ -25,6 +26,5 @@ errorReport.prototype.sendEmail = function(){
   mailgun.messages().send(data, function () {
   });
 };
-
 
 module.exports = errorReport;

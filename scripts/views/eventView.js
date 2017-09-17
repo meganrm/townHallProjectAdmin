@@ -14,7 +14,7 @@
   //     }
   //   })
   // })
-  function setupTypeaheads() {
+  eventHandler.setupTypeaheads = function setupTypeaheads() {
     var typeaheadConfig = {
       fitToElement: true,
       delay: 250,
@@ -129,29 +129,7 @@
 
 // url hash for direct links to subtabs
 // slightly hacky routing
-  $(document).ready(function () {
-    $('#lookup-old-events-form').on('submit', eventHandler.lookupOldEvents);
-    $('.sort').on('click', 'a', eventHandler.sortTable);
-    $('.filter').on('click', 'a', eventHandler.filterTable);
-    $('#filter-info').on('click', 'button.btn', eventHandler.removeFilter);
-    eventHandler.resetFilters();
-    setupTypeaheads();
 
-    if (location.hash) {
-      $('a[href=\'' + location.hash + '\']').tab('show');
-    } else {
-      TownHall.isMap = true;
-    }
-    $('nav').on('click', '.hash-link', function onClickGethref() {
-      var hashid = this.getAttribute('href');
-      if (hashid === '#home' && TownHall.isMap === true) {
-        history.replaceState({}, document.title, '.');
-      } else {
-        location.hash = this.getAttribute('href');
-      }
-      $('[data-toggle="popover"]').popover('hide');
-    });
-  });
 
   eventHandler.metaData = function () {
 
@@ -223,106 +201,23 @@
       console.log('no start time', ele.eventId);
     }
   };
-
-  eventHandler.initalProgressBar = function initalProgressBar(total, $total){
-    currentNoEvents = Number($total.attr('data-count'));
-    $total.attr('data-count', currentNoEvents);
-    widthNoEvents = currentNoEvents / total * 100;
-    $total.width(widthNoEvents + '%');
-    $total.text(currentNoEvents);
-  };
-
-  var max = 100;
-
-  function updateTotalEventsBar($bar){
-    current = Number($bar.attr('data-count'));
-    max = Number($bar.attr('data-max'));
-    updated = current + 1;
-    max = updated > max ? updated : max;
-    width = updated / (max + 50) * 100;
-    $bar.attr('data-count', updated);
-    $bar.width(width + '%');
-    $bar.text(updated);
-  }
-
-  function updateProgressBar($bar, total, $total){
-    current = Number($bar.attr('data-count'));
-    updated = current + 1;
-    $bar.attr('data-count', updated);
-    width = updated / total * 100;
-    $bar.width(width + '%');
-    $bar.text(updated);
-
-    currentNoEvents = Number($total.attr('data-count'));
-    updatedNoEvents = currentNoEvents - 1;
-    $total.attr('data-count', updatedNoEvents);
-    widthNoEvents = updatedNoEvents / total * 100;
-    $total.width(widthNoEvents + '%');
-    $total.text(updatedNoEvents);
-  }
-
-  function parseBars(party, chamber, newMember, total) {
-    if (newMember) {
-      $memberBar = $(`.${party}-aug-progress-${chamber}`);
-      $total = $(`.${party}-${chamber}`);
-      updateProgressBar($memberBar, total, $total);
+  eventHandler.renderNav = function(flag) {
+    if (!flag) {
+      $('.var-nav').addClass('hidden');
+      return
     }
-    $bar = $(`.${party}-aug-total-${chamber}`);
-    updateTotalEventsBar($bar)
+    $('.hash-link.' + flag).removeClass('hidden');
   }
-
-  eventHandler.membersEvents = new Set();
-  eventHandler.recessProgress = function (townhall) {
-    var total;
-    var  newMember = false;
-
-    if (moment(townhall.dateObj).isBetween('2017-07-29', '2017-09-04', []) && townhall.meetingType ==='Town Hall') {
-        if (!eventHandler.membersEvents.has(townhall.Member)) {
-          newMember = true;
-          eventHandler.membersEvents.add(townhall.Member);
-        }
-        if (townhall.Party === 'Republican') {
-          party = 'rep'
-        } else {
-          party = 'dem'
-        }
-        if (townhall.District === 'Senate') {
-          total = 100;
-          chamber = 'senate'
-        } else {
-          total = 434;
-          chamber = 'house'
-
-        }
-      parseBars(party, chamber, newMember, total);
-    }
-  };
-
-  eventHandler.getPastEvents = function(path, dateStart, dateEnd){
-    var ref = firebase.database().ref(path);
-    ref.orderByChild('dateObj').startAt(dateStart).endAt(dateEnd).on('child_added', function(snapshot) {
-      eventHandler.recessProgress(snapshot.val());
-    });
-  };
-
-  var dateStart = new Date('2017-07-29').valueOf();
-  var dateEnd = new Date('2017-09-04').valueOf();
-
-  eventHandler.getPastEvents('townHallsOld/2017-7', dateStart, dateEnd);
-  eventHandler.getPastEvents('townHallsOld/2017-6', dateStart, dateEnd);
 
   eventHandler.readData = function (path) {
-    eventHandler.initalProgressBar(100, $('.dem-senate'));
-    eventHandler.initalProgressBar(100, $('.rep-senate'));
-    eventHandler.initalProgressBar(434, $('.dem-house'));
-    eventHandler.initalProgressBar(434, $('.rep-house'));
+
     $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;
       $currentState.attr('data-total', total);
       var ele = new TownHall(snapshot.val());
       obj = {};
-      eventHandler.recessProgress(ele);
+      // dataviz.recessProgress(ele, dataviz.membersEvents);
       eventHandler.checkLastUpdated(ele);
       eventHandler.checkEndTime(ele);
       TownHall.allTownHallsFB[ele.eventId] = ele;
@@ -330,110 +225,57 @@
       TownHall.addFilterIndexes(ele);
       eventHandler.checkTimeFormat(ele);
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
-      var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
-      var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
-      if (ele.timeStart24 && ele.timeEnd24) {
-        if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
-          console.log('24 hour time error: ', ele.eventId);
-        } else {
-          ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
-          ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
-        }
-      }
-      if (ele.yearMonthDay) {
-        var month = ele.yearMonthDay.split('-')[1];
-        var day = ele.yearMonthDay.split('-')[2];
-        if (!month || !day) {
-          console.log('date error', ele.eventId);
-        } else {
-          if (month.length === 1) {
-            month = 0 + month;
-          }
-          if (day.length === 1) {
-            day = 0 + day;
-          }
-          ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
-        }
-      }
 
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {
-        console.log('missing meeting type: ', ele.eventId);
+        console.log('no meeting type', ele);
       } else {
-        switch (ele.meetingType.slice(0, 4)) {
-        case 'Tele':
-          $toAppend.find('.location-data').html(teleInputsTemplate(ele));
-          break;
-        case 'Tick':
-          $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
-          break;
-        }
+        updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
       }
       $('#all-events-table').append($toAppend);
     });
+    firebase.database().ref(path).once('value').then(function(snapshot){
+      DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download, false);
+      DownLoadCenter.downloadButtonHandler('CAP-download', CSVTownHall.download, false, 'CAP CSV download');
+      DownLoadCenter.downloadButtonHandler('SC-download', CSVTownHall.download, false, 'Sierra Club CSV download');
+    })
     $('[data-toggle="tooltip"]').tooltip();
   };
 
 
   eventHandler.readDataUsers = function () {
-
     firebase.database().ref('/UserSubmission/').on('child_added', function getSnapShot(snapshot) {
       var ele = new TownHall(snapshot.val());
       obj = {};
       TownHall.allTownHallsFB[ele.eventId] = ele;
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
-      var teleInputsTemplate = Handlebars.getTemplate('teleInputs');
-      var ticketInputsTemplate = Handlebars.getTemplate('ticketInputs');
       var approveButtons = Handlebars.getTemplate('approveButtons');
-
-      if (ele.timeStart24 && ele.timeEnd24) {
-        if (parseInt(ele.timeStart24.split(':')[0]) > 23 || parseInt(ele.timeEnd24.split(':')[0]) > 23) {
-          console.log(ele.eventId);
-        } else {
-          ele.timeStart24 = eventHandler.checkTime(ele.timeStart24);
-          ele.timeEnd24 = eventHandler.checkTime(ele.timeEnd24);
-        }
-      }
 
       if (!ele.zoneString && ele.lat) {
         ele.validateZone(ele.eventId).then(function(returnedTH){
-          TownHall.allTownHallsFB[ele.eventId] = returnedTH
+          TownHall.allTownHallsFB[ele.eventId] = returnedTH;
           returnedTH.updateUserSubmission(ele.eventId).then(function(updated){
-          })
-        })
+          });
+        });
       }
-      if (ele.yearMonthDay) {
-        var month = ele.yearMonthDay.split('-')[1];
-        var day = ele.yearMonthDay.split('-')[2];
-        if (month && month.length === 1) {
-          month = 0 + month;
-        }
-        if (day && day.length === 1) {
-          day = 0 + day;
-        }
-        ele.yearMonthDay = ele.yearMonthDay.split('-')[0] + '-' + month + '-' + day;
-      }
+
       ele.lastUpdatedHuman = new Date(ele.lastUpdated).toDateString();
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {
         console.log('no meeting type', ele);
       } else {
-        switch (ele.meetingType.slice(0, 4)) {
-        case 'Tele':
-          $toAppend.find('.location-data').html(teleInputsTemplate(ele));
-          break;
-        case 'Tick':
-          $toAppend.find('.location-data').html(ticketInputsTemplate(ele));
-          break;
-        }
+        updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
+      }
+      if (!ele.lat) {
+        $toAppend.find('#geocode-button').removeClass('disabled');
+        $toAppend.find('#geocode-button').addClass('btn-blue');
+        $toAppend.find('#locationCheck').val('');
       }
       $toAppend.find('.btns').html(approveButtons(ele));
       $('#for-approval').append($toAppend);
     });
-    $('[data-toggle="tooltip"]').tooltip();
   };
 
-  $('');
 
   module.eventHandler = eventHandler;
 })(window);
