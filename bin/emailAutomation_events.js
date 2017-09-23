@@ -72,7 +72,7 @@
   TownHall.senateEvents = {};
 
   var firebasedb = require('../bin/setupFirebase.js');
-  var moment = require('moment')
+  var moment = require('moment');
 
   // admin.database.enableLogging(true);
   TownHall.prints = {
@@ -127,7 +127,7 @@
         }
       }
       // if Thursday
-      if (today === 4 && townhallDay.isBefore(nextThursday)) {
+      if ((today === 4) && (townhallDay.isBetween(lastweekly, nextThursday, '(]'))) {
         if (include) {
           TownHall.prints.isThursday.push(`<li>${townhall.Date}}</li>`);
         }
