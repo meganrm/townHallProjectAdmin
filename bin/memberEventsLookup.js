@@ -1,6 +1,6 @@
 // write program that finds all events by Moc name
-// make sure if same name, you are getting correct memeber
-// (maybe check if rep or sen, or something else?)
+// make sure if same name, you are getting correct member
+// (maybe check govtrack_id)
 
 // first, find all events (including date) from Paul Gosar in database
 date_list = [
@@ -17,7 +17,7 @@ date_list = [
 
 function getData(dates) {
   return new Promise(function(resolve, reject) {
-    events = [];
+    let events = [];
     for (var i = 0; i < dates.length; i++) {
       let date_key = dates[i];
 
@@ -27,10 +27,8 @@ function getData(dates) {
         .once("value")
         .then(function(snapshot) {
           snapshot.forEach(function(element) {
-            // do stuff
             let town_hall = element.val();
             if (town_hall["Member"] === "Paul Gosar") {
-              //console.log(town_hall);
               events.push(town_hall);
             }
           });
