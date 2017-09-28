@@ -1,4 +1,6 @@
-// write program that finds
+// write program that finds all events by Moc name
+// make sure if same name, you are getting correct memeber
+// (maybe check if rep or sen, or something else?)
 
 // first, find all events (including date) from Paul Gosar in database
 date_list = [
