@@ -116,12 +116,23 @@
     }
     console.log(key, value, dates);
     var totalCount = 0;
+    var allEvents = [];
     dates.forEach(function(date, index){
       TownHall.getOldData(key, value, date).then(function(returnedSet){
         totalCount = totalCount + returnedSet.size;
+        var returnedArr = Array.from(returnedSet);
+        allEvents = allEvents.concat(returnedArr);
+        console.log(returnedArr, allEvents);
         if (index + 1 === dates.length) {
           console.log(totalCount);
           $('#lookup-results').val(totalCount);
+          console.log(allEvents);
+          var list = document.getElementById("download-csv-events-list");
+          if(list.childNodes[0]) {
+            list.removeChild(list.childNodes[0]);
+          }
+          var fileDownloadName = value + '.csv';
+          CSVTownHall.makeDownloadButton('Download Events (csv)', allEvents, fileDownloadName, 'download-csv-events-list');
         }
       });
     });

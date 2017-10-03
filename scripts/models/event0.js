@@ -52,7 +52,7 @@
     return new Promise (function(resolve, reject){
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
-          townHall = oldTownHall.val();
+          townHall = new OldTownHall(oldTownHall.val());
           if (townHall[key] === value) {
             totals.add(townHall);
           }

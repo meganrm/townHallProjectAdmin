@@ -101,16 +101,32 @@
                     </div>
                     <div class="lookup-old-events">
                       <form class="form-inline" id="lookup-old-events-form">
-                        <div class="form-group">
-                          <label for="lookup-key">Key</label>
-                          <input type="text" class="form-control" id="lookup-key" placeholder="ex meetingType">
-                        </div>
-                        <div class="form-group">
-                          <label for="lookup-value">Value</label>
-                          <input type="text" class="form-control" id="lookup-value" placeholder="ex Town Hall">
-                        </div>
-                        <button type="submit" class="btn btn-default">Get Count</button>
-                      </form>
+                          <div class="form-group">
+                            <label for="lookup-key">Key</label>
+                            <select class="form-control" id="lookup-key">
+                              <option value="Member">Member</option>
+                              <option value="Meeting_Type">Event Type</option>
+                              <option value="District">District</option>
+                              <option value="State">State</option>
+                              <option value="Party">Party</option>
+                              <option value="Date">Date</option>
+                            </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="lookup-value">Value</label>
+                            <input list="lookup-options" id="lookup-value" type="text" class="form-control" placeholder="ex Town Hall">
+                            <datalist id="lookup-options">
+                              <option value="Town Hall">
+                              <option value="Office Hours">
+                              <option value="Tele-Town Hall">
+                              <option value="Empty Chair Town Hall">
+                              <option value="DC Event">
+                              <option value="Other">
+                            </datalist>
+                          </div>
+                          <button type="submit" class="btn btn-default">Get Count</button>
+                          <ul id="download-csv-events-list"></ul>
+                        </form>
                       <input type="text" name="name" value="0" readonly="" id="lookup-results">
                     </div>
                     <div class="">
@@ -599,6 +615,7 @@
     <script src="/scripts/models/downloadingEvents.js"></script>
     <script src="/scripts/models/capEvents.js"></script>
     <script src="/scripts/models/User.js"></script>
+    <script src="/scripts/models/oldTownHall.js"></script>
 
     <script src="/scripts/views/eventView.js"></script>
     <script src="/scripts/views/dataViz.js"></script>
@@ -608,6 +625,5 @@
     <script src="/scripts/views/mocReportView.js"></script>
     <script src="/scripts/views/mocEditorView.js"></script>
     <script src="/scripts/views/missingMemberPosterView.js"></script>
-
   </body>
 </html>
