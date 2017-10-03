@@ -8,9 +8,9 @@
         this.Event_Name = cur.eventName ? cur.eventName: ' ';
         this.Location = cur.Location ? cur.Location: ' ';
         this.Meeting_Type = cur.meetingType;
-        this.District = cur.District;
-        this.Party = cur.Party;
-        this.State = cur.State;
+        this.District = cur.district;
+        this.Party = cur.party;
+        this.State = cur.stateName;
         if (cur.repeatingEvent) {
           this.Repeating_Event = cur.repeatingEvent
           this.Date = ' ';
