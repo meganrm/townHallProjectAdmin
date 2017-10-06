@@ -15,7 +15,8 @@ var actionkit_url = 'https://act.indivisibleguide.com/rest/v1/eventcreatepage/26
 // Get list of existing townhalls so we don't submit duplicates
 var existingTownHallIds = [];
 
-firebasedb.ref('/townHallIds/').once('value').then(function(snapshot){
+// TODO:  Change this to the actual endpoint
+firebasedb.ref('/indivisible/').once('value').then(function(snapshot){
   snapshot.forEach(node => {
     existingTownHallIds.push(node.val().eventId);
   });
