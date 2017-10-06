@@ -7,10 +7,6 @@ var request = require('request-promise'); // NB:  This is isn't the default requ
 var eventbriteToken = process.env.EVENTBRITE_TOKEN;
 var firebasedb = require('../bin/setupFirebase.js');
 var moment = require('moment');
-var actionkit_user = process.env.ACTION_KIT_USERNAME;
-var actionkit_password = process.env.ACTION_KIT_PASS;
-var actionkit_url = 'https://act.indivisibleguide.com/rest/v1/eventcreatepage/266/';
-
 
 // Get list of existing townhalls so we don't submit duplicates
 var existingTownHallIds = [];
@@ -74,37 +70,24 @@ function processIndivisibleResults(queryTerm, collection) {
   });
 }
 
+
 function submitTownhallToIndivisible(event) {
-  request.post(
-    actionkit_url,
-    {
-      json: event,
-      auth: {
-        'user': actionkit_user,
-        'pass': actionkit_password,
-      }
-    },
-    function (error, response) {
-      if (!error && response.statusCode == 201) {
-        var updates = {};
-        updates['/townHallIds/' + event.id] = {
-          eventId: event.id,
-          lastUpdated: Date.now()
-        };
-        firebasedb.ref().update(updates);
-      }
-      if (error) {
-        errorEmail = new errorReport(error);
-        errorEmail.sendEmail();
-      }
-    });
+  var updates = {};
+  updates['/indivisbleIds/' + event.eventId] = {
+    eventId: event.eventId,
+    lastUpdated: Date.now()
+  };
+  updates['/indivisible/' + event.eventId] = event;
+
+  return firebasedb.ref().update(updates);
 }
 
 function transformIndivisibleTownhall(event) {
   return {
     id: 'in_' + event.id,
-    email: 'field@indivisible.org',
-    user_group_name: 'Indivisible Group',
+    user_group_id: event.organizer.id,
+    user_group_name: event.organizer.name,
+    user_group_description: event.organizer.description.text,
     event_public_description: event.description.text,
     event_title: event.name.text,
     event_starts_at_date: moment.parseZone(event.start.local).format('YYYY-MM-DD'),
@@ -120,7 +103,5 @@ function transformIndivisibleTownhall(event) {
     twitter: event.organizer.twitter,
     facebook: event.organizer.facebook,
     logo: event.organizer.logo ? event.organizer.logo.url : null,
-    num_past_events: event.organizer.num_past_events,
-    num_future_events: event.organizer.num_future_events
   };
 }
