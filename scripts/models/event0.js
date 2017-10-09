@@ -165,7 +165,6 @@
           }
 
         }
-
         var dup = false;
         if (obj) {
           firebase.database().ref('zipToDistrict/' + zip).once('value').then(function(snapshot){
