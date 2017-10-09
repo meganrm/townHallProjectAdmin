@@ -15,8 +15,8 @@
     CO: 'Colorado',
     CT: 'Connecticut',
     DE: 'Delaware',
-    DC: 'District Of Columbia',
-    FM: 'Federated States Of Micronesia',
+    DC: 'District of Columbia',
+    FM: 'Federated States of Micronesia',
     FL: 'Florida',
     GA: 'Georgia',
     GU: 'Guam',
@@ -148,6 +148,9 @@
       include = true;
       break;
     case 'Tele-Town Hall':
+      include = true;
+      break;
+    case 'Adopt-A-District/State':
       include = true;
       break;
     case 'Other':
