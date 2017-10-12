@@ -1,12 +1,11 @@
 #!/usr/bin/env node
-
-
+require('dotenv').load();
 
 var request = require('request-promise'); // NB:  This is isn't the default request library!
 
 var eventbriteToken = process.env.EVENTBRITE_TOKEN;
 var facebookToken = process.env.FACEBOOK_TOKEN;
-var firebaseKey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n');
+
 var statesAb = require('../bin/stateMap.js');
 var firebasedb = require('../bin/setupFirebase.js');
 var moment = require('moment');
@@ -80,7 +79,7 @@ function submitTownhall(townhall) {
   };
   updates['/UserSubmission/' + townhall.eventId] = townhall;
 
-  return firebasedb.ref().update(updates);
+  // return firebasedb.ref().update(updates);
 
 }
 
@@ -119,7 +118,8 @@ function transformFacebookTownhall(event) {
     timeStart24: moment.parseZone(event.start_time).format('HH:mm:ss'),
     timeEnd24: moment.parseZone(event.end_time).format('HH:mm:ss'),
     yearMonthDay: moment.parseZone(event.start_time).format('YYYY-MM-DD'),
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
+    Notes: event.description
   };
 
   if (event.hasOwnProperty('place')) {
@@ -134,5 +134,3 @@ function transformFacebookTownhall(event) {
 
   return townhall;
 }
-
-console.log('working')
