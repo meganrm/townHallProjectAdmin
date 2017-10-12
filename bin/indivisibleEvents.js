@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+require('dotenv').load();
 
 // TODO:  Once we re-enable eventbrite scraping DRY and facebookEvents out and make a
 // common library both can pull from
@@ -12,7 +13,7 @@ var moment = require('moment');
 var existingTownHallIds = [];
 
 // TODO:  Change this to the actual endpoint
-firebasedb.ref('/indivisible/').once('value').then(function(snapshot){
+firebasedb.ref('/indivisbleIds/').once('value').then(function(snapshot){
   snapshot.forEach(node => {
     existingTownHallIds.push(node.val().eventId);
   });
@@ -71,37 +72,38 @@ function processIndivisibleResults(queryTerm, collection) {
 }
 
 
-function submitTownhallToIndivisible(event) {
+function submitTownhallToIndivisible(eventbriteEvent) {
   var updates = {};
-  updates['/indivisbleIds/' + event.eventId] = {
-    eventId: event.eventId,
+  updates['/indivisbleIds/' + eventbriteEvent.eventId] = {
+    eventId: eventbriteEvent.eventId,
     lastUpdated: Date.now()
   };
-  updates['/indivisible/' + event.eventId] = event;
-
-  return firebasedb.ref().update(updates);
+  updates['/indivisible/' + eventbriteEvent.eventId] = eventbriteEvent;
+  return firebasedb.ref().update(updates).catch((e) =>{
+    console.log('couldnt updated firebase', e);
+  });
 }
 
-function transformIndivisibleTownhall(event) {
+function transformIndivisibleTownhall(eventbriteEvent) {
   return {
-    id: 'in_' + event.id,
-    user_group_id: event.organizer.id,
-    user_group_name: event.organizer.name,
-    user_group_description: event.organizer.description.text,
-    event_public_description: event.description.text,
-    event_title: event.name.text,
-    event_starts_at_date: moment.parseZone(event.start.local).format('YYYY-MM-DD'),
-    event_starts_at_time: moment.parseZone(event.start.local).format('h:mm'),
-    event_starts_at_ampm: moment.parseZone(event.start.local).format('A'),
-    event_address1: event.venue.address.address_1,
-    event_city: event.venue.address.city,
-    event_country: event.venue.address.country,
-    event_venue: event.venue.name,
-    event_capacity: event.capacity,
-    event_online: event.online_event,
-    action_link_to_event_information: event.url,
-    twitter: event.organizer.twitter,
-    facebook: event.organizer.facebook,
-    logo: event.organizer.logo ? event.organizer.logo.url : null,
+    eventId: 'in_' + eventbriteEvent.id,
+    user_group_id: eventbriteEvent.organizer.id,
+    user_group_name: eventbriteEvent.organizer.name,
+    user_group_description: eventbriteEvent.organizer.description.text,
+    event_public_description: eventbriteEvent.description.text,
+    event_title: eventbriteEvent.name.text,
+    event_starts_at_date: moment.parseZone(eventbriteEvent.start.local).format('YYYY-MM-DD'),
+    event_starts_at_time: moment.parseZone(eventbriteEvent.start.local).format('h:mm'),
+    event_starts_at_ampm: moment.parseZone(eventbriteEvent.start.local).format('A'),
+    event_address1: eventbriteEvent.venue.address.address_1,
+    event_city: eventbriteEvent.venue.address.city,
+    event_country: eventbriteEvent.venue.address.country,
+    event_venue: eventbriteEvent.venue.name,
+    event_capacity: eventbriteEvent.capacity,
+    event_online: eventbriteEvent.online_event,
+    action_link_to_event_information: eventbriteEvent.url,
+    twitter: eventbriteEvent.organizer.twitter ? eventbriteEvent.organizer.twitter: null,
+    facebook: eventbriteEvent.organizer.facebook ? eventbriteEvent.organizer.facebook: null,
+    logo: eventbriteEvent.organizer.logo ? eventbriteEvent.organizer.logo.url : null,
   };
 }
