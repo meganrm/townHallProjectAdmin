@@ -43,8 +43,7 @@
     $('#submit-success').addClass('hidden');
     var compiledTemplate = Handlebars.getTemplate('mocPoster');
     $list.empty();
-    var $errorMessage = $('.new-event-form #member-help-block');
-    var $memberformgroup = $('#member-form-group');
+
     if (validateMember(member)) {
       $('#member-form-group').removeClass('has-error');
       var memberKey = Moc.getMemberKey(member);

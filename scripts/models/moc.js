@@ -11,22 +11,21 @@
   Moc.getMember = function (member) {
     var memberKey;
     if (member.split(' ').length === 3) {
-        memberKey = member.split(' ')[1].toLowerCase() + member.split(' ')[2].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+      memberKey = member.split(' ')[1].toLowerCase() + member.split(' ')[2].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
     } else {
-        memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+      memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
     }
     var memberid = Moc.allMocsObjs[memberKey].id;
     return new Promise(function(resolve, reject){
       firebase.database().ref('mocData/' + memberid).once('value').then(function (snapshot) {
-          if (snapshot.exists()) {
-            resolve(snapshot.val())
-          } else {
-            reject('That member is not in our database, please check the spelling, and only use first and last name.')
-
-          }
-      })
-    })
-  }
+        if (snapshot.exists()) {
+          resolve(snapshot.val());
+        } else {
+          reject('That member is not in our database, please check the spelling, and only use first and last name.');
+        }
+      });
+    });
+  };
 
   Moc.loadAllUpdated = function(){
     var allupdated = [];
@@ -39,7 +38,7 @@
             var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
             var days;
             if (memberobj.lastUpdated) {
-              dataviz.mocReportProgress(memberobj)
+              dataviz.mocReportProgress(memberobj);
               var now = moment();
               var timeAgo = moment(memberobj.lastUpdated);
               days = now.diff(timeAgo, 'days');
@@ -58,7 +57,7 @@
             });
           }
         });
-        Moc.download()
+        Moc.download();
         console.log(allupdated.length);
         allupdated.sort(function(a, b) {
           if (a.state < b.state ) {
@@ -129,12 +128,12 @@
 
   Moc.download = function(){
     data = Object.keys(Moc.allMocsObjs).map(function(key){
-      return Moc.allMocsObjs[key]
-    })
+      return Moc.allMocsObjs[key];
+    });
     // prepare CSV data
     var csvData = new Array();
     csvData.push('id, name, party, chamber, state, district, facebook_account');
-    data.forEach(function(item, index) {
+    data.forEach(function(item) {
       csvData.push(
         '"' + item.govtrack_id +
       '","' + item.displayName +

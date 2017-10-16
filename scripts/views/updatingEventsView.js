@@ -81,7 +81,7 @@
         updateEventView.saveDeleteReason(id, reason);
       }
     }
-    oldTownHall.deleteEvent(path).then(function (deletedEvent) {
+    oldTownHall.deleteEvent(path).then(function () {
       delete TownHall.allTownHallsFB[id];
       $(`.${id}`).remove();
     });
@@ -232,7 +232,7 @@
     }
   };
 
-  updateEventView.dateChanged = function (event) {
+  updateEventView.dateChanged = function () {
     var $input = $(this);
     var $form = $input.parents('form');
     var $listgroup = $(this).parents('.list-group-item');
@@ -277,7 +277,7 @@
       } else {
         console.log('something has gone terribly wrong, email megan');
       }
-    }).catch(function (error) {
+    }).catch(function () {
       $form.find('#locationCheck').val('Geocoding failed');
     });
   };
@@ -387,7 +387,8 @@
       var District = $form.find('#District');
 
       Moc.getMember(member).then(function(mocdata){
-        var district;
+        var districtV0;
+        var districtV1;
         if (mocdata.type === 'sen') {
           districtV0 = 'Senate';
           districtV1 = false;
@@ -395,7 +396,7 @@
           districtV0 = mocdata.state + '-' + mocdata.district;
           districtV1 = mocdata.district;
         }
-        District.val(districtV0)
+        District.val(districtV0);
         var fullname = mocdata.displayName;
         $memberInput.val(fullname);
         TownHall.allTownHallsFB[id].Member = fullname;
