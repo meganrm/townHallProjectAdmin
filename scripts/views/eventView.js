@@ -281,15 +281,6 @@
       TownHall.allTownHallsFB[ele.eventId] = ele;
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var approveButtons = Handlebars.getTemplate('approveButtons');
-
-      // if (!ele.zoneString && ele.lat) {
-      //   ele.validateZone(ele.eventId).then(function(returnedTH){
-      //     TownHall.allTownHallsFB[ele.eventId] = returnedTH;
-      //     // returnedTH.updateUserSubmission(ele.eventId).then(function(){
-      //     // });
-      //   });
-      // }
-
       ele.lastUpdatedHuman = new Date(ele.lastUpdated).toDateString();
       var $toAppend = $(tableRowTemplate(ele));
       if (!ele.meetingType) {

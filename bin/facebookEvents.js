@@ -118,7 +118,7 @@ function submitTownhall(townhall) {
     lastUpdated: Date.now()
   };
   updates['/UserSubmission/' + townhall.eventId] = townhall;
-  // console.log(updates);
+  console.log(updates);
   return firebasedb.ref().update(updates);
 
 }
@@ -137,42 +137,41 @@ function createEventbriteQuery(queryTerm) {
   });
 }
 
-function transformFacebookTownhall(event) {
+function transformFacebookTownhall(facebookEvent) {
   var district;
-  if (event.MoC.type === 'sen') {
+  if (facebookEvent.MoC.type === 'sen') {
     district = 'Senate';
   } else {
-    district = event.MoC.state + '-' + event.MoC.district;
+    district = facebookEvent.MoC.state + '-' + facebookEvent.MoC.district;
   }
-  let start = new Date(event.start_time);
   var townhall = {
-    eventId: 'fb_' + event.id,
-    Member: event.MoC.displayName,
-    govtrack_id: event.MoC.govtrack_id,
-    Party: event.MoC.party,
+    eventId: 'fb_' + facebookEvent.id,
+    Member: facebookEvent.MoC.displayName,
+    govtrack_id: facebookEvent.MoC.govtrack_id,
+    Party: facebookEvent.MoC.party,
     District: district,
-    State: statesAb[event.MoC.state],
-    stateName: statesAb[event.MoC.state],
-    state: event.MoC.state,
-    eventName: event.name,
-    meetingType: 'unknown',
-    link: 'https://www.facebook.com/events/' + event.id + '/',
+    State: statesAb[facebookEvent.MoC.state],
+    stateName: statesAb[facebookEvent.MoC.state],
+    state: facebookEvent.MoC.state,
+    eventName: facebookEvent.name,
+    meetingType: null,
+    link: 'https://www.facebook.com/events/' + facebookEvent.id + '/',
     linkName: 'Facebook Link',
-    dateObj: Date.parse(start),
-    dateString: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
-    Date: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
-    Time: moment.parseZone(event.start_time).format('LT'),
-    timeStart24: moment.parseZone(event.start_time).format('HH:mm:ss'),
-    timeEnd24: moment.parseZone(event.end_time).format('HH:mm:ss'),
-    yearMonthDay: moment.parseZone(event.start_time).format('YYYY-MM-DD'),
+    dateObj: moment(facebookEvent.start_time),
+    dateString: moment.parseZone(facebookEvent.start_time).format('ddd, MMM D, YYYY'),
+    Date: moment.parseZone(facebookEvent.start_time).format('ddd, MMM D, YYYY'),
+    Time: moment.parseZone(facebookEvent.start_time).format('LT'),
+    timeStart24: moment.parseZone(facebookEvent.start_time).format('HH:mm:ss'),
+    timeEnd24: moment.parseZone(facebookEvent.end_time).format('HH:mm:ss'),
+    yearMonthDay: moment.parseZone(facebookEvent.start_time).format('YYYY-MM-DD'),
     lastUpdated: Date.now(),
-    Notes: event.description
+    Notes: facebookEvent.description
   };
 
-  if (event.hasOwnProperty('place')) {
-    townhall.Location = event.place.name;
-    if (event.place.hasOwnProperty('location')) {
-      var location = event.place.location;
+  if (facebookEvent.hasOwnProperty('place')) {
+    townhall.Location = facebookEvent.place.name;
+    if (facebookEvent.place.hasOwnProperty('location')) {
+      var location = facebookEvent.place.location;
       townhall.lat = location.latitude;
       townhall.lng = location.longitude;
       townhall.address = location.street + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
@@ -182,32 +181,32 @@ function transformFacebookTownhall(event) {
   return townhall;
 }
 
-function transformEventbriteTownhall(event) {
-  let start = new Date(event.start.utc);
-  let end = new Date(event.end.utc);
+function transformEventbriteTownhall(eventBriteEvent) {
+  let start = new Date(eventBriteEvent.start.utc);
+  let end = new Date(eventBriteEvent.end.utc);
   var townhall = {
-    eventId: 'eb_' + event.id,
+    eventId: 'eb_' + eventBriteEvent.id,
     Member: null,
-    eventName: event.name.text,
+    eventName: eventBriteEvent.name.text,
     meetingType: 'unknown',
-    link: event.url,
+    link: eventBriteEvent.url,
     linkName: 'Eventbrite Link',
     dateObj: Date.parse(start),
-    dateString: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
-    Date: moment.parseZone(event.start_time).format('ddd, MMM D, YYYY'),
-    Time: moment.parseZone(event.start_time).format('LT'),
-    timeStart24: moment.parseZone(event.start_time).format('HH:mm:ss'),
-    timeEnd24: moment.parseZone(event.end_time).format('HH:mm:ss'),
-    yearMonthDay: moment.parseZone(event.start_time).format('YYYY-MM-DD'),
+    dateString: moment.parseZone(start).format('ddd, MMM D, YYYY'),
+    Date: moment.parseZone(start).format('ddd, MMM D, YYYY'),
+    Time: moment.parseZone(start).format('LT'),
+    timeStart24: moment.parseZone(start).format('HH:mm:ss'),
+    timeEnd24: moment.parseZone(end).format('HH:mm:ss'),
+    yearMonthDay: moment.parseZone(start).format('YYYY-MM-DD'),
     lastUpdated: Date.now(),
   };
 
-  if (event.hasOwnProperty('venue')) {
-    townhall.Location = event.venue.name;
-    townhall.lat = event.venue.latitude;
-    townhall.lng = event.venue.longitude;
-    if (event.venue.hasOwnProperty('address')) {
-      townhall.address = event.venue.address.localized_address_display;
+  if (eventBriteEvent.hasOwnProperty('venue')) {
+    townhall.Location = eventBriteEvent.venue.name;
+    townhall.lat = eventBriteEvent.venue.latitude;
+    townhall.lng = eventBriteEvent.venue.longitude;
+    if (eventBriteEvent.venue.hasOwnProperty('address')) {
+      townhall.address = eventBriteEvent.venue.address.localized_address_display;
     }
   }
 
