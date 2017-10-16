@@ -24,9 +24,27 @@
         eventHandler.renderTableWithArray(eventHandler.getFilterState());
       }
     };
+
     $('#stateTypeahead').typeahead($.extend({ source: TownHall.allStates }, typeaheadConfig));
     $('#memberTypeahead').typeahead($.extend({ source: TownHall.allMoCs }, typeaheadConfig));
-  }
+  };
+
+  eventHandler.setupTypeaheadsAllMocs = function(input) {
+    var typeaheadConfig = {
+      fitToElement: true,
+      delay: 200,
+      highlighter: function(item) { return item; }, // Kill ugly highlight
+      filter: function(selection) {
+        $(input).val(selection);
+      }
+    };
+    Moc.loadAll().then(function(allnames){
+      Moc.allNames = allnames;
+      $(input).each(function(){
+        $(this).typeahead({source: allnames}, typeaheadConfig);
+      });
+    });
+  };
 
   // render table row
   eventHandler.renderTable = function renderTable(townhall, $tableid) {
@@ -127,7 +145,7 @@
           console.log(totalCount);
           $('#lookup-results').val(totalCount);
           console.log(allEvents);
-          var list = document.getElementById("download-csv-events-list");
+          var list = document.getElementById('download-csv-events-list');
           if(list.childNodes[0]) {
             list.removeChild(list.childNodes[0]);
           }
@@ -215,10 +233,10 @@
   eventHandler.renderNav = function(flag) {
     if (!flag) {
       $('.var-nav').addClass('hidden');
-      return
+      return;
     }
     $('.hash-link.' + flag).removeClass('hidden');
-  }
+  };
 
   eventHandler.readData = function (path) {
 
@@ -245,11 +263,13 @@
       }
       $('#all-events-table').append($toAppend);
     });
-    firebase.database().ref(path).once('value').then(function(snapshot){
+    firebase.database().ref(path).once('value').then(function(){
+      eventHandler.setupTypeaheadsAllMocs('#for-approval .member-input');
+      eventHandler.setupTypeaheads();
       DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download, false);
       DownLoadCenter.downloadButtonHandler('CAP-download', CSVTownHall.download, false, 'CAP CSV download');
       DownLoadCenter.downloadButtonHandler('SC-download', CSVTownHall.download, false, 'Sierra Club CSV download');
-    })
+    });
     $('[data-toggle="tooltip"]').tooltip();
   };
 
@@ -265,7 +285,7 @@
       if (!ele.zoneString && ele.lat) {
         ele.validateZone(ele.eventId).then(function(returnedTH){
           TownHall.allTownHallsFB[ele.eventId] = returnedTH;
-          returnedTH.updateUserSubmission(ele.eventId).then(function(updated){
+          returnedTH.updateUserSubmission(ele.eventId).then(function(){
           });
         });
       }

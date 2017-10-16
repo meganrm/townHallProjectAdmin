@@ -38,7 +38,6 @@
   lookupMember = function () {
     var $memberInput = $(this);
     var member = $memberInput.val();
-    var $form = $(this).parents('form');
     var $list = $('#current-pending');
     $('.to-remove').remove();
     $('#submit-success').addClass('hidden');
