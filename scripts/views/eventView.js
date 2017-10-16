@@ -107,6 +107,9 @@
 
   eventHandler.lookupOldEvents = function(event){
     event.preventDefault();
+    clearCSVOutput();
+    var para = document.createTextNode('Loading...');
+    document.getElementById('download-csv-events-list').appendChild(para);
     var currentMonth = moment().get('month');
     var key = $('#lookup-key').val();
     var value = $('#lookup-value').val();
@@ -114,7 +117,6 @@
     for (var i = 0; i < currentMonth + 1; i++) {
       dates.push('2017-' + i);
     }
-    console.log(key, value, dates);
     var totalCount = 0;
     var allEvents = [];
     dates.forEach(function(date, index){
@@ -122,20 +124,21 @@
         totalCount = totalCount + returnedSet.size;
         var returnedArr = Array.from(returnedSet);
         allEvents = allEvents.concat(returnedArr);
-        console.log(returnedArr, allEvents);
         if (index + 1 === dates.length) {
-          console.log(totalCount);
           $('#lookup-results').val(totalCount);
-          console.log(allEvents);
-          var list = document.getElementById("download-csv-events-list");
-          if(list.childNodes[0]) {
-            list.removeChild(list.childNodes[0]);
-          }
+          clearCSVOutput();
           var fileDownloadName = value + '.csv';
           CSVTownHall.makeDownloadButton('Download Events (csv)', allEvents, fileDownloadName, 'download-csv-events-list');
         }
       });
     });
+  };
+
+  var clearCSVOutput = function() {
+    var list = document.getElementById('download-csv-events-list');
+    while(list.firstChild) {
+      list.removeChild(list.firstChild);
+    }
   };
 
 // url hash for direct links to subtabs
