@@ -8,6 +8,26 @@
   Moc.allMocsObjs = {};
   Moc.mocUpdated = [];
 
+  Moc.getMember = function (member) {
+    var memberKey;
+    if (member.split(' ').length === 3) {
+        memberKey = member.split(' ')[1].toLowerCase() + member.split(' ')[2].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+    } else {
+        memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+    }
+    var memberid = Moc.allMocsObjs[memberKey].id;
+    return new Promise(function(resolve, reject){
+      firebase.database().ref('mocData/' + memberid).once('value').then(function (snapshot) {
+          if (snapshot.exists()) {
+            resolve(snapshot.val())
+          } else {
+            reject('That member is not in our database, please check the spelling, and only use first and last name.')
+
+          }
+      })
+    })
+  }
+
   Moc.loadAllUpdated = function(){
     var allupdated = [];
     return new Promise(function (resolve, reject) {

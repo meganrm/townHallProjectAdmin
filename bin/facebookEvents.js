@@ -24,7 +24,7 @@ function getTownhalls() {
   firebasedb.ref('mocData/').once('value').then((snapshot) => {
     getFacebookEvents(snapshot.val());
   });
-  // getEventbriteEvents();
+  getEventbriteEvents();
 }
 
 function getFacebookEvents(MoCs) {
@@ -91,7 +91,7 @@ function getEventbriteEvents() {
     var newEventIds = removeExistingIds(eventbriteEvents.map(event => 'eb_' + event.id));
     eventbriteEvents.forEach(event => {
       if (newEventIds.indexOf('eb_' + event.id) !== -1) {
-        // submitTownhall(transformEventbriteTownhall(event));
+        submitTownhall(transformEventbriteTownhall(event));
       }
     });
   });
@@ -107,6 +107,10 @@ function removeExistingIds(eventIds) {
   return eventIds;
 }
 
+function unqiueFilter(value, index, self) {
+  return self.findIndex(obj => obj.id === value.id) === index;
+}
+
 function submitTownhall(townhall) {
   var updates = {};
   updates['/townHallIds/' + townhall.eventId] = {
@@ -114,8 +118,8 @@ function submitTownhall(townhall) {
     lastUpdated: Date.now()
   };
   updates['/UserSubmission/' + townhall.eventId] = townhall;
-
-  // return firebasedb.ref().update(updates);
+  // console.log(updates);
+  return firebasedb.ref().update(updates);
 
 }
 
