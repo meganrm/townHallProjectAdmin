@@ -32,15 +32,26 @@ function getFacebookEvents(MoCs) {
   var startDate = Math.floor(new Date() / 1000); //Needs to be in Unix timestamp form
   Object.keys(MoCs).forEach(id => {
     let MoC = MoCs[id];
-    if (MoC.hasOwnProperty('facebook_official_account') && MoC.facebook_account) {
-      facebookPromises.push(
-        createFacebookQuery(MoC.facebook_account, startDate).then(res => {
-          // Create references to MoCs for easy data lookup later
-          res.data.forEach(event => event.MoC = MoC);
-          return res.data;
-        }).catch(() => {})
-      );
+    if (MoC.in_office) {
+      if (MoC.hasOwnProperty('facebook_official_account') && MoC.facebook_official_account && MoC.facebook_official_account.length > 0) {
+        facebookPromises.push(
+          createFacebookQuery(MoC.facebook_official_account, startDate).then(res => {
+            // Create references to MoCs for easy data lookup later
+            res.data.forEach(event => event.MoC = MoC);
+            return res.data;
+          }).catch(() => {})
+        );
+      } else if (MoC.hasOwnProperty('facebook_account') && MoC.facebook_account && MoC.facebook_account.length > 0) {
+        facebookPromises.push(
+          createFacebookQuery(MoC.facebook_account, startDate).then(res => {
+            // Create references to MoCs for easy data lookup later
+            res.data.forEach(event => event.MoC = MoC);
+            return res.data;
+          }).catch(() => {})
+        );
+      }
     }
+
   });
   Promise.all(facebookPromises).then(res => {
     // Stop gap measure for while we have bad facebook id data and are getting undefined
@@ -118,7 +129,8 @@ function submitTownhall(townhall) {
     lastUpdated: Date.now()
   };
   updates['/UserSubmission/' + townhall.eventId] = townhall;
-  return firebasedb.ref().update(updates);
+  console.log(updates);
+  // return firebasedb.ref().update(updates);
 
 }
 
