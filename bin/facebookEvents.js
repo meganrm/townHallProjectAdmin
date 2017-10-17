@@ -24,7 +24,7 @@ function getTownhalls() {
   firebasedb.ref('mocData/').once('value').then((snapshot) => {
     getFacebookEvents(snapshot.val());
   });
-  getEventbriteEvents();
+  // getEventbriteEvents();
 }
 
 function getFacebookEvents(MoCs) {
@@ -32,7 +32,7 @@ function getFacebookEvents(MoCs) {
   var startDate = Math.floor(new Date() / 1000); //Needs to be in Unix timestamp form
   Object.keys(MoCs).forEach(id => {
     let MoC = MoCs[id];
-    if (MoC.hasOwnProperty('facebook_account') && MoC.facebook_account) {
+    if (MoC.hasOwnProperty('facebook_official_account') && MoC.facebook_account) {
       facebookPromises.push(
         createFacebookQuery(MoC.facebook_account, startDate).then(res => {
           // Create references to MoCs for easy data lookup later

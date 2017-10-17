@@ -27,6 +27,15 @@
     });
   };
 
+  Moc.updateWithArray = function(array){
+    array.forEach(function(ele){
+      if (!ele.id) {
+        return;
+      }
+      firebase.database().ref('mocData/' + ele.id).update(ele);
+    })
+  }
+
   Moc.loadAllUpdated = function(){
     var allupdated = [];
     return new Promise(function (resolve, reject) {
