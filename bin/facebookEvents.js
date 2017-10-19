@@ -119,7 +119,8 @@ function transformFacebookTownhall(event) {
     timeStart24: moment.parseZone(event.start_time).format('HH:mm:ss'),
     timeEnd24: moment.parseZone(event.end_time).format('HH:mm:ss'),
     yearMonthDay: moment.parseZone(event.start_time).format('YYYY-MM-DD'),
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
+    notes: event.description
   };
 
   if (event.hasOwnProperty('place')) {
