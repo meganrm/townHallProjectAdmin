@@ -129,8 +129,7 @@ function submitTownhall(townhall) {
     lastUpdated: Date.now()
   };
   updates['/UserSubmission/' + townhall.eventId] = townhall;
-  console.log(updates);
-  // return firebasedb.ref().update(updates);
+  return firebasedb.ref().update(updates);
 
 }
 
