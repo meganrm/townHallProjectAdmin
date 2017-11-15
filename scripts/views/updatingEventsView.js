@@ -339,10 +339,6 @@
       $form.find('#iconFlag').val('activism').addClass('edited');
       $form.find('.general-inputs').removeClass('hidden');
       break;
-    case 'Hearing': // need to check this
-      $form.find('#iconFlag').val('').addClass('edited'); 
-      $form.find('.general-inputs').removeClass('hidden');
-      break;
     default:
       $form.find('.general-inputs').removeClass('hidden');
     }
