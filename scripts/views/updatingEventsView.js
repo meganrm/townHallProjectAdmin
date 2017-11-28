@@ -335,6 +335,14 @@
       $form.find('#iconFlag').val('in-person').addClass('edited');
       $form.find('.general-inputs').removeClass('hidden');
       break;
+    case 'Candidate Town Hall':
+      $form.find('#iconFlag').val('campaign').addClass('edited');
+      $form.find('.general-inputs').removeClass('hidden');
+      break;
+    case 'Hearing':
+      $form.find('#iconFlag').val('').addClass('edited');
+      $('.general-inputs').removeClass('hidden');
+      break;
     case 'Empty Chair Town Hall':
       $form.find('#iconFlag').val('activism').addClass('edited');
       $form.find('.general-inputs').removeClass('hidden');
