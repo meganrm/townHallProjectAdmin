@@ -69,7 +69,7 @@
     if (flag) {
       user[flag] = true
     }
-    firebase.database().ref('users/' + userId).update(user);
+    firebasedb.ref('users/' + userId).update(user);
   }
 
   firebase.auth().onAuthStateChanged(function (user) {

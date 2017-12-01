@@ -13,7 +13,6 @@
     Moc.loadAll().then(function(allnames){
       Moc.allNames = allnames;
       $(input).typeahead($.extend({source: allnames}, typeaheadConfig));
-          // newEventView.render();
     });
   }
   setupTypeaheads('.member-lookup');
@@ -38,14 +37,12 @@
   lookupMember = function () {
     var $memberInput = $(this);
     var member = $memberInput.val();
-    var $form = $(this).parents('form');
     var $list = $('#current-pending');
     $('.to-remove').remove();
     $('#submit-success').addClass('hidden');
     var compiledTemplate = Handlebars.getTemplate('mocPoster');
     $list.empty();
-    var $errorMessage = $('.new-event-form #member-help-block');
-    var $memberformgroup = $('#member-form-group');
+
     if (validateMember(member)) {
       $('#member-form-group').removeClass('has-error');
       var memberKey = Moc.getMemberKey(member);

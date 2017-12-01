@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-var admin = require('firebase-admin');
 var request = require('request-promise'); // NB:  This is isn't the default request library!
 
 var eventbriteToken = process.env.EVENTBRITE_TOKEN;

@@ -50,7 +50,7 @@
       $('#member-form-group').removeClass('has-error');
       var memberKey = Moc.getMemberKey(member);
       var memberid = Moc.allMocsObjs[memberKey].id;
-      firebase.database().ref('mocData/' + memberid).once('value').then(function (snapshot) {
+      firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
         if (snapshot.exists()) {
           var mocdata = snapshot.val();
           Moc.currentMoc = new Moc(mocdata);
