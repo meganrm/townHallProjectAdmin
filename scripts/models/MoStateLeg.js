@@ -1,44 +1,74 @@
 (function (module) {
-  function Moc(opts) {
-    for (keys in opts) {
-      this[keys] = opts[keys];
-    }
+  function MoStateLeg(opts) {
+    this.chamber = opts.chamber;
+    this.district = opts.district;
+    this.party = opts.party;
+    this.state = opts.thp_id.split('-')[0];
+    this.stateName = statesAb[this.state];
+    this.phone_capitol = opts.phone_capitol || null;
+    this.phone_district = opts.phone_district || null;
+    this.email = opts.email;
+    this.in_office = true;
+    this.role = opts.role || null;
+    this.url = opts.url;
+    this.thp_id = opts.thp_id;
+    this.displayName = opts.displayName.replace(/\./g, '');
   }
 
-  Moc.allMocsObjs = {};
-  Moc.mocUpdated = [];
+  MoStateLeg.allMoStateLegsObjs = {};
+  MoStateLeg.mocUpdated = [];
 
-  Moc.getMember = function (member) {
-    var memberKey;
-    if (member.split(' ').length === 3) {
-      memberKey = member.split(' ')[1].toLowerCase() + member.split(' ')[2].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
-    } else {
-      memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
-    }
-    var memberid = Moc.allMocsObjs[memberKey].id;
-    return new Promise(function(resolve, reject){
-      firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
-        if (snapshot.exists()) {
-          resolve(snapshot.val());
-        } else {
-          reject('That member is not in our database, please check the spelling, and only use first and last name.');
-        }
-      });
-    });
-  };
+  // MoStateLeg.getMember = function (member) {
+  //   var memberKey;
+  //   if (member.split(' ').length === 3) {
+  //     if (member.split(' ')[0].length === 1) {
+  //       memberKey = member.split(' ')[2].toLowerCase().replace(/\./g, '') + member.split(' ')[0].toLowerCase() + '_' + member.split(' ')[1].toLowerCase();
+  //     } else {
+  //       memberKey = member.split(' ')[1].toLowerCase() + member.split(' ')[2].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+  //     }
+  //   } else {
+  //     memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
+  //   }
+  //   var memberid = MoStateLeg.allMoStateLegsObjs[memberKey].id;
+  //   return new Promise(function(resolve, reject){
+  //     firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
+  //       if (snapshot.exists()) {
+  //         resolve(snapshot.val());
+  //       } else {
+  //         reject('That member is not in our database, please check the spelling, and only use first and last name.');
+  //       }
+  //     });
+  //   });
+  // };
 
-  Moc.updateWithArray = function(array){
+  MoStateLeg.updateWithArray = function(array){
     array.forEach(function(ele){
-      if (!ele.id) {
+      if (!ele.thp_id) {
         return;
       }
-      let cleanedObj = Object.keys(ele).reduce(function(acc, cur){
-        if (ele[cur].length > 0) {
-          acc[cur] = ele[cur]
+      let newMember = new MoStateLeg(ele)
+      let memberKey;
+      let member = newMember.displayName;
+      let nameArray = member.split(' ');
+      if (nameArray.length === 0 ) {
+        return console.log('only one name', member);
+      }
+      if (nameArray.length > 2) {
+        let firstname = nameArray[0];
+        let middlename = nameArray[1];
+        let lastname = nameArray[2]
+        if (firstname.length === 1 || middlename.length === 1) {
+          memberKey = lastname.toLowerCase().replace(/\,/g, '') + '_' + firstname.toLowerCase() + '_' + middlename.toLowerCase();
+        } else {
+          memberKey = middlename.toLowerCase() + lastname.toLowerCase().replace(/\,/g, '') + '_' + firstname.toLowerCase();
         }
-        return acc
-      }, {})
-      firebasedb.ref('mocData/' + ele.id).update(ele);
+      } else {
+        memberKey = nameArray[1].toLowerCase().replace(/\,/g, '') + '_' + nameArray[0].toLowerCase();
+      }
+
+      let memberLookup = {id: newMember.thp_id, nameEntered: newMember.displayName}
+      firebasedb.ref(`state_legislators_data/${newMember.state}/${newMember.thp_id}`).update(newMember);
+      firebasedb.ref(`state_legislators_id/${newMember.state}/${memberKey}`).update(memberLookup);
     })
   }
 
@@ -49,10 +79,10 @@
     return padded;
   }
 
-  Moc.makeNewEndpoints = function(){
-    Moc.loadAllData()
-      .then((allMocs) => {
-        allMocs.forEach((moc) => {
+  MoStateLeg.makeNewEndpoints = function(){
+    MoStateLeg.loadAllData()
+      .then((allMoStateLegs) => {
+        allMoStateLegs.forEach((moc) => {
           let obj = {
             govtrack_id : moc.govtrack_id || null,
             propublica_id : moc.propublica_id || null,
@@ -76,12 +106,12 @@
   }
 
 
-  Moc.loadAllUpdated = function(){
+  MoStateLeg.loadAllUpdated = function(){
     var allupdated = [];
     return new Promise(function (resolve, reject) {
       firebasedb.ref('mocData/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){
-          var memberobj = new Moc(member.val());
+          var memberobj = new MoStateLeg(member.val());
           if (memberobj.in_office) {
             var name = memberobj.displayName;
             var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
@@ -92,7 +122,7 @@
               var timeAgo = moment(memberobj.lastUpdated);
               days = now.diff(timeAgo, 'days');
             }
-            Moc.allMocsObjs[member.key] = memberobj;
+            MoStateLeg.allMoStateLegsObjs[member.key] = memberobj;
             allupdated.push({
               id: member.key,
               name: name,
@@ -106,7 +136,7 @@
             });
           }
         });
-        Moc.download();
+        MoStateLeg.download();
         console.log(allupdated.length);
         allupdated.sort(function(a, b) {
           if (a.state < b.state ) {
@@ -122,13 +152,13 @@
     });
   };
 
-  Moc.loadAll = function(){
+  MoStateLeg.loadAll = function(){
     var allNames = [];
     return new Promise(function (resolve, reject) {
       firebasedb.ref('mocID/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){
-          var memberobj = new Moc(member.val());
-          Moc.allMocsObjs[member.key] = memberobj;
+          var memberobj = new MoStateLeg(member.val());
+          MoStateLeg.allMoStateLegsObjs[member.key] = memberobj;
           var name = memberobj.nameEntered;
           if (!name) {
             console.log(member.key);
@@ -143,20 +173,20 @@
     });
   };
 
-  Moc.loadAllData = function(){
-    var allMocs = [];
+  MoStateLeg.loadAllData = function(){
+    var allMoStateLegs = [];
     return new Promise(function (resolve, reject) {
       firebasedb.ref('mocData/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){
-          var memberobj = new Moc(member.val());
-          allMocs.push(memberobj)
+          var memberobj = new MoStateLeg(member.val());
+          allMoStateLegs.push(memberobj)
         });
-        resolve(allMocs);
+        resolve(allMoStateLegs);
       });
     });
   };
 
-  Moc.prototype.updateFB = function () {
+  MoStateLeg.prototype.updateFB = function () {
     var mocObj = this;
     return new Promise(function (resolve, reject) {
       firebasedb.ref('/mocData/' + mocObj.govtrack_id).update(mocObj).then(function(){
@@ -167,9 +197,9 @@
     });
   };
 
-  Moc.prototype.updateDisplayName = function () {
+  MoStateLeg.prototype.updateDisplayName = function () {
     var mocObj = this;
-    memberKey = Moc.getMemberKey(mocObj.nameEntered);
+    memberKey = MoStateLeg.getMemberKey(mocObj.nameEntered);
     return new Promise(function (resolve, reject) {
       firebasedb.ref('/mocID/' + memberKey).update(mocObj).then(function(){
         resolve(mocObj);
@@ -179,7 +209,7 @@
     });
   };
 
-  Moc.getMemberKey = function (member) {
+  MoStateLeg.getMemberKey = function (member) {
     var memberKey;
     if (member.split(' ').length === 3) {
       memberKey = member.split(' ')[1].toLowerCase() + member.split(' ')[2].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
@@ -189,9 +219,9 @@
     return memberKey;
   };
 
-  Moc.download = function(){
-    data = Object.keys(Moc.allMocsObjs).map(function(key){
-      return Moc.allMocsObjs[key];
+  MoStateLeg.download = function(){
+    data = Object.keys(MoStateLeg.allMoStateLegsObjs).map(function(key){
+      return MoStateLeg.allMoStateLegsObjs[key];
     });
     // prepare CSV data
     var csvData = new Array();
@@ -226,9 +256,9 @@
       // it needs to implement server side export
       link.setAttribute('href', 'http://www.example.com/export');
     }
-    link.innerHTML = 'Download Mocs';
+    link.innerHTML = 'Download MoStateLegs';
     document.getElementById('THP-downloads').appendChild(link);
   };
 
-  module.Moc = Moc;
+  module.MoStateLeg = MoStateLeg;
 })(window);

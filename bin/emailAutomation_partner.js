@@ -77,7 +77,7 @@
     var data = {
       from: 'Town Hall Updates <update@updates.townhallproject.com>',
       to: 'Megan Riel-Mehan <meganrm@townhallproject.com>',
-      cc: 'Nathan Williams <nwilliams@townhallproject.com> , Lillie Catlin <lcatlin@aclu.org>, <patriotnewstracking@gmail.com>',
+      cc: 'Nathan Williams <nwilliams@townhallproject.com> , Lillie Catlin <lcatlin@aclu.org>, <patriotnewstracking@gmail.com>, Cassie Kifer <cassie@rapidresist.org>, Yoni Landau <yoni@rapidresist.org>',
       subject: subject,
       html: htmltext
     };

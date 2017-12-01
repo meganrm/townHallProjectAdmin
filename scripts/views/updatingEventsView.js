@@ -81,7 +81,7 @@
         updateEventView.saveDeleteReason(id, reason);
       }
     }
-    oldTownHall.deleteEvent(path).then(function (deletedEvent) {
+    oldTownHall.deleteEvent(path).then(function () {
       delete TownHall.allTownHallsFB[id];
       $(`.${id}`).remove();
     });
@@ -127,6 +127,9 @@
     if (listID === 'for-approval') {
       var key = $form.closest('.list-group-item').attr('id');
       var approvedTH = TownHall.allTownHallsFB[key];
+      if (!approvedTH.Member) {
+        return console.log('Needs a member');
+      }
       approvedTH.updateFB(key).then(function (dataWritten) {
         if (dataWritten.eventId) {
           console.log(dataWritten);
@@ -229,7 +232,7 @@
     }
   };
 
-  updateEventView.dateChanged = function (event) {
+  updateEventView.dateChanged = function () {
     var $input = $(this);
     var $form = $input.parents('form');
     var $listgroup = $(this).parents('.list-group-item');
@@ -274,7 +277,7 @@
       } else {
         console.log('something has gone terribly wrong, email megan');
       }
-    }).catch(function (error) {
+    }).catch(function () {
       $form.find('#locationCheck').val('Geocoding failed');
     });
   };
@@ -332,6 +335,14 @@
       $form.find('#iconFlag').val('in-person').addClass('edited');
       $form.find('.general-inputs').removeClass('hidden');
       break;
+    case 'Candidate Town Hall':
+      $form.find('#iconFlag').val('campaign').addClass('edited');
+      $form.find('.general-inputs').removeClass('hidden');
+      break;
+    case 'Hearing':
+      $form.find('#iconFlag').val('').addClass('edited');
+      $('.general-inputs').removeClass('hidden');
+      break;
     case 'Empty Chair Town Hall':
       $form.find('#iconFlag').val('activism').addClass('edited');
       $form.find('.general-inputs').removeClass('hidden');
@@ -356,6 +367,64 @@
   updateEventView.loadOldEvents = function() {
   };
 
+  updateEventView.validateMember = function (member, $errorMessage, $memberformgroup) {
+    if (member.length < 1) {
+      $errorMessage.html('Please enter a member of congress name');
+      $memberformgroup.addClass('has-error');
+    } else if (parseInt(member)) {
+      $errorMessage.html('Please enter a member of congress name');
+      $memberformgroup.addClass('has-error');
+    } else if (member.split(' ').length === 1) {
+      $errorMessage.html('Please enter both a first and last name');
+      $memberformgroup.addClass('has-error');
+    } else {
+      return true;
+    }
+  };
+
+  updateEventView.memberChanged = function () {
+    var $memberInput = $(this);
+    var member = $memberInput.val();
+    var $listgroup = $(this).parents('.list-group-item');
+    var id = $listgroup.attr('id');
+    var $form = $(this).parents('form');
+    var $errorMessage = $('.new-event-form #member-help-block');
+    var $memberformgroup = $('#member-form-group');
+
+    if (updateEventView.validateMember(member, $errorMessage, $memberformgroup)) {
+      var District = $form.find('#District');
+
+      Moc.getMember(member).then(function(mocdata){
+        var districtV0;
+        var districtV1;
+        if (mocdata.type === 'sen') {
+          districtV0 = 'Senate';
+          districtV1 = false;
+        } else if (mocdata.type === 'rep') {
+          districtV0 = mocdata.state + '-' + mocdata.district;
+          districtV1 = mocdata.district;
+        }
+        District.val(districtV0);
+        var fullname = mocdata.displayName;
+        $memberInput.val(fullname);
+        TownHall.allTownHallsFB[id].Member = fullname;
+        TownHall.allTownHallsFB[id].District = districtV0;
+        TownHall.allTownHallsFB[id].district = districtV1;
+        TownHall.allTownHallsFB[id].govtrack_id = mocdata.govtrack_id;
+        TownHall.allTownHallsFB[id].Party = mocdata.party;
+        TownHall.allTownHallsFB[id].state = mocdata.state;
+        TownHall.allTownHallsFB[id].stateName = statesAb[mocdata.state];
+        TownHall.allTownHallsFB[id].State = statesAb[mocdata.state];
+
+        $errorMessage.html('');
+        $memberformgroup.removeClass('has-error').addClass('has-success');
+      }).catch(function(errorMessage){
+        $('#member-form-group').addClass('has-error');
+        $('.new-event-form #member-help-block').html('You can still submit this event, but the lookup failed. Please email meganrm@townhallproject.com this message: ', errorMessage);
+      });
+    }
+  };
+
   // event listeners for table interactions
   $('.events-table').on('click', '#geocode-button', updateEventView.geoCode);
   $('.events-table').on('click', '.meeting-type-dropdown a', updateEventView.changeMeetingType);
@@ -370,6 +439,7 @@
   $('.events-table').on('submit', 'form', updateEventView.submitUpdateForm);
   $('.events-table').on('click', '#delete', updateEventView.deleteEvent);
   $('#archived-lookup').on('submit', updateEventView.loadOldEvents);
+  $('#for-approval').on('change', '#Member', updateEventView.memberChanged);
 
   $('#scroll-to-top').on('click', function () {
     $('html, body').animate({ scrollTop: 0 }, 'slow');
