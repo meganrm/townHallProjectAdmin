@@ -13,7 +13,6 @@
     Moc.loadAll().then(function(allnames){
       Moc.allNames = allnames;
       $(input).typeahead($.extend({source: allnames}, typeaheadConfig));
-          // newEventView.render();
     });
   }
   setupTypeaheads('.member-lookup');
