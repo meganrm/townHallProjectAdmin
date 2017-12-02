@@ -26,14 +26,27 @@
     this.State = state;
     this.Zip = zip;
     this.Host = 'info@townhallproject.com';
-    this.Description = cur.Notes;
+    this.Description = cur.Notes ? cur.Notes.replace(/â€“/g, '-'): '';
     this.Categories = cur.meetingType;
     this.Directions = 'https://www.google.com/maps/dir/Current+Location/' + escape(cur.address);
   }
 
-  ACLUTownHall.download = function(){
+  ACLUTownHall.include = function(meetingType) {
+    if (
+        meetingType === 'Tele-Town Hall' ||
+        meetingType === 'Tele-town Hall' ||
+        meetingType === 'DC Event' ||
+        meetingType === 'Ticketed Event'
+      ) {
+      return false;
+    }
+    return true;
+  };
 
-    data = TownHall.allTownHalls.filter(function(ele){return !ele.repeatingEvent && ele.meetingType != 'Tele-Town Hall' && ele.meetingType !=='Tele-town Hall';}).reduce(function(acc, cur){
+  ACLUTownHall.download = function(){
+    data = TownHall.allTownHalls.filter(function(ele){
+      return !ele.repeatingEvent && ACLUTownHall.include(ele.meetingType);
+    }).reduce(function(acc, cur){
       obj = new ACLUTownHall(cur);
 
       acc.push(obj);
@@ -43,7 +56,7 @@
     // prepare CSV data
     var csvData = new Array();
     csvData.push('"Title","Venue","Address","City","State","Zip","Categories","Date","Description","Time","Host","Directions"');
-    data.forEach(function(item, index) {
+    data.forEach(function(item) {
       csvData.push(
         '"' + item.Title +
       '","' + item.Venue +
@@ -77,7 +90,7 @@
       // it needs to implement server side export
       link.setAttribute('href', 'http://www.example.com/export');
     }
-    link.setAttribute('class', 'btn btn-blue')
+    link.setAttribute('class', 'btn btn-blue');
     link.innerHTML = 'ACLU CSV Download';
     document.getElementById('ACLU-buttons').appendChild(link);
   };
