@@ -274,8 +274,8 @@
   };
 
 
-  eventHandler.readDataUsers = function () {
-    firebase.database().ref('/UserSubmission/').on('child_added', function getSnapShot(snapshot) {
+  eventHandler.readDataUsers = function (path, table) {
+    firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var ele = new TownHall(snapshot.val());
       obj = {};
       TownHall.allTownHallsFB[ele.eventId] = ele;
@@ -294,7 +294,7 @@
         $toAppend.find('#locationCheck').val('');
       }
       $toAppend.find('.btns').html(approveButtons(ele));
-      $('#for-approval').append($toAppend);
+      $(table).append($toAppend);
     });
   };
 
