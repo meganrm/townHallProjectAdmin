@@ -1,6 +1,6 @@
 (function(module) {
     helperFunctions = {};
-  
+
     // To call:
     // helperFunctions.updateOldData("", "");
     // helperFunctions.updateOldData("", "", "2017-3"); // with a date parameter
@@ -15,9 +15,9 @@
     //
     // Also, to update MOC obj stateName:
     // helperFunctions.stateNameMoc();
-  
+
     //////// general update function //////
-  
+
     // [default : will update old value with new value]
     helperFunctions.updateOldData = function updateOldData(
     //   oldValue,
@@ -43,7 +43,7 @@
           "noDate"
         ];
       }
-  
+
       // loop over each date key
       for (var i = 0; i < date_list.length; i++) {
         let date_key = date_list[i];
@@ -77,17 +77,17 @@
               if(newDate){
                 newUpdateObject['dateString'] = newDate;
               }
-              var newGovId = addGovTrackId(townHallObj, oldTownHall.key, date_key);    
+              var newGovId = addGovTrackId(townHallObj, oldTownHall.key, date_key);
               if(newGovId){
                 newUpdateObject['govtrack_id'] = newGovId;
-              }         
+              }
 
               updateObj(`/townHallsOld/${date_key}/${oldTownHall.key}`, newUpdateObject);
             });
           });
       }
     };
-  
+
     //////// specific update functions ////////
 
     function dateUpdate(townHallObj, key, date_key) {
@@ -107,11 +107,11 @@
         console.log("No " + oldValue + " property found. Event id: " + townHallObj.eventId + " date key: " + date_key);
       }
     }
-  
+
     function partyUpdate(townHallObj, key, date_key) {
       var oldValue = "Party";
       var newValue = "party";
-  
+
       if (townHallObj[oldValue]) {
         party = townHallObj[oldValue];
         if (party == "Democrat" || party == "democrat") {
@@ -122,7 +122,7 @@
         console.log("No " + oldValue + " property found. Event id: " + townHallObj.eventId + " date key: " + date_key);
       }
     }
-  
+
     function districtUpdate(townHallObj, key, date_key) {
       var oldValue = "District";
       var newValue = "district";
@@ -150,7 +150,7 @@
             zeropadding.slice(0, zeropadding.length - districtString.length) +
             districtString;
         }
-  
+
         if (updatedDistrict) {
           return updatedDistrict;
         } else {
@@ -160,16 +160,16 @@
         console.log("No 'District' value " + townHallObj.eventId + " date key: " + date_key);
       }
     }
-  
+
     function stateNameUpdate(townHallObj, key, date_key) {
       // 9 values return no property found (info is logged)
       var oldValue = "State";
       var newValue = "stateName";
-  
+
       // old value is State new value is stateName, should be the same except in a few cases.
       if (townHallObj[oldValue]) {
         currentValue = townHallObj[oldValue];
-  
+
         var stateName;
         if (currentValue.length === 2) {
           // current version is abbr already
@@ -179,14 +179,14 @@
         }
         return stateName;
       }
-  
+
       if (!townHallObj[oldValue]) {
         console.log(
           "No " + oldValue + " property found. " + date_key + " " + key
         );
       }
     }
-  
+
     function stateUpdate(townHallObj, key, date_key) {
       var oldValue = "StateAb";
       var newValue = "state";
@@ -198,7 +198,7 @@
       var StateAb = townHallObj[oldValue]
       if (
         StateAb &&
-        StateAb.length == 2 && 
+        StateAb.length == 2 &&
         StateAb !== 'DC'
       ) {
         // if StateAb is there, use it
@@ -228,7 +228,7 @@
         console.log('no "state" value defined. Event id: ' + townHallObj.eventId + ' date key: ' + date_key);
       }
     }
-  
+
     function addGovTrackId(townHallObj, key, date_key) {
       if (townHallObj.Member) {
         getMember(townHallObj.Member)
@@ -242,30 +242,30 @@
         console.log("townHallObj.Member is undefined Event id: " + townHallObj.eventId +" date key: " + date_key);
       }
     }
-  
+
     // Update stateName for Member of Congress objects
     helperFunctions.stateNameMoc = function() {
-      firebase.database().ref("/mocData/").once("value").then(function(snapshot) {
+      firebasedb.ref("/mocData/").once("value").then(function(snapshot) {
         snapshot.forEach(function(member) {
           // stateName
           var stateName;
-  
+
           // get path key
           var path_key = member.govtrack_id;
-  
+
           // get member stateAbbr value
           var currentAbbrState = member.val().state;
-  
+
           // states abbr from object keys
           stateName = statesAb[currentAbbrState];
-  
+
           updateObj(`/mocData/${path_key}`, "stateName", stateName);
         });
       });
     };
-  
+
     //////// Helper Functions ////////
-  
+
     // getMember
     getMember = function(displayName) {
       var memberKey;
@@ -279,7 +279,7 @@
         /[^\w\sáúé-]|(rep)\s|(representative)\s|(senator)\s/gi,
         ""
       );
-  
+
       if (formatName.split(" ").length === 3) {
         if (formatName.split(" ")[1].length === 1) {
           memberKey =
@@ -299,12 +299,12 @@
           "_" +
           formatName.split(" ")[0].toLowerCase();
       }
-  
+
       memberKey = memberKey.replace(/^[a-z]\./g, "");
       memberKey = memberKey.replace(/[,]+/g, "");
       memberKey = memberKey.replace(/\,(jr)\./g, "");
       memberKey = memberKey.replace(/(jr)/g, "");
-  
+
       // *** also special cases with a number of names **
       switch (memberKey) {
         case "donaldmceachin_a":
@@ -540,7 +540,7 @@
           // not a special case
           break;
       }
-  
+
       // still missing:
       // price_tom
       // shuster_brian
@@ -549,7 +549,7 @@
       // till_burr (multiple members on listed event)
       // blarson_john
       // ruben_rep
-  
+
       return new Promise(function(resolve, reject) {
         firebase
           .database()
@@ -562,29 +562,28 @@
               reject(
                 memberKey +
                   " That member is not in our database, please check the spelling, and only use first and last name. "
-                  + displayName 
+                  + displayName
               );
             }
           });
       });
     };
-  
+
     // update object
     function updateObj(path, obj) {
       // console.log(obj);
       // uncomment to run
-      // firebase.database().ref(path).update(obj);
+      // firebasedb.ref(path).update(obj);
     }
-  
+
     // get object key from value
     function getKeyByValue(object, value) {
       return Object.keys(object).find(function(key) {
         return object[key] === value;
       });
     }
-  
 
-  
+
+
     module.helperFunctions = helperFunctions;
   })(window);
-  

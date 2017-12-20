@@ -17,10 +17,10 @@
     $total.text(updatedNoEvents);
   }
 
-  dataviz.getPastEvents = function(path, dateStart, dateEnd, memberSet){
+  dataviz.getPastEvents = function(path, dateStart, dateEnd, memberSet, houseMapping, senateMapping){
     var ref = firebase.database().ref(path);
     ref.orderByChild('dateObj').startAt(dateStart).endAt(dateEnd).on('child_added', function(snapshot) {
-      dataviz.recessProgress(snapshot.val(), memberSet);
+      dataviz.recessProgress(snapshot.val(), memberSet, houseMapping, senateMapping);
     });
   };
 
@@ -54,7 +54,23 @@
 
   dataviz.membersEvents = new Set();
 
-  dataviz.recessProgress = function (townhall, memberSet) {
+  function addToMapping(chamber, member, houseMapping, senateMapping) {
+    if (chamber === 'house') {
+      if (houseMapping[member]) {
+        houseMapping[member] ++;
+      } else {
+        houseMapping[member] = 1;
+      }
+    } else {
+      if (senateMapping[member]) {
+        senateMapping[member] ++;
+      } else {
+        senateMapping[member] = 1;
+      }
+    }
+  }
+
+  dataviz.recessProgress = function (townhall, memberSet, houseMapping, senateMapping) {
     var total;
     var newMember = false;
     if (townhall.meetingType ==='Town Hall') {
@@ -80,6 +96,7 @@
         total = 100;
         chamber = 'senate';
       }
+      addToMapping(chamber, townhall.Member, houseMapping, senateMapping);
       parseBars(party, chamber, newMember, total, '-aug-progress-');
     }
   };
@@ -121,39 +138,42 @@
     $bar.attr('data-count', 0);
     $bar.width(0 + '%');
     $bar.text('');
-  }
+  };
 
   dataviz.reset = function(){
     dataviz.initalProgressBar(100, $('.dem-senate'), $('.dem-aug-progress-senate'));
     dataviz.initalProgressBar(100, $('.rep-senate'), $('.rep-aug-progress-senate'));
     dataviz.initalProgressBar(434, $('.dem-house'), $('.dem-aug-progress-house'));
     dataviz.initalProgressBar(434, $('.rep-house'), $('.rep-aug-progress-house'));
-    dataviz.resetGraph($('.dem-aug-total-house'))
-    dataviz.resetGraph($('.rep-aug-total-house'))
-    dataviz.resetGraph($('.dem-aug-total-senate'))
-    dataviz.resetGraph($('.rep-aug-total-senate'))
-  }
+    dataviz.resetGraph($('.dem-aug-total-house'));
+    dataviz.resetGraph($('.rep-aug-total-house'));
+    dataviz.resetGraph($('.dem-aug-total-senate'));
+    dataviz.resetGraph($('.rep-aug-total-senate'));
+  };
+
   dataviz.lookUpEvents = function(e){
-    e.preventDefault()
-    dataviz.reset()
+    e.preventDefault();
+    dataviz.reset();
     dataviz.lookupMembers = new Set();
+    dataviz.houseMemberMapping = {};
+    dataviz.sentateHouseMapping = {};
     var dateStart = moment($('#start-date').val()).startOf('day');
     var dateEnd = moment($('#end-date').val()).endOf('day');
     var start = dateStart.valueOf();
-    var end = dateEnd.valueOf()
+    var end = dateEnd.valueOf();
 
     var monthStart = dateStart.month();
     var monthEnd = dateEnd.month();
-    var dates = []
+    var dates = [];
     for (var i = monthStart; i <= monthEnd; i++) {
-      dates.push('2017-' + i)
+      dates.push('2017-' + i);
     }
     dates.forEach(function(date){
-      dataviz.getPastEvents('townHallsOld/' + date, start, end, dataviz.lookupMembers);
-    })
-  }
+      dataviz.getPastEvents('townHallsOld/' + date, start, end, dataviz.lookupMembers, dataviz.houseMemberMapping,  dataviz.sentateHouseMapping);
+    });
+  };
 
-  $('#progress-bar-form').on('submit', dataviz.lookUpEvents)
+  $('#progress-bar-form').on('submit', dataviz.lookUpEvents);
   dataviz.initalProgressBar(100, $('.dem-senate'));
   dataviz.initalProgressBar(100, $('.rep-senate'));
   dataviz.initalProgressBar(434, $('.dem-house'));

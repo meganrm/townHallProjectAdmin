@@ -8,7 +8,7 @@
 
   User.prototype.assignMoc = function(mocID){
     var user = this;
-    var ref = firebase.database().ref('users/' + user.ID + '/mocs/' + mocID + '/lastUpdated')
+    var ref = firebasedb.ref('users/' + user.ID + '/mocs/' + mocID + '/lastUpdated')
     ref.once('value').then(function(snapshot){
       if (parseInt(snapshot.val()) && moment(snapshot.val()).isValid()){
         lastUpdated = snapshot.val()
@@ -17,7 +17,7 @@
         lastUpdated = ''
       }
       console.log('users/' + user.ID + '/mocs/' + mocID,{lastUpdated : lastUpdated});
-      firebase.database().ref('users/' + user.ID + '/mocs/' + mocID).update({lastUpdated : lastUpdated})
+      firebasedb.ref('users/' + user.ID + '/mocs/' + mocID).update({lastUpdated : lastUpdated})
     })
   }
 
@@ -37,7 +37,7 @@
 
   User.getUser = function(userID){
     return new Promise(function(resolve, reject) {
-      firebase.database().ref('users/' + userID).once('value').then(function(snapshot){
+      firebasedb.ref('users/' + userID).once('value').then(function(snapshot){
         if (snapshot.exists()) {
           resolve(snapshot.val())
         } else {
@@ -50,7 +50,7 @@
   User.download = function(){
     var users = []
     var maxLength = 0
-    firebase.database().ref('users/').once('value').then(function(snapshot){
+    firebasedb.ref('users/').once('value').then(function(snapshot){
       snapshot.forEach(function(ele){
         obj = new User(ele.val(), ele.key);
         maxLength = obj.num > maxLength ? obj.num : maxLength;

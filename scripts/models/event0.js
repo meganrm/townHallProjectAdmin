@@ -6,10 +6,7 @@
     }
   }
 
-
-
-
-  // Global data stete
+  // Global data state
   TownHall.allTownHalls = [];
   TownHall.allTownHallsFB = {};
   TownHall.currentUser = null;
@@ -35,9 +32,9 @@
     var updates = {};
     return new Promise(function (resolve, reject) {
       updates['/townHallIds/' + key] = metaData;
-      return firebase.database().ref('/townHalls/' + key).update(newEvent).then(function (updated) {
+      return firebasedb.ref('/townHalls/' + key).update(newEvent).then(function (updated) {
         console.log('wrote', updated);
-        firebase.database().ref().update(updates);
+        firebasedb.ref().update(updates);
         resolve(newEvent);
       }).catch(function (error) {
         reject(error);
@@ -46,14 +43,14 @@
   };
 
   TownHall.getOldData = function getOldData (key, value, dateKey) {
-    var db = firebase.database();
+    var db = firebasedb;
     var ref = db.ref('/townHallsOld/' + dateKey);
     var totals = new Set();
     return new Promise (function(resolve, reject){
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
           townHall = new OldTownHall(oldTownHall.val());
-          if (townHall[key] === value) {
+          if (townHall[key].toLowerCase() === value.toLowerCase()) {
             totals.add(townHall);
           }
         });
@@ -69,7 +66,7 @@
       if (!key) {
         reject('needs key');
       }
-      firebase.database().ref('/UserSubmission/' + key).update(newEvent);
+      firebasedb.ref('/UserSubmission/' + key).update(newEvent);
       resolve(newEvent);
     });
   };
@@ -77,7 +74,7 @@
   TownHall.prototype.eventApproved = function (key) {
     var newEvent = this;
     return new Promise(function (resolve, reject) {
-      firebase.database().ref('/UserSubmission/' + key).update(newEvent);
+      firebasedb.ref('/UserSubmission/' + key).update(newEvent);
       resolve(newEvent);
     });
   };
@@ -167,14 +164,14 @@
         }
         var dup = false;
         if (obj) {
-          firebase.database().ref('zipToDistrict/' + zip).once('value').then(function(snapshot){
+          firebasedb.ref('zipToDistrict/' + zip).once('value').then(function(snapshot){
             snapshot.forEach(function(ele){
               if (ele.val().abr === obj.abr && parseInt(ele.val().dis) === parseInt(obj.dis)) {
                 dup = true;
               }
             });
             if (!dup) {
-              firebase.database().ref('zipToDistrict/' + zip).push(obj).then(function(){
+              firebasedb.ref('zipToDistrict/' + zip).push(obj).then(function(){
                 console.log('wrote', obj);
               });
             } else {
@@ -187,7 +184,7 @@
       }
     });
   };
-//   firebase.database().ref('zipToDistrict/').once('value').then(function(snapshot){
+//   firebasedb.ref('zipToDistrict/').once('value').then(function(snapshot){
 //     snapshot.forEach(function(zip){
 //       if (zip.numChildren() > 1) {
 //         var acc = {}
