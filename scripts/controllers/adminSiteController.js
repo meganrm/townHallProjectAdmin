@@ -3,77 +3,81 @@
 
   adminSiteController.initMOCReport = function(){
     if (!mocReportView.rendered) {
-      mocReportView.init()
+      mocReportView.init();
     }
-  }
+  };
 
   adminSiteController.renderAdmin = function(){
     eventHandler.readData('/townHalls/');
     eventHandler.metaData();
-    eventHandler.readDataUsers();
-    eventHandler.renderNav('admin')
-  }
+    eventHandler.readDataUsers('/UserSubmission', '#for-approval');
+    eventHandler.readDataUsers('/state_legislators_user_submission/NC', '#for-approval-state');
+    eventHandler.readDataUsers('/state_legislators_user_submission/VA', '#for-approval-state');
+    eventHandler.readDataUsers('/state_legislators_user_submission/CO', '#for-approval-state');
+    eventHandler.readDataUsers('/state_legislators_user_submission/AZ', '#for-approval-state');
+    eventHandler.renderNav('admin');
+  };
 
   adminSiteController.renderPartner = function(){
     eventHandler.readData('/townHalls/');
     eventHandler.metaData();
-    eventHandler.renderNav('partner')
-  }
+    eventHandler.renderNav('partner');
+  };
 
   adminSiteController.renderDefault = function(){
     eventHandler.readData('/townHalls/');
     eventHandler.metaData();
-    eventHandler.renderNav('default')
-  }
+    eventHandler.renderNav('default');
+  };
 
   adminSiteController.renderMain= function(ctx){
     if (ctx.Auth) {
       switch (ctx.Auth) {
-        case 'isAdmin':
-          adminSiteController.renderAdmin()
-          break;
-        case 'isResearcher':
-          adminSiteController.renderAdmin()
-          break;
-        case 'isPartner':
-          adminSiteController.renderPartner()
-          break;
-        default:
-        adminSiteController.renderDefault()
+      case 'isAdmin':
+        adminSiteController.renderAdmin();
+        break;
+      case 'isResearcher':
+        adminSiteController.renderAdmin();
+        break;
+      case 'isPartner':
+        adminSiteController.renderPartner();
+        break;
+      default:
+        adminSiteController.renderDefault();
       }
     }
-  }
+  };
 
   adminSiteController.checkAuth = function(uid, next) {
-    ctx = {}
-      User.getUser(uid).then(function(user){
-        if (user['isPartner']) {
-          ctx.Auth = 'isPartner'
-        }
-        if (user['isResearcher']) {
-          ctx.Auth = 'isResearcher'
-        }
-        if (user['isAdmin']) {
-          ctx.Auth = 'isAdmin'
-        }
-      next(ctx)
-    })
-  }
+    ctx = {};
+    User.getUser(uid).then(function(user){
+      if (user['isPartner']) {
+        ctx.Auth = 'isPartner';
+      }
+      if (user['isResearcher']) {
+        ctx.Auth = 'isResearcher';
+      }
+      if (user['isAdmin']) {
+        ctx.Auth = 'isAdmin';
+      }
+      next(ctx);
+    });
+  };
 
 
   function writeUserData(userId, name, email, flag) {
     user = {
       username: name,
       email: email
-    }
+    };
     if (flag) {
-      user[flag] = true
+      user[flag] = true;
     }
     firebasedb.ref('users/' + userId).update(user);
   }
 
   firebase.auth().onAuthStateChanged(function (user) {
-    eventHandler.renderNav()
+    eventHandler.renderNav();
     if (user) {
     // User is signed in.
       if (user.uid !== TownHall.currentUser) {
@@ -85,7 +89,7 @@
         } else {
           writeUserData(user.uid, user.displayName, user.email);
         }
-        adminSiteController.checkAuth(user.uid, adminSiteController.renderMain)
+        adminSiteController.checkAuth(user.uid, adminSiteController.renderMain);
       } else {
         console.log(user.displayName, ' is still signed in');
       }
@@ -99,7 +103,7 @@
   // Sign in fuction for firebase
   adminSiteController.signIn = function signIn() {
     firebase.auth().signInWithRedirect(provider);
-    firebase.auth().getRedirectResult().then(function (result) {
+    firebase.auth().getRedirectResult().then(function () {
       // This gives you a Google Access Token. You can use it to access the Google API.
       // var token = result.credential.accessToken;
       // The signed-in user info.
@@ -113,19 +117,19 @@
   };
 
   adminSiteController.signOut = function() {
-    firebase.auth().signOut()
-  }
+    firebase.auth().signOut();
+  };
 
   $(document).ready(function () {
     $('#lookup-old-events-form').on('submit', eventHandler.lookupOldEvents);
     $('.sort').on('click', 'a', eventHandler.sortTable);
     $('.filter').on('click', 'a', eventHandler.filterTable);
     $('#filter-info').on('click', 'button.btn', eventHandler.removeFilter);
-    $('#signOut').on('click', adminSiteController.signOut)
+    $('#signOut').on('click', adminSiteController.signOut);
     eventHandler.resetFilters();
     eventHandler.setupTypeaheads();
     if (location.hash) {
-      $("a[href='" + location.hash + "']").click();
+      $('a[href=\'' + location.hash + '\']').click();
     }
   });
 

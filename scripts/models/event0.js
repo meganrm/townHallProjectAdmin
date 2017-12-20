@@ -50,7 +50,7 @@
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
           townHall = new OldTownHall(oldTownHall.val());
-          if (townHall[key] === value) {
+          if (townHall[key].toLowerCase() === value.toLowerCase()) {
             totals.add(townHall);
           }
         });
