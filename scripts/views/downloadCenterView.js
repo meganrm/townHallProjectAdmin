@@ -16,6 +16,9 @@
   }
 
   CSVTownHall.makeDownloadButton = function(buttonName, data, inputFileName, appendToId){
+    if (data.length === 0) {
+      return;
+    }
     // prepare CSV data
     var csvData = new Array();
     csvData.push(Object.keys(data[0]).join(', '));
