@@ -39,6 +39,9 @@
       case 'isResearcher':
         adminSiteController.renderAdmin();
         break;
+      case 'dataIntern':
+        adminSiteController.renderAdmin();
+        break;
       case 'isPartner':
         adminSiteController.renderPartner();
         break;
@@ -59,6 +62,9 @@
       }
       if (user['isAdmin']) {
         ctx.Auth = 'isAdmin';
+      }
+      if (user['dataIntern']) {
+        ctx.Auth = 'dataIntern';
       }
       next(ctx);
     });
