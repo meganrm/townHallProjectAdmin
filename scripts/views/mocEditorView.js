@@ -71,6 +71,8 @@
     event.preventDefault();
     var $input = $(this).parents('.input-group').find('input');
     var value = $(this).attr('data-value');
+    if (value === "true") { value = true }
+    if (value === "false") { value = false }
     $input.val(value);
     Moc.currentMoc[$input.attr('id')] = value;
   };
