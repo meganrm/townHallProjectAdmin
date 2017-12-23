@@ -1,17 +1,17 @@
 function eventValidation() {
   var https = require('https');
-  var google = require('googleapis');
 
   var firebasedb = require('../bin/setupFirebase.js');
   var ErrorReport = require('../bin/errorReporting.js');
   var moment = require('moment');
+
   function TownHall(opts) {
     for (keys in opts) {
       this[keys] = opts[keys];
     }
   }
   //geocodes an address
-  TownHall.prototype.getLatandLog = function (address, type) {
+  TownHall.prototype.getLatandLog = function (address) {
     var addressQuery = escape(address);
     var addresskey = address.replace(/\W/g, '');
     var options = {
@@ -36,10 +36,10 @@ function eventValidation() {
           newTownHall.address = r.results[0].formatted_address.split(', USA')[0];
           addresskey.trim();
           update =  {
-              lat: newTownHall.lat,
-              lng: newTownHall.lng,
-              formatted_address: newTownHall.address,
-            }
+            lat: newTownHall.lat,
+            lng: newTownHall.lng,
+            formatted_address: newTownHall.address,
+          };
         }
         updateEvent(newTownHall.eventId, update, 'townHalls/');
       });
@@ -145,4 +145,5 @@ function eventValidation() {
     dateTimeValidation(townhall, 'UserSubmission/');
   });
 }
+
 module.exports = eventValidation;

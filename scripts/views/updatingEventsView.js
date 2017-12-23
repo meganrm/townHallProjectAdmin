@@ -11,7 +11,6 @@
     var preview = Handlebars.getTemplate('previewEvent');
     var updated = $form.find('.edited').get();
     var id = $form.attr('id').split('-form')[0];
-    var databaseTH = TownHall.allTownHallsFB[id];
     var updates = updated.reduce(function (newObj, cur) {
       var $curValue = $(cur).val();
       switch (cur.id) {
@@ -61,7 +60,7 @@
     firebase.database().ref(`deletedTownHalls/${oldTownHall.userID}`).update({
       user: oldTownHall.enteredBy,
       reason: reason,
-      townHall: oldTownHall
+      townHall: oldTownHall,
     });
   };
 
@@ -80,10 +79,19 @@
       if (reason) {
         updateEventView.saveDeleteReason(id, reason);
       }
+    } else if (listID === 'for-approval-state') {
+      var reason = $deleteButton.attr('data-delete-reason');
+      console.log(reason);
+      if (reason) {
+        updateEventView.saveDeleteReason(id, reason);
+      }
+      path = `state_legislators_user_submission/${oldTownHall.state}`;
     }
     oldTownHall.deleteEvent(path).then(function () {
       delete TownHall.allTownHallsFB[id];
       $(`.${id}`).remove();
+    }).catch((e) => {
+      console.log(e);
     });
   };
 
@@ -119,34 +127,70 @@
     }
   };
 
+  updateEventView.approveNewEvent = function($form, preview) {
+    var key = $form.closest('.list-group-item').attr('id');
+    var approvedTH = TownHall.allTownHallsFB[key];
+    if (!approvedTH.Member) {
+      return console.log('Needs a member');
+    }
+    approvedTH.updateFB(key).then(function (dataWritten) {
+      if (dataWritten.eventId) {
+        console.log(dataWritten);
+        var print = dataWritten;
+        updateEventView.updateMOCEvents(dataWritten);
+        print.writtenId = key;
+        print.edit = 'updated';
+        $('#edited').append(preview(print));
+        dataWritten.deleteEvent('UserSubmission').then(function () {
+          $(`#for-approval #${key}`).remove();
+        });
+      }
+    }).catch(function(error){
+      $form.find('.write-error').removeClass('hidden');
+      console.log(error);
+    });
+    $form.find('#update-button').removeClass('btn-blue');
+  };
+
+  updateEventView.approveNewStateEvent = function($form, preview) {
+    var key = $form.closest('.list-group-item').attr('id');
+    var approvedTH = TownHall.allTownHallsFB[key];
+    if (!approvedTH.Member) {
+      return console.log('Needs a member');
+    }
+    approvedTH.updateFB(key).then(function (dataWritten) {
+      if (dataWritten.eventId) {
+        console.log(dataWritten);
+        var print = dataWritten;
+        updateEventView.updateMOCEvents(dataWritten);
+        print.writtenId = key;
+        print.edit = 'updated';
+        $('#edited').append(preview(print));
+        dataWritten.deleteEvent(`state_legislators_user_submission/${dataWritten.state}`).then(function () {
+          $(`#for-approval-state #${key}`).remove();
+        });
+      }
+    }).catch(function(error){
+      $form.find('.write-error').removeClass('hidden');
+      console.log(error);
+    });
+    $form.find('#update-button').removeClass('btn-blue');
+  };
+
+
   updateEventView.submitUpdateForm = function (event) {
     event.preventDefault();
-    $form = $(this);
+    var $form = $(this);
     var listID = $form.closest('.events-table').attr('id');
     var preview = Handlebars.getTemplate('previewEvent');
     if (listID === 'for-approval') {
-      var key = $form.closest('.list-group-item').attr('id');
-      var approvedTH = TownHall.allTownHallsFB[key];
-      if (!approvedTH.Member) {
-        return console.log('Needs a member');
-      }
-      approvedTH.updateFB(key).then(function (dataWritten) {
-        if (dataWritten.eventId) {
-          console.log(dataWritten);
-          var print = dataWritten;
-          updateEventView.updateMOCEvents(dataWritten);
-          print.writtenId = key;
-          print.edit = 'updated';
-          $('#edited').append(preview(print));
-          dataWritten.deleteEvent('UserSubmission').then(function () {
-            $(`#for-approval #${key}`).remove();
-          });
-        }
-      }).catch(function(error){
-        $form.find('.write-error').removeClass('hidden');
-        console.log(error);
-      });
-      $form.find('#update-button').removeClass('btn-blue');
+
+      updateEventView.approveNewEvent($form, preview);
+
+    } else if (listID === 'for-approval-state') {
+
+      updateEventView.approveNewStateEvent($form, preview);
+
     } else {
       var $listgroup = $(this).parents('.list-group-item');
       var updated = $form.find('.edited').get();
@@ -263,8 +307,8 @@
     var address = $form.find('#address').val();
     var $listgroup = $(this).parents('.list-group-item');
     var id = $listgroup.attr('id');
-    newTownHall = new TownHall();
-    type = $form.find('#addressType').val();
+    let newTownHall = new TownHall();
+    let type = $form.find('#addressType').val();
     newTownHall.getLatandLog(address, type).then(function (geotownHall) {
       console.log('geocoding!', geotownHall);
       $form.find('#locationCheck').val('Location is valid');
@@ -284,7 +328,7 @@
 
   updateEventView.changeMeetingType = function (event) {
     event.preventDefault();
-    $form = $(this).parents('form');
+    let $form = $(this).parents('form');
     var value = $(this).attr('data-value');
     $form.find('#meetingType').val(value).addClass('edited');
     $form.find('#meetingType').change();
@@ -292,7 +336,7 @@
 
   updateEventView.changeDeleteReason = function (event) {
     event.preventDefault();
-    $form = $(this).parents('form');
+    let $form = $(this).parents('form');
     var value = $(this).attr('data-value');
     $form.find('#delete-reason').val(value);
     $form.find('#delete-error').addClass('hidden');
@@ -302,7 +346,7 @@
   updateEventView.changeIconFlag = function (event) {
     event.preventDefault();
     console.log(this);
-    $form = $(this).parents('form');
+    let $form = $(this).parents('form');
     var value = $(this).attr('data-value');
     $form.find('#iconFlag').val(value);
     $form.find('#iconFlag').change();

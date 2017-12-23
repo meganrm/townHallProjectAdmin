@@ -34,18 +34,25 @@
       }
       let cleanedObj = Object.keys(ele).reduce(function(acc, cur){
         if (ele[cur].length > 0) {
-          acc[cur] = ele[cur]
+          console.log(ele[cur]);
+          if (ele[cur] === 'true' || ele[cur] === 'yes'){
+            acc[cur] = true;
+            console.log('fixing', ele[cur]);
+          } else {
+            acc[cur] = ele[cur];
+          }
         }
-        return acc
-      }, {})
-      firebasedb.ref('mocData/' + ele.id).update(ele);
-    })
-  }
+        return acc;
+      }, {});
+
+      firebasedb.ref('mocData/' + ele.id).update(cleanedObj);
+    });
+  };
 
   function zeropadding(num) {
     let padding = '00';
-    let tobepadded = num.toString()
-    let padded = padding.slice(0, padding.length - tobepadded.length) + tobepadded
+    let tobepadded = num.toString();
+    let padded = padding.slice(0, padding.length - tobepadded.length) + tobepadded;
     return padded;
   }
 
@@ -57,23 +64,23 @@
             govtrack_id : moc.govtrack_id || null,
             propublica_id : moc.propublica_id || null,
             displayName : moc.displayName || null
-          }
+          };
           if (moc.type === 'sen') {
-            path = `mocByStateDistrict/${moc.state}/${moc.state_rank}/`
+            path = `mocByStateDistrict/${moc.state}/${moc.state_rank}/`;
           } else if (moc.type === 'rep') {
             let district;
             if (moc.at_large === true) {
-              district = '00'
+              district = '00';
             } else {
-              district =  zeropadding(moc.district)
+              district =  zeropadding(moc.district);
             }
-            path = `mocByStateDistrict/${moc.state}-${district}/`
+            path = `mocByStateDistrict/${moc.state}-${district}/`;
           }
           console.log(path, obj);
           // return firebasedb.ref(path).update(obj);
-        })
-    })
-  }
+        });
+      });
+  };
 
 
   Moc.loadAllUpdated = function(){
@@ -149,7 +156,7 @@
       firebasedb.ref('mocData/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){
           var memberobj = new Moc(member.val());
-          allMocs.push(memberobj)
+          allMocs.push(memberobj);
         });
         resolve(allMocs);
       });

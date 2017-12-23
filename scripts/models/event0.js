@@ -19,7 +19,7 @@
   TownHall.filterIds = {
     meetingType: '',
     Party: '',
-    State: ''
+    State: '',
   };
   TownHall.isCurrentContext = false;
   TownHall.isMap = false;
@@ -49,7 +49,7 @@
     return new Promise (function(resolve, reject){
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
-          townHall = new OldTownHall(oldTownHall.val());
+          let townHall = new OldTownHall(oldTownHall.val());
           if (townHall[key].toLowerCase() === value.toLowerCase()) {
             totals.add(townHall);
           }
@@ -277,7 +277,7 @@
       {
         lat: lat,
         lng: lng,
-        formatted_address: address
+        formatted_address: address,
       });
   };
 
@@ -287,7 +287,7 @@
       $.ajax({
         url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM',
         data: {
-          'address': address
+          'address': address,
         },
         dataType: 'json',
         success: function (r) {
@@ -307,7 +307,7 @@
         },
         error: function (e) {
           console.log('we got an error', e);
-        }
+        },
       });
     });
   };
