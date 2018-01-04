@@ -61,6 +61,8 @@
       user: oldTownHall.enteredBy,
       reason: reason,
       townHall: oldTownHall,
+    }).catch((e) => {
+      console.log(e);
     });
   };
 
@@ -166,7 +168,7 @@
         print.writtenId = key;
         print.edit = 'updated';
         $('#edited').append(preview(print));
-        dataWritten.deleteEvent(`state_legislators_user_submission/${dataWritten.state}`).then(function () {
+        dataWritten.deleteEvent(`state_legislators_user_submission/${approvedTH.state}`).then(function () {
           $(`#for-approval-state #${key}`).remove();
         });
       }
@@ -184,11 +186,11 @@
     var listID = $form.closest('.events-table').attr('id');
     var preview = Handlebars.getTemplate('previewEvent');
     if (listID === 'for-approval') {
-
+      console.log('Approving US event');
       updateEventView.approveNewEvent($form, preview);
 
     } else if (listID === 'for-approval-state') {
-
+      console.log('Approving state event');
       updateEventView.approveNewStateEvent($form, preview);
 
     } else {
@@ -503,9 +505,6 @@
   });
 
   // DownLoadCenter.downloadButtonHandler('user-download', User.download, 'isAdmin');
-
-
-
 
   module.updateEventView = updateEventView;
 })(window);
