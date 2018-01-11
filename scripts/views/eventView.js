@@ -123,24 +123,35 @@
     eventHandler.renderTableWithArray(data, $table);
   };
 
+  eventHandler.getDateRange = function() {
+    var dateStart = moment($('#start-date').val()).startOf('day');
+    dateStart = dateStart.isValid() ? dateStart : moment('2017-01-01');
+    var dateEnd = moment($('#end-date').val()).endOf('day');
+    dateEnd = dateEnd.isValid() ? dateEnd : moment().endOf('day');
+    var start = dateStart.valueOf();
+    var end = dateEnd.valueOf();
+    var dates = [];
+
+    while (dateEnd > dateStart || dateStart.isSame(dateEnd, 'month') === true) {
+      var monthZeroIndex = dateStart.month();
+      dates.push(dateStart.format('YYYY-' + monthZeroIndex));
+      dateStart.add(1,'month');
+    }
+    return {
+      dates: dates,
+      start: start,
+      end: end,
+    };
+  };
+
   eventHandler.lookupOldEvents = function(event){
     event.preventDefault();
     clearCSVOutput();
     var para = document.createTextNode('Loading...');
     document.getElementById('download-csv-events-list').appendChild(para);
-    var dateStart = moment($('#start-date').val()).startOf('day');
-    dateStart = dateStart.isValid() ? dateStart : moment('2017-01-01');
-    var dateEnd = moment($('#end-date').val()).endOf('day');
-    dateEnd = dateEnd.isValid() ? dateEnd : moment().endOf('day');
+    var dates = eventHandler.getDateRange().dates;
     var key = $('#lookup-key').val();
     var value = $('#lookup-value').val();
-    var dates = [];
-
-    while (dateEnd.endOf('day') > dateStart.startOf('day') || dateStart.format('M') === dateEnd.format('M')) {
-      var monthZeroIndex = dateStart.month();
-      dates.push(dateStart.format('YYYY-' + monthZeroIndex));
-      dateStart.add(1,'month');
-    }
     var totalCount = 0;
     var allEvents = [];
     dates.forEach(function(date, index){
