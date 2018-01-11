@@ -128,14 +128,15 @@
     clearCSVOutput();
     var para = document.createTextNode('Loading...');
     document.getElementById('download-csv-events-list').appendChild(para);
-    var dateStart = moment('2017-01-01');
-    var dateEnd = moment();
+    var dateStart = moment($('#start-date').val()).startOf('day');
+    var dateEnd = moment($('#end-date').val()).endOf('day');
     var key = $('#lookup-key').val();
     var value = $('#lookup-value').val();
     var dates = [];
-    
-    while (dateEnd > dateStart || dateStart.format('M') === dateEnd.format('M')) {
-      dates.push(dateStart.format('YYYY-M'));
+
+    while (dateEnd.endOf('day') > dateStart.startOf('day') || dateStart.format('M') === dateEnd.format('M')) {
+      var monthZeroIndex = dateStart.month();
+      dates.push(dateStart.format('YYYY-' + monthZeroIndex));
       dateStart.add(1,'month');
     }
     var totalCount = 0;

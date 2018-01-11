@@ -163,8 +163,9 @@
     var end = dateEnd.valueOf();
     var dates = [];
 
-    while (dateEnd > dateStart || dateStart.format('M') === dateEnd.format('M')) {
-      dates.push(dateStart.format('YYYY-M'));
+    while (dateEnd.endOf('day') > dateStart.startOf('day') || dateStart.format('M') === dateEnd.format('M')) {
+      var monthZeroIndex = dateStart.month();
+      dates.push(dateStart.format('YYYY-' + monthZeroIndex));
       dateStart.add(1,'month');
     }
     dates.forEach(function(date){
