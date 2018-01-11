@@ -125,7 +125,7 @@
 
   eventHandler.getDateRange = function() {
     var dateStart = moment($('#start-date').val()).startOf('day');
-    dateStart = dateStart.isValid() ? dateStart : moment('2017-01-01');
+    dateStart = dateStart.isValid() ? dateStart : moment('2017-01-01').startOf('day');
     var dateEnd = moment($('#end-date').val()).endOf('day');
     dateEnd = dateEnd.isValid() ? dateEnd : moment().endOf('day');
     var start = dateStart.valueOf();
