@@ -162,13 +162,12 @@
     var start = dateStart.valueOf();
     var end = dateEnd.valueOf();
     var dates = [];
-    
+
     while (dateEnd > dateStart || dateStart.format('M') === dateEnd.format('M')) {
       dates.push(dateStart.format('YYYY-M'));
       dateStart.add(1,'month');
     }
     dates.forEach(function(date){
-      console.log(date);
       dataviz.getPastEvents('townHallsOld/' + date, start, end, dataviz.lookupMembers, dataviz.houseMemberMapping,  dataviz.sentateHouseMapping);
     });
   };
