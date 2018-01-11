@@ -161,14 +161,14 @@
     var dateEnd = moment($('#end-date').val()).endOf('day');
     var start = dateStart.valueOf();
     var end = dateEnd.valueOf();
-
-    var monthStart = dateStart.month();
-    var monthEnd = dateEnd.month();
     var dates = [];
-    for (var i = monthStart; i <= monthEnd; i++) {
-      dates.push('2017-' + i);
+    
+    while (dateEnd > dateStart || dateStart.format('M') === dateEnd.format('M')) {
+      dates.push(dateStart.format('YYYY-M'));
+      dateStart.add(1,'month');
     }
     dates.forEach(function(date){
+      console.log(date);
       dataviz.getPastEvents('townHallsOld/' + date, start, end, dataviz.lookupMembers, dataviz.houseMemberMapping,  dataviz.sentateHouseMapping);
     });
   };
