@@ -158,7 +158,9 @@
     dataviz.houseMemberMapping = {};
     dataviz.sentateHouseMapping = {};
     var dateStart = moment($('#start-date').val()).startOf('day');
+    dateStart = dateStart.isValid() ? dateStart : moment('2017-01-01');
     var dateEnd = moment($('#end-date').val()).endOf('day');
+    dateEnd = dateEnd.isValid() ? dateEnd : moment().endOf('day');
     var start = dateStart.valueOf();
     var end = dateEnd.valueOf();
     var dates = [];

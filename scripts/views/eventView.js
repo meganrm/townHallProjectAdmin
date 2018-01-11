@@ -129,7 +129,9 @@
     var para = document.createTextNode('Loading...');
     document.getElementById('download-csv-events-list').appendChild(para);
     var dateStart = moment($('#start-date').val()).startOf('day');
+    dateStart = dateStart.isValid() ? dateStart : moment('2017-01-01');
     var dateEnd = moment($('#end-date').val()).endOf('day');
+    dateEnd = dateEnd.isValid() ? dateEnd : moment().endOf('day');
     var key = $('#lookup-key').val();
     var value = $('#lookup-value').val();
     var dates = [];
