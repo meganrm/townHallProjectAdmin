@@ -158,7 +158,6 @@
     dataviz.houseMemberMapping = {};
     dataviz.sentateHouseMapping = {};
     var dateStart = moment($('#start-date').val()).startOf('day');
-    console.log(dateStart);
     var dateEnd = moment($('#end-date').val()).endOf('day');
     var start = dateStart.valueOf();
     var end = dateEnd.valueOf();
