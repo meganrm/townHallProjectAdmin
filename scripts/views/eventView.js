@@ -260,12 +260,11 @@
 
   eventHandler.readData = function (path) {
 
-    $currentState = $('#current-state');
+    var $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;
       $currentState.attr('data-total', total);
       var ele = new TownHall(snapshot.val());
-      obj = {};
       // dataviz.recessProgress(ele, dataviz.membersEvents);
       eventHandler.checkLastUpdated(ele);
       eventHandler.checkEndTime(ele);
@@ -297,7 +296,6 @@
   eventHandler.readDataUsers = function (path, table) {
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var ele = new TownHall(snapshot.val());
-      obj = {};
       TownHall.allTownHallsFB[ele.eventId] = ele;
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var approveButtons = Handlebars.getTemplate('approveButtons');

@@ -4,6 +4,7 @@
     "req": true,
     "res": true,
     "next": true,
+    "moment": true,
     "expect": true,
     "TownHall": true,
     "Moc": true,
