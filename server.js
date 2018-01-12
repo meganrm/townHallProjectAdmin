@@ -35,7 +35,7 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
           html: `
           <p>Thank you for your event submission to Town Hall Project. We have approved your event:</p>
           <ul>
-            <li>Member of Congress: ${townhall.Member}</li>
+            <li>Lawmaker: ${townhall.Member}</li>
             <li>Date: ${townhall.Date}</li>
             <li>Time: ${townhall.Time}</li>
             <li>Location: ${townhall.Location}</li>
@@ -46,7 +46,7 @@ firebasedb.ref('townHalls/').on('child_added', function(snapshot){
           <br>
           <br>
           <br>
-          <footer><p><a href="%tag_unsubscribe_url%">Click to stop getting email updates about your submitted events</a></p></footer>`
+          <footer><p><a href="%tag_unsubscribe_url%">Click to stop getting email updates about your submitted events</a></p></footer>`,
         };
         data['h:Reply-To']='TownHall Project <info@townhallproject.com>';
         data['o:tag']='researcher-update';
@@ -73,7 +73,7 @@ firebasedb.ref('deletedTownHalls/').on('child_added', function(snapshot){
     html: `
     <p>Thank you for your event submission to Town Hall Project. We were not able to approve your event for the following reason: <br>${reason}</p>
     <ul>
-      <li>Member of Congress: ${townhall.Member}</li>
+      <li>Lawmaker: ${townhall.Member}</li>
       <li>Date: ${townhall.Date}</li>
       <li>Time: ${townhall.Time}</li>
       <li>Location: ${townhall.Location}</li>
@@ -84,12 +84,12 @@ firebasedb.ref('deletedTownHalls/').on('child_added', function(snapshot){
     <br>
     <br>
     <br>
-    <footer><p><a href="%tag_unsubscribe_url%">Click to stop getting email updates about your submitted events</a></p></footer>`
+    <footer><p><a href="%tag_unsubscribe_url%">Click to stop getting email updates about your submitted events</a></p></footer>`,
   };
   data['h:Reply-To']='TownHall Project <info@townhallproject.com>';
   data['o:tag']='researcher-update';
   mailgun.messages().send(data, function () {
-    oldTownHall = firebasedb.ref(`deletedTownHalls/${key}`).remove();
+    var oldTownHall = firebasedb.ref(`deletedTownHalls/${key}`).remove();
     if (oldTownHall) {
       console.log('sent email, removed record');
     }
