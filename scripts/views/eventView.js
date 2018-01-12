@@ -22,7 +22,7 @@
       updater: function (selection) {
         eventHandler.addFilter(this.$element.attr('data-filter'), selection);
         eventHandler.renderTableWithArray(eventHandler.getFilterState());
-      }
+      },
     };
 
     $('#stateTypeahead').typeahead($.extend({ source: TownHall.allStates }, typeaheadConfig));
@@ -36,7 +36,7 @@
       highlighter: function(item) { return item; }, // Kill ugly highlight
       filter: function(selection) {
         $(input).val(selection);
-      }
+      },
     };
     Moc.loadAll().then(function(allnames){
       Moc.allNames = allnames;
@@ -114,7 +114,7 @@
 
   eventHandler.resetTable = function (e) {
     e.preventDefault();
-    $table = $('#all-events-table');
+    var $table = $('#all-events-table');
     $table.empty();
     $('#resetTable').hide();
     TownHall.filterIds = {};
@@ -313,6 +313,7 @@
         $toAppend.find('#geocode-button').addClass('btn-blue');
         $toAppend.find('#locationCheck').val('');
       }
+      ele.path = path;
       $toAppend.find('.btns').html(approveButtons(ele));
       $(table).append($toAppend);
     });

@@ -72,23 +72,23 @@
     var id = $deleteButton.attr('data-id');
     var oldTownHall = TownHall.allTownHallsFB[id];
     var path = $deleteButton.attr('data-path');
-    console.log(id, path, oldTownHall);
     var listID = $deleteButton.closest('.events-table').attr('id');
+    var reason;
     console.log(listID);
     if (listID === 'for-approval') {
-      var reason = $deleteButton.attr('data-delete-reason');
+      reason = $deleteButton.attr('data-delete-reason');
       console.log(reason);
       if (reason) {
         updateEventView.saveDeleteReason(id, reason);
       }
     } else if (listID === 'for-approval-state') {
-      var reason = $deleteButton.attr('data-delete-reason');
+      reason = $deleteButton.attr('data-delete-reason');
       console.log(reason);
       if (reason) {
         updateEventView.saveDeleteReason(id, reason);
       }
-      path = `state_legislators_user_submission/${oldTownHall.state}`;
     }
+    console.log(id, path, oldTownHall);
     oldTownHall.deleteEvent(path).then(function () {
       delete TownHall.allTownHallsFB[id];
       $(`.${id}`).remove();

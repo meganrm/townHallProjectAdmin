@@ -10,9 +10,9 @@
         <li><a href="#" data-value="Unable to verify">Unable to verify</a></li>
         <li><a href="#" data-value="Not a THP event type">Not a THP event type</a></li>
       </ul>
-      <button type="button" class="btn btn-secondary" id="delete" data-id="{{eventId}}" data-path="UserSubmission" data-toggle="tooltip" data-placement="top" title="For events that were canceled or wrong">Delete</button>
+      <button type="button" class="btn btn-secondary" id="delete" data-id="{{eventId}}" data-path="{{path}}" data-toggle="tooltip" data-placement="top" title="For events that were canceled or wrong">Delete</button>
     </div><!-- /btn-group -->
 </div><!-- /input-group -->
 
-<button type="submit" class="btn btn-blue" id="approve-button" data-toggle="tooltip" data-placement="top" data-id="{{eventId}}" data-path="UserSubmission" title="Will be published live to the site">Approve</button>
+<button type="submit" class="btn btn-blue" id="approve-button" data-toggle="tooltip" data-placement="top" data-id="{{eventId}}" data-path="{{path}}" title="Will be published live to the site">Approve</button>
 <span id="delete-error" class="help-block write-error error-message hidden">Please give a reason for deleting</span>
