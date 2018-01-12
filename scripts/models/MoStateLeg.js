@@ -1,16 +1,20 @@
 (function (module) {
   function MoStateLeg(opts) {
     this.chamber = opts.chamber;
-    this.district = opts.district;
+    this.district = opts.district || null;
     this.party = opts.party;
     this.state = opts.thp_id.split('-')[0];
     this.stateName = statesAb[this.state];
     this.phone_capitol = opts.phone_capitol || null;
     this.phone_district = opts.phone_district || null;
-    this.email = opts.email;
+    if (this.state === 'AZ' && this.chamber != 'statewide') {
+      this.email = opts.email.split('Email: ')[1].toLowerCase() + '@azleg.gov';
+    } else {
+      this.email = opts.email;
+    }
     this.in_office = true;
     this.role = opts.role || null;
-    this.url = opts.url;
+    this.url = opts.url || null;
     this.thp_id = opts.thp_id;
     this.displayName = opts.displayName.replace(/\./g, '');
   }
@@ -46,7 +50,7 @@
       if (!ele.thp_id) {
         return;
       }
-      let newMember = new MoStateLeg(ele)
+      let newMember = new MoStateLeg(ele);
       let memberKey;
       let member = newMember.displayName;
       let nameArray = member.split(' ');
@@ -56,7 +60,7 @@
       if (nameArray.length > 2) {
         let firstname = nameArray[0];
         let middlename = nameArray[1];
-        let lastname = nameArray[2]
+        let lastname = nameArray[2];
         if (firstname.length === 1 || middlename.length === 1) {
           memberKey = lastname.toLowerCase().replace(/\,/g, '') + '_' + firstname.toLowerCase() + '_' + middlename.toLowerCase();
         } else {
@@ -66,16 +70,16 @@
         memberKey = nameArray[1].toLowerCase().replace(/\,/g, '') + '_' + nameArray[0].toLowerCase();
       }
 
-      let memberLookup = {id: newMember.thp_id, nameEntered: newMember.displayName}
+      let memberLookup = {id: newMember.thp_id, nameEntered: newMember.displayName};
       firebasedb.ref(`state_legislators_data/${newMember.state}/${newMember.thp_id}`).update(newMember);
       firebasedb.ref(`state_legislators_id/${newMember.state}/${memberKey}`).update(memberLookup);
-    })
-  }
+    });
+  };
 
   function zeropadding(num) {
     let padding = '00';
-    let tobepadded = num.toString()
-    let padded = padding.slice(0, padding.length - tobepadded.length) + tobepadded
+    let tobepadded = num.toString();
+    let padded = padding.slice(0, padding.length - tobepadded.length) + tobepadded;
     return padded;
   }
 
@@ -86,24 +90,24 @@
           let obj = {
             govtrack_id : moc.govtrack_id || null,
             propublica_id : moc.propublica_id || null,
-            displayName : moc.displayName || null
-          }
+            displayName : moc.displayName || null,
+          };
           if (moc.type === 'sen') {
-            path = `mocByStateDistrict/${moc.state}/${moc.state_rank}/`
+            path = `mocByStateDistrict/${moc.state}/${moc.state_rank}/`;
           } else if (moc.type === 'rep') {
             let district;
             if (moc.at_large === true) {
-              district = '00'
+              district = '00';
             } else {
-              district =  zeropadding(moc.district)
+              district =  zeropadding(moc.district);
             }
-            path = `mocByStateDistrict/${moc.state}-${district}/`
+            path = `mocByStateDistrict/${moc.state}-${district}/`;
           }
           console.log(path, obj);
           // return firebasedb.ref(path).update(obj);
-        })
-    })
-  }
+        });
+      });
+  };
 
 
   MoStateLeg.loadAllUpdated = function(){
@@ -132,7 +136,7 @@
               lastUpdatedBy : memberobj.lastUpdatedBy,
               lastUpdated : lastUpdated,
               daysAgo: days,
-              missingMember: memberobj.missingMember
+              missingMember: memberobj.missingMember,
             });
           }
         });
@@ -179,7 +183,7 @@
       firebasedb.ref('mocData/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){
           var memberobj = new MoStateLeg(member.val());
-          allMoStateLegs.push(memberobj)
+          allMoStateLegs.push(memberobj);
         });
         resolve(allMoStateLegs);
       });
@@ -243,7 +247,7 @@
     var fileName = 'mocs.csv';
     var buffer = csvData.join('\n');
     var blob = new Blob([buffer], {
-      'type': 'text/csv;charset=utf8;'
+      'type': 'text/csv;charset=utf8;',
     });
     var link = document.createElement('a');
 
