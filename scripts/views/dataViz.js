@@ -157,17 +157,11 @@
     dataviz.lookupMembers = new Set();
     dataviz.houseMemberMapping = {};
     dataviz.sentateHouseMapping = {};
-    var dateStart = moment($('#start-date').val()).startOf('day');
-    var dateEnd = moment($('#end-date').val()).endOf('day');
-    var start = dateStart.valueOf();
-    var end = dateEnd.valueOf();
-    var dates = [];
-
-    while (dateEnd.endOf('day') > dateStart.startOf('day') || dateStart.format('M') === dateEnd.format('M')) {
-      var monthZeroIndex = dateStart.month();
-      dates.push(dateStart.format('YYYY-' + monthZeroIndex));
-      dateStart.add(1,'month');
-    }
+    var dateRange = eventHandler.getDateRange();
+    var dates = dateRange.dates;
+    var start = dateRange.start;
+    var end = dateRange.end;
+    
     dates.forEach(function(date){
       dataviz.getPastEvents('townHallsOld/' + date, start, end, dataviz.lookupMembers, dataviz.houseMemberMapping,  dataviz.sentateHouseMapping);
     });
