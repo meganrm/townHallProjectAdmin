@@ -26,13 +26,14 @@
 
 
   // writes to townhall, can take a key for update
-  TownHall.prototype.updateFB = function (key) {
+  TownHall.prototype.updateFB = function (key, path) {
     var newEvent = this;
     var metaData = { eventId: key, lastUpdated: newEvent.lastUpdated };
     var updates = {};
+    var townhallPath = path || '/townHalls/';
     return new Promise(function (resolve, reject) {
       updates['/townHallIds/' + key] = metaData;
-      return firebasedb.ref('/townHalls/' + key).update(newEvent).then(function (updated) {
+      return firebasedb.ref(townhallPath + key).update(newEvent).then(function (updated) {
         console.log('wrote', updated);
         firebasedb.ref().update(updates);
         resolve(newEvent);
@@ -212,7 +213,7 @@
     var time = Date.parse(newTownHall.Date + ' ' + databaseTH.Time) / 1000;
     var loc = databaseTH.lat + ',' + databaseTH.lng;
     return new Promise(function (resolve, reject) {
-      url = `https://maps.googleapis.com/maps/api/timezone/json?location=${loc}&timestamp=${time}&key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM`;
+      var url = `https://maps.googleapis.com/maps/api/timezone/json?location=${loc}&timestamp=${time}&key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM`;
       $.get(url, function (response) {
         if (!response.timeZoneName) {
           reject('no timezone results', id, response);
