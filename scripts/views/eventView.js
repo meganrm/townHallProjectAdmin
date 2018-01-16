@@ -311,8 +311,11 @@
         $toAppend.find('#geocode-button').addClass('btn-blue');
         $toAppend.find('#locationCheck').val('');
       }
-      ele.path = path;
-      $toAppend.find('.btns').html(approveButtons(ele));
+      var buttonInfo = {
+        eventId: ele.eventId,
+        path: path,
+      };
+      $toAppend.find('.btns').html(approveButtons(buttonInfo));
       $(table).append($toAppend);
     });
   };

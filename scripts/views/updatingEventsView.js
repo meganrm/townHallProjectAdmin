@@ -163,7 +163,7 @@
     if (!approvedTH.state) {
       return console.log('Needs state');
     }
-    approvedTH.updateFB(key, `state_townhalls/${approvedTH.state}`).then(function (dataWritten) {
+    approvedTH.updateFB(key, `state_townhalls/${approvedTH.state}/`).then(function (dataWritten) {
       if (dataWritten.eventId) {
         console.log(dataWritten);
         var print = dataWritten;
