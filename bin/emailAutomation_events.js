@@ -64,7 +64,7 @@
     WA: 'Washington',
     WV: 'West Virginia',
     WI: 'Wisconsin',
-    WY: 'Wyoming'
+    WY: 'Wyoming',
   };
 
   // Global data state
@@ -79,7 +79,7 @@
     inPast: [],
     notInNextWeek: [],
     isThursday: [],
-    changedToday : []
+    changedToday : [],
   };
 
   TownHall.setLastEmailTime = function() {

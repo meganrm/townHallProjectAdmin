@@ -78,7 +78,7 @@ User.prototype.removeUser = function(){
 
 // sends email, removes user from group
 User.sendEmail = function(user, data){
-  mailgun.messages().send(data, function (error, body) {
+  mailgun.messages().send(data, function () {
     console.log('sent');
   });
 };
@@ -112,7 +112,7 @@ User.composeSummary = function(user) {
     to: 'meganrm@gmail.com',
     cc: 'nwilliams@townhallproject.com',
     subject: 'Sent town hall update emails',
-    html: `<p>Sent emails to: ${User.sentEmails.length} people</p> <p>${districtreport}</p><p>${badZipsReport}</p>`
+    html: `<p>Sent emails to: ${User.sentEmails.length} people</p> <p>${districtreport}</p><p>${badZipsReport}</p>`,
   };
   User.sendEmail(user, data);
 };
@@ -122,13 +122,13 @@ User.composeErrorEmail = function(user, error) {
     from: 'Town Hall Updates <update@updates.townhallproject.com>',
     to: 'meganrm@townhallproject.com',
     subject: `Error sending emails`,
-    html: `${user} ${error}`
+    html: `${user} ${error}`,
   };
   User.sendEmail(user, data);
 };
 
 // composes email using the list of events
-User.prototype.composeEmail = function(district, allevents, index){
+User.prototype.composeEmail = function(district, allevents){
   var username;
   var fullname;
   var user = this;
@@ -198,7 +198,7 @@ User.prototype.composeEmail = function(district, allevents, index){
     to: `${fullname} <${user.primaryEmail}>`,
     // to: 'Megan Riel-Mehan <meganrm@townhallproject.com>',
     subject: subject,
-    html: htmltext
+    html: htmltext,
   };
   data['h:Reply-To']='TownHall Project <info@townhallproject.com>';
   User.sentEmails.push(user.primaryEmail);
@@ -385,7 +385,7 @@ User.prototype.getDistricts = function(acc, index){
 
 // saves chunk of data, resolves when all the people in the list have been assigned a district
 User.makeListbyDistrict = function(peopleList) {
-  return new Promise(function(resolve, reject){
+  return new Promise(function(resolve){
     peopleList.forEach(function(ele, index){
       if (!ele.zip) {
         User.zipErrors.push(ele);
@@ -418,7 +418,7 @@ User.getUsers = function (path) {
       method: 'GET',
       headers: {
         'OSDI-API-Token': process.env.ACTION_NETWORK_KEY,
-        'Content-Type': 'application/json' }
+        'Content-Type': 'application/json' },
     };
     var str = '';
     var req = https.request(options, (res) => {
@@ -460,7 +460,7 @@ User.getAllUsers = function(page){
       User.getDataForUsers();
       return;
     }
-    User.makeListbyDistrict(peopleList).then(function(done){
+    User.makeListbyDistrict(peopleList).then(function(){
       // if no more new pages, or we set a break point for testing
       if (!returnedData['_links']['next']) {
         console.log('got all data');

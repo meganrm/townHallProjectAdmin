@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 var request = require('request-promise'); // NB:  This is isn't the default request library!
+var moment = require('moment');
+
+var statesAb = require('../data/stateMap.js');
+var firebasedb = require('../server/lib/setupFirebase.js');
 
 var eventbriteToken = process.env.EVENTBRITE_TOKEN;
-var statesAb = require('../bin/stateMap.js');
-var firebasedb = require('../bin/setupFirebase.js');
-
-var moment = require('moment');
 
 // Get list of existing townhalls so we don't submit duplicates
 var existingTownHallIds = [];
@@ -71,7 +71,7 @@ function getEventbriteEvents() {
     'town%20hall%20representative',
     'ask%20senator',
     'ask%20congresswoman',
-    'ask%20congressman'
+    'ask%20congressman',
   ];
 
   var eventbritePromises = [];
@@ -114,7 +114,7 @@ function submitTownhall(townhall) {
   var updates = {};
   updates['/townHallIds/' + townhall.eventId] = {
     eventId:townhall.eventId,
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
   };
   updates['/UserSubmission/' + townhall.eventId] = townhall;
 
@@ -125,14 +125,14 @@ function submitTownhall(townhall) {
 function createFacebookQuery(facebookID, startDate) {
   return request({
     uri: 'https://graph.facebook.com/v2.10/' + facebookID + '/events?since=' + startDate +'&access_token=' + facebookToken,
-    json: true
+    json: true,
   });
 }
 
 function createEventbriteQuery(queryTerm) {
   return request({
     uri: 'https://www.eventbriteapi.com/v3/events/search/?q=' + queryTerm + '&categories=112&expand=organizer,venue&token=' + eventbriteToken,
-    json: true
+    json: true,
   });
 }
 
@@ -164,7 +164,7 @@ function transformFacebookTownhall(event) {
     timeStart24: moment.parseZone(event.start_time).format('HH:mm:ss'),
     timeEnd24: moment.parseZone(event.end_time).format('HH:mm:ss'),
     yearMonthDay: moment.parseZone(event.start_time).format('YYYY-MM-DD'),
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
   };
 
   if (event.hasOwnProperty('place')) {
@@ -196,7 +196,7 @@ function transformEventbriteTownhall(event) {
     timeStart24: start.toLocaleString('en-US', { hour: 'numeric', minute:'numeric', second: 'numeric', hour12: false }),
     timeEnd24: end.toLocaleString('en-US', { hour: 'numeric', minute:'numeric', second: 'numeric', hour12: false }),
     yearMonthDay: start.toISOString().substring(0, 10),
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
   };
 
   if (event.hasOwnProperty('venue')) {

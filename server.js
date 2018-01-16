@@ -1,8 +1,8 @@
 const mailgun_api_key = process.env.MAILGUN_API_KEY2;
 const domain = 'updates.townhallproject.com';
 const mailgun = require('mailgun-js')({apiKey: mailgun_api_key, domain: domain});
-const firebasedb = require('./bin/setupFirebase.js');
-const eventValid = require('./bin/eventValidation.js');
+const firebasedb = require('./server/lib/setupFirebase.js');
+const eventValid = require('./server/eventValidation.js');
 
 const express = require('express'),
   port = process.env.PORT || 3000,

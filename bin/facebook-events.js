@@ -6,8 +6,8 @@ var request = require('request-promise'); // NB:  This is isn't the default requ
 var eventbriteToken = process.env.EVENTBRITE_TOKEN;
 var facebookToken = process.env.FACEBOOK_TOKEN;
 
-var statesAb = require('../bin/stateMap.js');
-var firebasedb = require('../bin/setupFirebase.js');
+var statesAb = require('../server/data/stateMap');
+var firebasedb = require('../server/lib/setupFirebase');
 var moment = require('moment');
 
 // Get list of existing townhalls so we don't submit duplicates
@@ -62,13 +62,21 @@ function getFacebookEvents(MoCs) {
     });
     // Collapse into flat array
     var facebookEvents = [].concat.apply([], res);
-    var newEventIds = removeExistingIds(facebookEvents.map(event => 'fb_' + event.id));
+    var newEventIds = removeExistingIds(facebookEvents.map(townhallevent => 'fb_' + townhallevent.id));
 
-    facebookEvents.forEach(event => {
-      if (newEventIds.indexOf('fb_' + event.id) !== -1) {
-        submitTownhall(transformFacebookTownhall(event));
+    facebookEvents.forEach(eventToSubmit => {
+      if (newEventIds.indexOf('fb_' + eventToSubmit.id) !== -1) {
+        submitTownhall(transformFacebookTownhall(eventToSubmit))
+        .then(() => {
+          console.log('submitted');
+        })
+        .catch((error) => {
+          console.log('error submitting', error, eventToSubmit);
+        });
       }
     });
+  }).catch((error) => {
+    console.log('error with facebook Promise', error);
   });
 }
 
@@ -84,7 +92,7 @@ function getEventbriteEvents() {
     'town%20hall%20representative',
     'ask%20senator',
     'ask%20congresswoman',
-    'ask%20congressman'
+    'ask%20congressman',
   ];
 
   var eventbritePromises = [];
@@ -126,7 +134,7 @@ function submitTownhall(townhall) {
   var updates = {};
   updates['/townHallIds/' + townhall.eventId] = {
     eventId:townhall.eventId,
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
   };
   updates['/UserSubmission/' + townhall.eventId] = townhall;
   return firebasedb.ref().update(updates);
@@ -136,14 +144,14 @@ function submitTownhall(townhall) {
 function createFacebookQuery(facebookID, startDate) {
   return request({
     uri: 'https://graph.facebook.com/v2.10/' + facebookID + '/events?since=' + startDate +'&access_token=' + facebookToken,
-    json: true
+    json: true,
   });
 }
 
 function createEventbriteQuery(queryTerm) {
   return request({
     uri: 'https://www.eventbriteapi.com/v3/events/search/?q=' + queryTerm + '&categories=112&expand=organizer,venue&token=' + eventbriteToken,
-    json: true
+    json: true,
   });
 }
 
@@ -167,7 +175,7 @@ function transformFacebookTownhall(facebookEvent) {
     meetingType: null,
     link: 'https://www.facebook.com/events/' + facebookEvent.id + '/',
     linkName: 'Facebook Link',
-    dateObj: moment(facebookEvent.start_time),
+    dateObj: moment(facebookEvent.start_time).valueOf(),
     dateString: moment.parseZone(facebookEvent.start_time).format('ddd, MMM D, YYYY'),
     Date: moment.parseZone(facebookEvent.start_time).format('ddd, MMM D, YYYY'),
     Time: moment.parseZone(facebookEvent.start_time).format('LT'),
@@ -175,7 +183,7 @@ function transformFacebookTownhall(facebookEvent) {
     timeEnd24: moment.parseZone(facebookEvent.end_time).format('HH:mm:ss'),
     yearMonthDay: moment.parseZone(facebookEvent.start_time).format('YYYY-MM-DD'),
     lastUpdated: Date.now(),
-    Notes: facebookEvent.description
+    Notes: facebookEvent.description,
   };
 
   if (facebookEvent.hasOwnProperty('place')) {
@@ -192,8 +200,8 @@ function transformFacebookTownhall(facebookEvent) {
 }
 
 function transformEventbriteTownhall(eventBriteEvent) {
-  let start = new Date(eventBriteEvent.start.utc);
-  let end = new Date(eventBriteEvent.end.utc);
+  let start = moment(eventBriteEvent.start.utc);
+  let end = moment(eventBriteEvent.end.utc);
   var townhall = {
     eventId: 'eb_' + eventBriteEvent.id,
     Member: null,
@@ -201,7 +209,7 @@ function transformEventbriteTownhall(eventBriteEvent) {
     meetingType: 'unknown',
     link: eventBriteEvent.url,
     linkName: 'Eventbrite Link',
-    dateObj: Date.parse(start),
+    dateObj: start.valueOf(),
     dateString: moment.parseZone(start).format('ddd, MMM D, YYYY'),
     Date: moment.parseZone(start).format('ddd, MMM D, YYYY'),
     Time: moment.parseZone(start).format('LT'),

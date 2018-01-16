@@ -5,10 +5,10 @@ require('dotenv').load();
 // common library both can pull from
 
 var request = require('request-promise'); // NB:  This is isn't the default request library!
-var eventbriteToken = process.env.EVENTBRITE_TOKEN;
-var firebasedb = require('../bin/setupFirebase.js');
 var moment = require('moment');
+var firebasedb = require('../server/lib/setupFirebase.js');
 
+var eventbriteToken = process.env.EVENTBRITE_TOKEN;
 // Get list of existing townhalls so we don't submit duplicates
 var existingTownHallIds = [];
 
@@ -39,7 +39,7 @@ function fetchNextEventbritePage(queryTerm, page, collection, cb) {
 function createEventbriteQuery(queryTerm, page=1) {
   return request({
     uri: 'https://www.eventbriteapi.com/v3/events/search/?q=' + queryTerm + '&page=' + page + '&expand=organizer,venue&token=' + eventbriteToken,
-    json: true
+    json: true,
   });
 }
 
@@ -76,7 +76,7 @@ function submitTownhallToIndivisible(eventbriteEvent) {
   var updates = {};
   updates['/indivisbleIds/' + eventbriteEvent.eventId] = {
     eventId: eventbriteEvent.eventId,
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
   };
   updates['/indivisible/' + eventbriteEvent.eventId] = eventbriteEvent;
   return firebasedb.ref().update(updates).catch((e) =>{
