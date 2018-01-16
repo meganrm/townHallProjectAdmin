@@ -9,7 +9,7 @@ function eventValidation() {
   const stateMap = require('./data/stateMap');
 
   const FEDERAL_TOWNHALLS = '/townHalls/';
-  const STATE_TOWNHALLS = '/state_townhalls';
+  const STATE_TOWNHALLS = '/state_townhalls/';
 
   const FEDERAL_SUBMISSION_PATH = '/UserSubmission/';
   const STATE_SUBMISSION_PATH = '/state_legislators_user_submission/';
@@ -52,6 +52,7 @@ function eventValidation() {
             lng: newTownHall.lng,
             formatted_address: newTownHall.address,
           };
+          console.log('got lat log', newTownHall.eventId);
           updateEvent(newTownHall.eventId, update, path);
         }
       });
@@ -102,6 +103,7 @@ function eventValidation() {
       if (!townhall.dateValid) {
         update = {};
         update.dateValid = true;
+        console.log('updating date valid');
         updateEvent(townhall.eventId, update, path);
       }
     } else if (!townhall.repeatingEvent) {
@@ -116,6 +118,8 @@ function eventValidation() {
         if (moment(townhall.timeStart24, 'H:mm:ss', true).isValid()) {
           update = {};
           update.timeStart24 = moment(townhall.timeStart24, 'H:mm:ss').format('HH:mm:ss');
+          console.log('updating timeStart24');
+
           updateEvent(townhall.eventId, update, path);
         }
       }
@@ -130,29 +134,38 @@ function eventValidation() {
       if (townhall.dateValid) {
         update = {};
         update.dateValid = false;
+        console.log('updating date not valid');
         updateEvent(townhall.eventId, update, path);
       }
     }
   }
 
   function checkDistrictAndState(townhall, path) {
-    if (!townhall.district && townhall.District && townhall.District !== 'Senate') {
+    if (townhall.district && townhall.state) {
+      return;
+    }
+    if (townhall.District === 'Senate') {
+      return;
+    }
+    let update = {};
+    if (!townhall.district && townhall.District) {
       let district = townhall.District.split('-')[1];
-      townhall.district = utils.zeropadding(district);
+      update.district = utils.zeropadding(district);
       console.log('adding district', district);
     }
-    if (!townhall.state && townhall.District && townhall.District !== 'Senate') {
+    if (!townhall.state && townhall.District) {
       let state = townhall.District.split('-')[0];
-      townhall.state = state;
-      townhall.stateName = stateMap[state];
+      update.state = state;
+      update.stateName = stateMap[state];
       console.log('adding state', state, stateMap[state]);
     }
-    updateEvent(townhall.eventId, townhall, path);
+    console.log(townhall.State);
+    updateEvent(townhall.eventId, update, path);
   }
 
   function updateEvent(key, update, path) {
-    console.log(path + key, update);
-    // firebasedb.ref(path + key).update(update);
+    console.log('updating event!', path + key, update);
+    firebasedb.ref(path + key).update(update);
   }
 
   firebasedb.ref(FEDERAL_TOWNHALLS).on('child_changed', function(snapshot){
@@ -176,6 +189,13 @@ function eventValidation() {
 
   STATES.forEach((state) => {
     let path = `${STATE_SUBMISSION_PATH}${state}`;
+    firebasedb.ref(path).on('child_added', function(snapshot){
+      var townhall = snapshot.val();
+      dateTimeValidation(townhall, path);
+    });
+  });
+  STATES.forEach((state) => {
+    let path = `${STATE_TOWNHALLS}${state}`;
     firebasedb.ref(path).on('child_added', function(snapshot){
       var townhall = snapshot.val();
       dateTimeValidation(townhall, path);
