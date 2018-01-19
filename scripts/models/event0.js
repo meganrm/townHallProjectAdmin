@@ -38,7 +38,7 @@
       return firebasedb.ref(townhallPath + key).update(newEvent).then(function () {
         console.log('wrote');
         console.log(townhallPath + key, newEvent);
-        // firebasedb.ref().update(updates);
+        firebasedb.ref().update(updates);
         resolve(newEvent);
       }).catch(function (error) {
         reject(error);
