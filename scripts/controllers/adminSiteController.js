@@ -3,7 +3,9 @@
 
   adminSiteController.initMOCReport = function(){
     if (!mocReportView.rendered) {
-      mocReportView.init();
+      setTimeout(function () {
+        mocReportView.init();
+      }, 30);
     }
   };
 
@@ -74,7 +76,7 @@
   function writeUserData(userId, name, email, flag) {
     user = {
       username: name,
-      email: email
+      email: email,
     };
     if (flag) {
       user[flag] = true;

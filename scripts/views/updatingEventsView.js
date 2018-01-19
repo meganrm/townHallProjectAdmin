@@ -1,7 +1,6 @@
 
 (function (module) {
 // For handling user submitted events.
-  var provider = new firebase.auth.GoogleAuthProvider();
 
   var updateEventView = {};
   TownHall.currentKey =  null;
@@ -75,13 +74,7 @@
     var listID = $deleteButton.closest('.events-table').attr('id');
     var reason;
     console.log(listID);
-    if (listID === 'for-approval') {
-      reason = $deleteButton.attr('data-delete-reason');
-      console.log(reason);
-      if (reason) {
-        updateEventView.saveDeleteReason(id, reason);
-      }
-    } else if (listID === 'for-approval-state') {
+    if (listID === 'for-approval' || listID === 'for-approval-state') {
       reason = $deleteButton.attr('data-delete-reason');
       console.log(reason);
       if (reason) {
@@ -201,6 +194,7 @@
       var updated = $form.find('.edited').get();
       var id = $form.attr('id').split('-form')[0];
       var databaseTH = TownHall.allTownHallsFB[id];
+      console.log('updating: ', updated);
       if (updated.length > 0) {
         var newTownHall = updateEventView.updatedView($form, $listgroup);
         newTownHall.lastUpdatedHuman = $form.find('#lastUpdatedHuman').val();
@@ -219,7 +213,12 @@
           newTownHall = updateEventView.validateDate(id, databaseTH, newTownHall);
         }
         if (newTownHall) {
-          newTownHall.updateFB(id).then(function (dataWritten) {
+          var path = '/townHalls/';
+          if (listID === 'state-events-table') {
+            var state = $('#' + listID).attr('data-state');
+            path = '/state_townhalls/' + state + '/';
+          }
+          newTownHall.updateFB(id, path).then(function (dataWritten) {
             var print = dataWritten;
             print.writtenId = id;
             print.edit = 'updated';

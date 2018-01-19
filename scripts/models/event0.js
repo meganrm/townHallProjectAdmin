@@ -1,7 +1,9 @@
+/*globals firebasedb*/
+
 (function (module) {
 
   function TownHall(opts) {
-    for (keys in opts) {
+    for (var keys in opts) {
       this[keys] = opts[keys];
     }
   }
@@ -33,9 +35,10 @@
     var townhallPath = path || '/townHalls/';
     return new Promise(function (resolve, reject) {
       updates['/townHallIds/' + key] = metaData;
-      return firebasedb.ref(townhallPath + key).update(newEvent).then(function (updated) {
-        console.log('wrote', updated);
-        firebasedb.ref().update(updates);
+      return firebasedb.ref(townhallPath + key).update(newEvent).then(function () {
+        console.log('wrote');
+        console.log(townhallPath + key, newEvent);
+        // firebasedb.ref().update(updates);
         resolve(newEvent);
       }).catch(function (error) {
         reject(error);
@@ -47,10 +50,10 @@
     var db = firebasedb;
     var ref = db.ref('/townHallsOld/' + dateKey);
     var totals = new Set();
-    return new Promise (function(resolve, reject){
+    return new Promise (function(resolve){
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
-          let townHall = new OldTownHall(oldTownHall.val());
+          let townHall = new TownHall(oldTownHall.val());
           if (townHall[key].toLowerCase() === value.toLowerCase()) {
             totals.add(townHall);
           }
@@ -74,7 +77,7 @@
 
   TownHall.prototype.eventApproved = function (key) {
     var newEvent = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
       firebasedb.ref('/UserSubmission/' + key).update(newEvent);
       resolve(newEvent);
     });
@@ -137,17 +140,16 @@
   };
 
   TownHall.lookupMoreZips = function(zip){
+    var obj = {};
     $.get('https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyAcogkW06HYmZnbEttHs9xcs_vOqMjzBzE&includeOffices=false&roles=legislatorLowerBody&address=' + zip, function(response){
       if (response.divisions) {
         var r = Object.keys(response.divisions)[0].split('/');
         if (r[2] === 'district:dc') {
-          var obj = {};
           obj.abr = 'DC';
           obj.dis = '0';
           obj.zip = zip.toString();
         }
         else if (r.length === 4) {
-          var obj = {};
           obj.abr = r[2].split(':')[1].toUpperCase();
           obj.dis = r[3].split(':')[1];
           obj.zip = zip;
@@ -156,7 +158,6 @@
           var aka = response.divisions[Object.keys(response.divisions)[0]].alsoKnownAs[0];
           var ls = aka.split('/');
           if (ls.length === 4 ) {
-            var obj = {};
             obj.abr = ls[2].split(':')[1].toUpperCase();
             obj.dis = ls[3].split(':')[1];
             obj.zip = zip;
@@ -238,7 +239,7 @@
   };
 
   TownHall.prototype.findLinks = function () {
-    $reg_exUrl = /(https?:\/\/[^\s]+)/g;
+    var $reg_exUrl = /(https?:\/\/[^\s]+)/g;
    // make the urls hyper links
     if (this.Notes && this.Notes.length > 0) {
       var withAnchors = this.Notes.replace($reg_exUrl, '<a href="$1" target="_blank">Link</a>');
@@ -325,7 +326,7 @@
         newTownHall.address = snapshot.val().formatted_address;
         TownHall.allTownHalls.push(newTownHall);
       } else if (snapshot.child('lat').exists() === false) {
-        var errorTownHall = firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).once('value').then(function (snap) {
+        firebasedb.ref('/townHallsErrors/geocoding/' + newTownHall.eventId).once('value').then(function (snap) {
           if (snap.child('streetAddress').exists() === newTownHall.streetAddress) {
             console.log('known eror');
           } else {
@@ -366,7 +367,7 @@
     var ele = this;
     var oldTownHall = firebasedb.ref(path + '/' + ele.eventId);
     if (path === 'TownHalls') {
-      var oldTownHallID = firebasedb.ref('/townHallIds/' + ele.eventId + '/lastUpdated').set(Date.now());
+      firebasedb.ref('/townHallIds/' + ele.eventId + '/lastUpdated').set(Date.now());
     }
     return new Promise(function (resolve, reject) {
       var removed = oldTownHall.remove();

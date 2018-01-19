@@ -57,15 +57,29 @@
         </div>
         <div class="collapse navbar-collapse" id="main-nav">
           <ul class="nav navbar-nav navbar-left" roll="tablists">
-            <!-- <li><a class="hash-link" data-toggle="tab" href="#new-page">New Event</a></li> -->
-            <!-- <li><a class="hash-link" data-toggle="tab" href="#location-errors-page">Location errors</a></li> -->
-            <!-- <li><a class="hash-link" data-toggle="tab" href="#date-errors-page">Date errors</a></li> -->
-            <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#all-events-page">All public events</a></li>
-            <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#for-approval-page">Pending approval</a></li>
-            <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#for-approval-page-state">State pending approval</a></li>
-            <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#moc-update">MOCs updated this week</a></li>
-            <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#moc-editor">MOC editor</a></li>
-            <!-- <li><a class="hash-link" data-toggle="tab" href="#to-archive-page">Past events</a></li> -->
+            <!-- Single button -->
+            <div class="btn-group hidden admin var-nav">
+              <button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Federal <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#all-events-page">All public events</a></li>
+                <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#for-approval-page">Pending approval</a></li>
+                <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#moc-update">MOCs updated this week</a></li>
+                <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#moc-editor">MOC editor</a></li>
+              </ul>
+            </div>
+            <div class="btn-group hidden admin var-nav">
+              <button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                State <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#all-state-events-page">Current public events</a></li>
+                <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#for-approval-page-state">State pending approval</a></li>
+                <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#state-lawmaker-update">Lawmakers updated this week</a></li>
+                <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#state-lawmaker-editor">Lawmakers editor</a></li>
+              </ul>
+            </div>
             <li><a class="hash-link var-nav hidden admin partner" data-toggle="tab" href="#download-center">Download Center</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
@@ -209,157 +223,6 @@
               </div>
             </section>
           </div>
-          <div role="tabpanel" class="tab-pane page" id="new-page">
-            <section class="row">
-              <div class="new-event-form col-md-9">
-                <form class="" id="new-event-form-element">
-                  <section class="member-info text-info">
-                    <h4>Member of Congress Information<br>
-                      <small>Enter their name and we will auto-fill the information</small></h4>
-                    <div class="form-group col-md-12" id="member-form-group">
-                      <label class="sr-only" for="Member">Member</label>
-                      <input type="text" class="form-control input-underline" id="Member" placeholder="Full name" value="">
-                      <span id="member-help-block" class="help-block">Only first name and last name, not titles</span>
-                    </div>
-                    <div class="form-group col-md-12">
-                      <label  for="State"class="sr-only">Home State</label>
-                      <input type="text" class="form-control input-underline" id="State" placeholder="Home State" value="">
-                    </div>
-                    <div class="form-group col-md-12">
-                      <label  for="District" class="sr-only">District</label>
-                      <input type="text" class="form-control input-underline" id="District" placeholder="District" value="">
-                      <span id="helpBlock" class="help-block">For Senate, write "Senate"; For At-Large, write MT-At-Large; Other examples: OH-08, TX-33, NY-22</span>
-                    </div>
-                    <div class="form-group party col-md-12">
-                      <label class="sr-only " for="Party">Party</label>
-                      <div class="input-group">
-                        <input type="text" class="form-control" aria-label="..." id="Party" value="" placeholder="Party" readonly>
-                        <div class="input-group-btn">
-                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
-                          <ul class="dropdown-menu dropdown-menu-right">
-                            <li><a data-value="Democratic" href="#">Democratic</a></li>
-                            <li><a data-value="Republican" href="#">Republican</a></li>
-                            <li><a data-value="Independent" href="#">Independent</a></li>
-                          </ul>
-                        </div><!-- /btn-group -->
-                      </div><!-- /input-group -->
-                    </div><!-- /form-group -->
-                  </section>
-                  <section class="meeting infomation">
-                    <h4 class="text-info">Information about the Event</h4>
-                    <div class="form-group col-md-12">
-                      <label class="sr-only" for="eventName">Event name</label>
-                      <input type="text" class="form-control input-underline" id="eventName" value="" placeholder="Name of the event">
-                    </div>
-                    <div class="form-group col-md-12">
-                      <label class="sr-only" for="meetingType">Meeting Type</label>
-                      <div class="input-group">
-                        <input type="text" class="form-control" id="meetingType" value="" readonly placeholder="Meeting Type">
-                        <div class="input-group-btn">
-                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
-                          <ul class="dropdown-menu dropdown-menu-right meeting-type-dropdown">
-                            <li><a data-value="Town Hall" href="#">Town Hall</a></li>
-                            <li><a data-value="Tele-Town Hall" href="#">Tele-Town Hall</a></li>
-                            <li><a data-value="Ticketed Event" href="#">Ticketed Event</a></li>
-                            <li><a data-value="Empty Chair Town Hall" href="#">Empty Chair Town Hall</a></li>
-                            <li><a data-value="DC Event" href="#">DC Event</a></li>
-                            <li><a data-value="Office Hours" href="#">Office Hours</a></li>
-                          </ul>
-                        </div><!-- /btn-group -->
-                      </div><!-- /input-group -->
-                      <span id="meetingType-error" class="help-block error-message hidden">Please select type of event</span>
-                    </div><!-- /form-group -->
-                  </section>
-                  <section class="location-data">
-                    <div class="form-group col-md-12">
-                      <label class="sr-only" for="Location">Location</label>
-                      <input type="text" class="form-control input-underline" id="Location" placeholder="Name of location (eg. Gary Recreation Center)" value="">
-                    </div>
-                    <div class="form-group col-md-12" id=location-form-group>
-                        <input type="text" class="form-control" placeholder="Street address" id="address">
-                        <span id="address-feedback" class="help-block">Enter a valid street address, if there isn't one, leave this blank</span>
-                    </div><!-- /form-group -->
-                    <div class="form-group col-md-12">
-                      <label class="sr-only" for="addressType">Address Type</label>
-                      <input class="sr-only" type="text" class="" id="addressType" placeholder="Address type" value="street" readonly>
-                    </div>
-                    <div class="form-group col-md-12">
-                      <label class="sr-only" for="locationCheck">Location Check</label>
-                      <input class="sr-only" type="text" class="text-success" id="locationCheck" placeholder="please geocode" readonly>
-                    </div>
-                  </section>
-                  <section class="time-data">
-                    <div class="checkbox col-md-12">
-                      <label>
-                        <input type="checkbox" class="date-string">
-                        <span class="checkbox-label">Click for repeating event (eg. 'First Wed')</span>
-                      </label>
-                    </div>
-                    <div class="form-group col-md-12">
-                      <label  for="yearMonthDay">Date</label>
-                      <input type="date" class="form-control datetime date " id="yearMonthDay" placeholder="Date">
-                      <span id="yearMonthDay-error" class="help-block error-message hidden">Please enter a date</span>
-                    </div>
-                    <div class="form-group hidden repeating">
-                      <label  for="repeatingString">Repeating Event</label>
-                      <input type="text" class="form-control input-underline " id="repeatingEvent" placeholder="Eg. First Tuesday of the month">
-                    </div>
-                    <div class="form-group col-md-6">
-                      <label for="Time">Start Time (HH:MM AM/PM)</label>
-                      <input type="time" class="form-control datetime " id="timeStart24" placeholder="Start Time">
-                      <span id="timeStart24-error" class="help-block error-message hidden">Please enter a time</span>
-                    </div>
-                    <div class="form-group col-md-6">
-                      <label for="endTime">End Time (HH:MM AM/PM)</label>
-                      <input type="time" class="form-control datetime " id="timeEnd24" placeholder="End Time">
-                    </div>
-                  </section>
-                  <section class="extra-data">
-                    <div class="form-group col-md-12">
-                      <label for="link">URL related to event (optional)</label>
-                      <input type="url" class="form-control input-underline" id="link" placeholder="Link" value="">
-                    </div>
-                    <div class="form-group col-md-12">
-                      <label  for="linkName">Link display name (optional)</label>
-                      <input type="text" class="form-control input-underline" id="linkName" placeholder="Link Name" value="">
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <div class="form-group col-md-12">
-                          <label for="Notes">Notes</label>
-                          <textarea class="form-control" id="Notes" placeholder="Notes about event that cannot be entered anywhere else." rows=3></textarea>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-                  <button class="btn btn-default btn-secondary" type="submit" name="button">Submit Event</button>
-                </form>
-              </div>
-            </section>
-          </div>
-          <div role="tabpanel" class="tab-pane page" id="location-errors-page">
-            <section class="">
-              <h3 class="text-primary table-title text-center">Location Errors</h3>
-              <div class="row">
-                <div class="col-sm-10 col-sm-offset-2">
-                  These had problems with the geocoding.<br>
-                  To update:
-                  <ul>
-                    <li>Enter a new address and click "Geocode!"</li>
-                    <li>Make sure the address is correct in the preview</li>
-                    <li>Click "Update" to save changes to the database</li>
-                  </ul>
-                  If there is no actual address, leave the street address blank.<br>
-                  If there is something like a room number, that might be the problem, maybe put that in the "location" field instead.
-                </div>
-              </div>
-              <div>
-                <ul id="location-errors" class="list-group events-table">
-
-                </ul><!--end table-->
-              </div>
-            </section>
-          </div>
             <!-- ALL EVENTS -->
           <div role="tabpanel" class="tab-pane page" id="all-events-page">
             <section class="">
@@ -411,26 +274,64 @@
               </div>
             </section>
           </div>
-          <div role="tabpanel" class="tab-pane page" id="date-errors-page">
-            <section class=" ">
-              <!-- DATE ERRORS -->
-              <h3 class="text-primary table-title text-center">No "add to calendar" possible</h3>
-                These had problems with assiging a date, mostly because they are repeating events.<br>
-                If there is no location, it cannot assign a timezone, which is also needed for the calendar event.<br>
-                To update:
-                <ul>
-                  <li>enter a new Date or Time</li>
-                  <li>Make sure the date and time is correct in the preview</li>
-                  <li>Click "Update" to save changes to the database</li>
-                </ul>
-                If the date has a '22nd' please change it to 22.<br>
-                If the date looks fine, it may be the time or time zone.
-                <div>
-                  <ul id="date-errors" class="list-group events-table">
-                  </ul><!--end table-->
+          <!-- ALL STATE EVENTS -->
+          <div role="tabpanel" class="tab-pane page" id="all-state-events-page">
+            <section class="">
+              <h3 class="text-primary table-title text-center">Current state public events</h3>
+              <div class="row">
+                <div class="col-sm-10 col-sm-offset-2">
+                  These are the events currently on the public site. <br>
+                  If an event has occurred, click "archive" to remove from the public site (will still be saved in the database).<br>
+                  If an event has been canceled, click "delete" to remove it from the database all together.
                 </div>
-              </section>
-            </div>
+              </div>
+              <div>
+                <div class="btn-group" role="group" aria-label="...">
+                  <button type="button" class="btn btn-default state-public-event-switcher" data-state="CO">CO</button>
+                  <button type="button" class="btn btn-default state-public-event-switcher" data-state="AZ">AZ</button>
+                  <button type="button" class="btn btn-default state-public-event-switcher" data-state="NC">NC</button>
+                  <button type="button" class="btn btn-default state-public-event-switcher" data-state="VA">VA</button>
+                </div>
+                <ul id="state-events-table" class="list-group events-table">
+                  <li class="list-group-item list-group-heading">
+                    <nav class="navbar navbar-default navbar-static-top ">
+                      <ul class="nav navbar-nav navbar-left" id="filter-info">
+                        <li><span id="current-state" data-current=0 data-total=0></span></li>
+                      </ul>
+                      <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Member <span class="caret"></span></a>
+                          <ul class="dropdown-menu">
+                            <li class="downdown-title">Search by member of Congress</li>
+                            <li role="separator" class="divider"></li>
+                            <li><input id="memberTypeahead" type="text" class="form-control dropdown-item filter" data-provide="typeahead" placeholder="Search by member" data-filter="Member" autocomplete="off"></li>
+                          </ul>
+                        </li>
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">State <span class="caret"></span></a>
+                          <ul class="dropdown-menu">
+                            <li class="downdown-title">Search by State</li>
+                            <li role="separator" class="divider"></li>
+                            <li><input id="stateTypeahead" type="text" class="form-control dropdown-item filter" data-provide="typeahead" placeholder="Search by state" data-filter="State" autocomplete="off"></li>
+                          </ul>
+                        </li>
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort <span class="caret"></span></a>
+                          <ul class="dropdown-menu sort">
+                            <li class="downdown-title">Sort Table</li>
+                            <li role="separator" class="divider"></li>
+                            <li><a data-filter="dateObj" id="byDate" class="dropdown-item" href="#">By Date</a></li>
+                            <li><a data-filter="State" id="byState" class="dropdown-item" href="#">By State</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </nav>
+                  </li> <!-- end header-->
+                </ul><!--end table-->
+              </div>
+            </section>
+          </div>
+          <!--for approval -->
             <div role="tabpanel" class="tab-pane page" id="for-approval-page">
               <section >
                 <h3 class="text-primary table-title text-center">Events submitted for review</h3>
@@ -640,6 +541,8 @@
     <script src="/scripts/views/mocReportView.js"></script>
     <script src="/scripts/views/mocEditorView.js"></script>
     <script src="/scripts/views/missingMemberPosterView.js"></script>
+
+    <script src="/scripts/views/state-updating-events.js"></script>
 
     <script src="/scripts/controllers/adminSiteController.js"></script>
     <script src="/scripts/controllers/routes.js"></script>

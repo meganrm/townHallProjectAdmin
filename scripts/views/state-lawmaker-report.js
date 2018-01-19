@@ -1,8 +1,8 @@
 /*globals dataviz firebasedb*/
 (function (module) {
-  var mocReportView = {};
+  var stateLawmakerReportView = {};
 
-  mocReportView.addFilter = function(filterObj, filterValue) {
+  stateLawmakerReportView.addFilter = function(filterObj, filterValue) {
     var $currentState = $('#mm-current-state');
     var total = parseInt($currentState.attr('data-total'));
     var nofilters = true;
@@ -32,7 +32,7 @@
     }
     return value;
   }
-  // 
+  //
   // function getAllCategories(returnedData) {
   //   return returnedData.map(function(ele){
   //     return {
@@ -81,12 +81,12 @@
       filters[ filterGroup ] = $this.attr('data-filter');
       // combine filters
       var filterValue = concatValues( filters );
-      mocReportView.addFilter(filters, filterValue);
+      stateLawmakerReportView.addFilter(filters, filterValue);
       $grid.isotope({ filter: filterValue });
     });
   }
 
-  mocReportView.renderMembers = function(template, parent, member) {
+  stateLawmakerReportView.renderMembers = function(template, parent, member) {
     var compiledTemplate = Handlebars.getTemplate(template);
     $(parent).append($(compiledTemplate(member)));
   };
@@ -103,20 +103,22 @@
         chamber : memberobj.type,
         lastUpdated : lastUpdated,
       };
-      mocReportView.renderMembers('mocReport', '.grid', member);
+      stateLawmakerReportView.renderMembers('mocReport', '.grid', member);
     }
   });
-  mocReportView.clearAll = function(parent){
+
+  stateLawmakerReportView.clearAll = function(parent){
     $(parent).empty();
     dataviz.initalProgressBar(100, $('.dem-senate-report'), $('.dem-updated-senate'));
     dataviz.initalProgressBar(100, $('.rep-senate-report'), $('.rep-updated-senate'));
     dataviz.initalProgressBar(434, $('.dem-house-report'), $('.dem-updated-house'));
     dataviz.initalProgressBar(434, $('.rep-house-report'), $('.rep-updated-house'));
   };
-  mocReportView.rendered = false;
+  
+  stateLawmakerReportView.rendered = false;
 
-  mocReportView.init = function(){
-    mocReportView.clearAll('.grid');
+  stateLawmakerReportView.init = function(){
+    stateLawmakerReportView.clearAll('.grid');
     Moc.loadAllUpdated().then(function(returnedData){
       returnedData.sort(function(a, b){
         if (!b.daysAgo && b.daysAgo !== 0) {
@@ -134,15 +136,15 @@
         }
       });
       returnedData.forEach(function(member){
-        mocReportView.renderMembers('mocReport', '.grid', member);
+        stateLawmakerReportView.renderMembers('mocReport', '.grid', member);
       });
       // var allCategories = getAllCategories(returnedData);
       // missingMemberView.renderAll('missingMemberButton', '#state-buttons', allCategories);
       startIsotope();
-      mocReportView.rendered= true;
+      stateLawmakerReportView.rendered= true;
     });
   };
 
 
-  module.mocReportView = mocReportView;
+  module.stateLawmakerReportView = stateLawmakerReportView;
 })(window);

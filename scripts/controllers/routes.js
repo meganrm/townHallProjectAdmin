@@ -1,10 +1,11 @@
+/*globals adminSiteController */
 
 function routes(location){
   switch (location) {
-    case '#moc-update':
-      adminSiteController.initMOCReport()
-      break;
-    default:
+  case '#moc-update':
+    adminSiteController.initMOCReport();
+    break;
+  default:
 
   }
 }
@@ -14,7 +15,7 @@ $('nav').on('click', '.hash-link', function onClickGethref() {
   if (hashid === '#home') {
     history.replaceState({}, document.title, '.');
   } else {
-    location.hash = hashid
+    location.hash = hashid;
   }
-  routes(hashid)
+  routes(hashid);
 });

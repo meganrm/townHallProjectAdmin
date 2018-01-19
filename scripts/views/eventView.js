@@ -1,3 +1,5 @@
+/*globals CSVTownHall ACLUTownHall updateEventView DownLoadCenter*/
+
 (function (module) {
   // object to hold the front end view functions
   var eventHandler = {};
@@ -255,11 +257,10 @@
       $('.var-nav').addClass('hidden');
       return;
     }
-    $('.hash-link.' + flag).removeClass('hidden');
+    $('.var-nav.' + flag).removeClass('hidden');
   };
 
   eventHandler.readData = function (path) {
-
     var $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;
@@ -288,6 +289,32 @@
       DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download, false);
       DownLoadCenter.downloadButtonHandler('CAP-download', CSVTownHall.download, false, 'CAP CSV download');
       DownLoadCenter.downloadButtonHandler('SC-download', CSVTownHall.download, false, 'Sierra Club CSV download');
+    });
+    $('[data-toggle="tooltip"]').tooltip();
+  };
+
+  eventHandler.readStateData = function (path) {
+    var $currentState = $('#current-state');
+    firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
+      var total = parseInt($currentState.attr('data-total')) + 1;
+      $currentState.attr('data-total', total);
+      var ele = new TownHall(snapshot.val());
+      // eventHandler.checkLastUpdated(ele);
+      // eventHandler.checkEndTime(ele);
+      // eventHandler.checkTimeFormat(ele);
+      
+      TownHall.allTownHallsFB[ele.eventId] = ele;
+      TownHall.allTownHalls.push(ele);
+      TownHall.addFilterIndexes(ele);
+      var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
+
+      var $toAppend = $(tableRowTemplate(ele));
+      if (!ele.meetingType) {
+        console.log('no meeting type', ele);
+      } else {
+        updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
+      }
+      $('#state-events-table').append($toAppend);
     });
     $('[data-toggle="tooltip"]').tooltip();
   };
