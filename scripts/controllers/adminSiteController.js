@@ -1,3 +1,5 @@
+/*globals mocReportView eventHandler User firebasedb*/
+
 (function(module){
   var adminSiteController = {};
 
@@ -54,7 +56,7 @@
   };
 
   adminSiteController.checkAuth = function(uid, next) {
-    ctx = {};
+    var ctx = {};
     User.getUser(uid).then(function(user){
       if (user['isPartner']) {
         ctx.Auth = 'isPartner';
@@ -74,7 +76,7 @@
 
 
   function writeUserData(userId, name, email, flag) {
-    user = {
+    var user = {
       username: name,
       email: email,
     };
@@ -107,8 +109,8 @@
       // No user is signed in.
     }
   });
-
-  // Sign in fuction for firebase
+  var provider = new firebase.auth.GoogleAuthProvider();
+  // Sign in function for firebase
   adminSiteController.signIn = function signIn() {
     firebase.auth().signInWithRedirect(provider);
     firebase.auth().getRedirectResult().then(function () {

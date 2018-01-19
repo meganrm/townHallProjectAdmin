@@ -1,18 +1,20 @@
+/*globals eventHandler*/
+
 (function(module) {
   var dataviz = {};
 
   function updateProgressBar($bar, total, $total){
-    current = Number($bar.attr('data-count'));
-    updated = current + 1;
+    var current = Number($bar.attr('data-count'));
+    var updated = current + 1;
     $bar.attr('data-count', updated);
-    width = updated / total * 100;
+    var width = updated / total * 100;
     $bar.width(width + '%');
     $bar.text(updated);
 
-    currentNoEvents = Number($total.attr('data-count'));
-    updatedNoEvents = currentNoEvents - 1;
+    var currentNoEvents = Number($total.attr('data-count'));
+    var updatedNoEvents = currentNoEvents - 1;
     $total.attr('data-count', updatedNoEvents);
-    widthNoEvents = updatedNoEvents / total * 100;
+    var widthNoEvents = updatedNoEvents / total * 100;
     $total.width(widthNoEvents + '%');
     $total.text(updatedNoEvents);
   }
@@ -25,11 +27,11 @@
   };
 
   function updateTotalEventsBar($bar){
-    current = Number($bar.attr('data-count'));
-    max = Number($bar.attr('data-max'));
-    updated = current + 1;
+    var current = Number($bar.attr('data-count'));
+    var max = Number($bar.attr('data-max'));
+    var updated = current + 1;
     max = updated > max ? updated : max;
-    width = updated / (max + 50) * 100;
+    var width = updated / (max + 50) * 100;
     $bar.attr('data-count', updated);
     $bar.width(width + '%');
     $bar.text(updated);
@@ -37,9 +39,9 @@
 
   function parseBars(party, chamber, newMember, total, type) {
     if (newMember) {
-      $memberBar = $('.' + party + type + chamber);
+      var $memberBar = $('.' + party + type + chamber);
       if (type === '-updated-') {
-        $total = $('.' + party + '-' + chamber + '-report');
+        var $total = $('.' + party + '-' + chamber + '-report');
       } else {
         $total = $('.' + party + '-' + chamber);
 
@@ -47,9 +49,55 @@
       updateProgressBar($memberBar, total, $total);
     }
     if (type === '-aug-progress-') {
-      $bar = $('.' + party + '-aug-total-' + chamber);
+      var $bar = $('.' + party + '-aug-total-' + chamber);
       updateTotalEventsBar($bar);
     }
+  }
+
+
+
+  function updateStateProgressBar($bar, $total, total, hasbeenUpdated) {
+    if (hasbeenUpdated) {
+      var current = Number($bar.attr('data-count'));
+      var updated = current + 1;
+      $bar.attr('data-count', updated);
+
+    } else {
+      var currentNoEvents = Number($total.attr('data-count'));
+      var updatedNoEvents = currentNoEvents + 1;
+      $total.attr('data-count', updatedNoEvents);
+
+    }
+    var width = updated / total * 100;
+    $bar.width(width + '%');
+    $bar.text(updated);
+    var widthNoEvents = updatedNoEvents / total * 100;
+    $total.width(widthNoEvents + '%');
+    $total.text(updatedNoEvents);
+
+
+  }
+
+  dataviz.stateTotals = {
+    lower: 0,
+    upper: 0,
+  };
+
+  function updateWidths(chamber, total) {
+    $('.' + chamber).each(function(){
+      var current = Number($(this).attr('data-count'));
+      var width = current / total * 100;
+      $(this).width(width + '%');
+    });
+  }
+
+  function parseStateBars(party, chamber, updated) {
+    var $memberBar = $('.' + party + '-updated-' + chamber);
+    var $total = $('.' + party + '-' + chamber + '-report');
+    dataviz.stateTotals[chamber] ++;
+    var total = dataviz.stateTotals[chamber];
+    updateWidths(chamber, total);
+    updateStateProgressBar($memberBar, $total, total, updated);
   }
 
   dataviz.membersEvents = new Set();
@@ -79,13 +127,13 @@
         memberSet.add(townhall.Member);
       }
       if (townhall.Party === 'Republican') {
-        party = 'rep';
+        var party = 'rep';
       } else {
         party = 'dem';
       }
       if (townhall.district) {
         total = 434;
-        chamber = 'house';
+        var chamber = 'house';
       } else if (townhall.District === 'Senate') {
         total = 100;
         chamber = 'senate';
@@ -105,26 +153,38 @@
     var total;
     var newMember = true;
     if (member.party === 'Republican') {
-      party = 'rep';
+      var party = 'rep';
     } else {
       party = 'dem';
     }
-    if (member.district) {
+    if ((!member.thp_id && member.district) || ( member.chamber === 'House')) {
       total = 434;
-      chamber = 'house';
+      var chamber = 'house';
     } else {
       total = 100;
       chamber = 'senate';
     }
     parseBars(party, chamber, newMember, total, '-updated-');
-
   };
 
+  dataviz.stateLawmakerProgress = function(member, updated) {
+    if (member.party === 'Republican') {
+      var party = 'rep';
+    } else {
+      party = 'dem';
+    }
+    if ((!member.thp_id && member.district) || ( member.chamber === 'House')) {
+      var chamber = 'upper';
+    } else {
+      chamber = 'lower';
+    }
+    parseStateBars(party, chamber, updated);
+  };
 
   dataviz.initalProgressBar = function initalProgressBar(total, $total, $progress){
-    currentNoEvents = Number($total.attr('data-start'));
+    var currentNoEvents = Number($total.attr('data-start'));
     $total.attr('data-count', currentNoEvents);
-    widthNoEvents = currentNoEvents / total * 100;
+    var widthNoEvents = currentNoEvents / total * 100;
     $total.width(widthNoEvents + '%');
     $total.text(currentNoEvents);
     if ($progress) {
@@ -161,7 +221,7 @@
     var dates = dateRange.dates;
     var start = dateRange.start;
     var end = dateRange.end;
-    
+
     dates.forEach(function(date){
       dataviz.getPastEvents('townHallsOld/' + date, start, end, dataviz.lookupMembers, dataviz.houseMemberMapping,  dataviz.sentateHouseMapping);
     });

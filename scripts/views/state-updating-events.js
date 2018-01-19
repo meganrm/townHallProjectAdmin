@@ -5,7 +5,6 @@
 
   updateStateEventView.getStateEvents = function(){
     var state = $(this).attr('data-state');
-    console.log(state);
 
     var path = 'state_townhalls/' + state + '/';
     $('#state-events-table .event-row').remove();
@@ -13,7 +12,7 @@
     eventHandler.readStateData(path);
   };
 
-  $('.state-public-event-switcher').on('click', updateStateEventView.getStateEvents);
+  $('.state-public-event-switcher-group button').on('click', updateStateEventView.getStateEvents);
 
   module.updateStateEventView = updateStateEventView;
 })(window);

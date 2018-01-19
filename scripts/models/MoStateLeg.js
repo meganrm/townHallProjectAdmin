@@ -1,5 +1,7 @@
+/*globals firebasedb dataviz*/
 (function (module) {
   function MoStateLeg(opts) {
+    this.level = 'state';
     this.chamber = opts.chamber;
     this.district = opts.district || null;
     this.party = opts.party;
@@ -17,6 +19,8 @@
     this.url = opts.url || null;
     this.thp_id = opts.thp_id;
     this.displayName = opts.displayName.replace(/\./g, '');
+    this.lastUpdated = opts.lastUpdated || null;
+    this.lastUpdatedBy = opts.lastUpdatedBy || null;
   }
 
   MoStateLeg.allMoStateLegsObjs = {};
@@ -93,7 +97,7 @@
             displayName : moc.displayName || null,
           };
           if (moc.type === 'sen') {
-            path = `mocByStateDistrict/${moc.state}/${moc.state_rank}/`;
+            var path = `mocByStateDistrict/${moc.state}/${moc.state_rank}/`;
           } else if (moc.type === 'rep') {
             let district;
             if (moc.at_large === true) {
@@ -110,10 +114,10 @@
   };
 
 
-  MoStateLeg.loadAllUpdated = function(){
+  MoStateLeg.loadAllUpdated = function(path){
     var allupdated = [];
     return new Promise(function (resolve, reject) {
-      firebasedb.ref('mocData/').once('value').then(function(snapshot){
+      firebasedb.ref(path).once('value').then(function(snapshot){
         snapshot.forEach(function(member){
           var memberobj = new MoStateLeg(member.val());
           if (memberobj.in_office) {
@@ -121,10 +125,13 @@
             var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
             var days;
             if (memberobj.lastUpdated) {
-              dataviz.mocReportProgress(memberobj);
+              dataviz.stateLawmakerProgress(memberobj, true);
               var now = moment();
               var timeAgo = moment(memberobj.lastUpdated);
               days = now.diff(timeAgo, 'days');
+            } else {
+              dataviz.stateLawmakerProgress(memberobj, false);
+
             }
             MoStateLeg.allMoStateLegsObjs[member.key] = memberobj;
             allupdated.push({
@@ -203,7 +210,7 @@
 
   MoStateLeg.prototype.updateDisplayName = function () {
     var mocObj = this;
-    memberKey = MoStateLeg.getMemberKey(mocObj.nameEntered);
+    var memberKey = MoStateLeg.getMemberKey(mocObj.nameEntered);
     return new Promise(function (resolve, reject) {
       firebasedb.ref('/mocID/' + memberKey).update(mocObj).then(function(){
         resolve(mocObj);
@@ -224,7 +231,7 @@
   };
 
   MoStateLeg.download = function(){
-    data = Object.keys(MoStateLeg.allMoStateLegsObjs).map(function(key){
+    var data = Object.keys(MoStateLeg.allMoStateLegsObjs).map(function(key){
       return MoStateLeg.allMoStateLegsObjs[key];
     });
     // prepare CSV data

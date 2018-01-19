@@ -1,6 +1,7 @@
+/*globals firebasedb*/
 
 (function (module) {
-  mocEditorView = {};
+  var mocEditorView = {};
   function setupTypeaheads(input) {
     var typeaheadConfig = {
       fitToElement: true,
@@ -8,7 +9,7 @@
       highlighter: function(item) { return item; }, // Kill ugly highlight
       filter: function(selection) {
         $(input).val(selection);
-      }
+      },
     };
     Moc.loadAll().then(function(allnames){
       Moc.allNames = allnames;
@@ -18,7 +19,7 @@
   }
   setupTypeaheads('.member-lookup');
 
-  validateMember = function (member) {
+  function validateMember(member) {
     var $errorMessage = $('.new-event-form #member-help-block');
     var $memberformgroup = $('#member-form-group');
     if (member.length < 1) {
@@ -33,9 +34,9 @@
     } else {
       return true;
     }
-  };
+  }
 
-  lookupMember = function () {
+  function lookupMember() {
     var $memberInput = $(this);
     var member = $memberInput.val();
     var $form = $(this).parents('form');
@@ -65,46 +66,46 @@
         console.error(error);
       });
     }
-  };
+  }
 
-  changeDropdown = function (event) {
+  function changeDropdown(event) {
     event.preventDefault();
     var $input = $(this).parents('.input-group').find('input');
     var value = $(this).attr('data-value');
-    if (value === 'true') { value = true }
-    if (value === 'false') { value = false }
+    if (value === 'true') { value = true; }
+    if (value === 'false') { value = false; }
     $input.val(value);
     Moc.currentMoc[$input.attr('id')] = value;
-  };
+  }
 
-  updateMember = function (event) {
+  function updateMember(event) {
     event.preventDefault();
     var $input = $(this);
     var value = $(this).val();
     Moc.currentMoc[$input.attr('id')] = value;
-  };
+  }
 
-  updateDisplayName = function (event) {
+  function updateDisplayName() {
     var $input = $(this);
-    $input.addClass('changed')
-  };
+    $input.addClass('changed');
+  }
 
-  saveMOC = function (event) {
+  function saveMOC(event) {
     event.preventDefault();
     if ($('#displayName').hasClass('changed')) {
-      mocID = new Moc({
+      var mocID = new Moc({
         nameEntered: $('#displayName').val(),
-        id: Moc.currentMoc.govtrack_id
+        id: Moc.currentMoc.govtrack_id,
       });
       mocID.updateDisplayName();
     }
 
-    moc = Moc.currentMoc;
+    var moc = Moc.currentMoc;
     moc.updateFB().then(function(){
       $('.to-remove').remove();
       $('#update-successful').text(`Update of ${Moc.currentMoc.displayName} successful!`);
     });
-  };
+  }
 
   $('#moc-editor-form').on('change', '#member-lookup', lookupMember);
   $('#moc-editor-form').on('change', '.moc-input', updateMember);

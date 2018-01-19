@@ -1,4 +1,4 @@
-/*globals dataviz firebasedb*/
+/*globals dataviz MoStateLeg*/
 (function (module) {
   var stateLawmakerReportView = {};
 
@@ -32,33 +32,7 @@
     }
     return value;
   }
-  //
-  // function getAllCategories(returnedData) {
-  //   return returnedData.map(function(ele){
-  //     return {
-  //       categoryID : ele.state.trim(),
-  //       Category : ele.state,
-  //       perCapita : 1,
-  //     };
-  //   }).reduce(function(acc, cur){
-  //     if (acc.map(function(mapItem){return mapItem['categoryID']; }).indexOf(cur['categoryID']) > -1) {
-  //       acc[acc.map(function(mapItem){return mapItem['categoryID']; }).indexOf(cur['categoryID'])].count ++;
-  //     } else {
-  //       cur.count = 1;
-  //       acc.push(cur);
-  //     }
-  //     return acc;
-  //   },[]).sort(function(a, b){
-  //     var statea = a.categoryID;
-  //     var stateb = b.categoryID;
-  //     if (statea > stateb) {
-  //       return -1;
-  //     } else if (stateb > statea) {
-  //       return 1;
-  //     }
-  //     return 0;
-  //   });
-  // }
+
 
   function startIsotope() {
     var $grid = $('.grid').isotope({
@@ -91,21 +65,21 @@
     $(parent).append($(compiledTemplate(member)));
   };
 
-  firebasedb.ref('mocData/').on('child_changed', function(snapshot){
-    var memberobj = snapshot.val();
-    if (memberobj.in_office) {
-      var name = memberobj.displayName;
-      var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
-      $('#' + memberobj.govtrack_id).remove();
-      var member = {
-        id: memberobj.govtrack_id,
-        name: name,
-        chamber : memberobj.type,
-        lastUpdated : lastUpdated,
-      };
-      stateLawmakerReportView.renderMembers('mocReport', '.grid', member);
-    }
-  });
+  // firebasedb.ref('state_legislators_data/CO').on('child_changed', function(snapshot) {
+  //   var memberobj = snapshot.val();
+  //   if (memberobj.in_office) {
+  //     var name = memberobj.displayName;
+  //     var lastUpdated = memberobj.lastUpdated? moment(memberobj.lastUpdated).fromNow(): 'Never';
+  //     $('#' + memberobj.govtrack_id).remove();
+  //     var member = {
+  //       id: memberobj.govtrack_id,
+  //       name: name,
+  //       chamber : memberobj.type,
+  //       lastUpdated : lastUpdated,
+  //     };
+  //     stateLawmakerReportView.renderMembers('mocReport', '.grid', member);
+  //   }
+  // });
 
   stateLawmakerReportView.clearAll = function(parent){
     $(parent).empty();
@@ -114,12 +88,12 @@
     dataviz.initalProgressBar(434, $('.dem-house-report'), $('.dem-updated-house'));
     dataviz.initalProgressBar(434, $('.rep-house-report'), $('.rep-updated-house'));
   };
-  
+
   stateLawmakerReportView.rendered = false;
 
-  stateLawmakerReportView.init = function(){
+  stateLawmakerReportView.init = function(path){
     stateLawmakerReportView.clearAll('.grid');
-    Moc.loadAllUpdated().then(function(returnedData){
+    MoStateLeg.loadAllUpdated(path).then(function(returnedData){
       returnedData.sort(function(a, b){
         if (!b.daysAgo && b.daysAgo !== 0) {
           return 1;
@@ -141,10 +115,17 @@
       // var allCategories = getAllCategories(returnedData);
       // missingMemberView.renderAll('missingMemberButton', '#state-buttons', allCategories);
       startIsotope();
-      stateLawmakerReportView.rendered= true;
+      stateLawmakerReportView.rendered =  true;
     });
   };
 
+  stateLawmakerReportView.getLawMakerReport = function(){
+    var state = $(this).attr('data-state');
+    var path = 'state_legislators_data/' + state + '/';
+    stateLawmakerReportView.init(path);
+  };
+
+  $('.state-lawmaker-report-group button').on('click', stateLawmakerReportView.getLawMakerReport);
 
   module.stateLawmakerReportView = stateLawmakerReportView;
 })(window);
