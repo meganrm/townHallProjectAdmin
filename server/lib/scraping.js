@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 require('dotenv').load();
 
-function ScrapingModule() {};
+function ScrapingModule() {}
 
 ScrapingModule.firebasedb = require('../server/lib/setupFirebase');
 
 ScrapingModule.getTownhalls = function() {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function(resolve) {
     // Get list of existing townhalls so we don't submit duplicates
     var existingTownHallIds = [];
 
@@ -17,13 +17,13 @@ ScrapingModule.getTownhalls = function() {
 
       ScrapingModule.firebasedb.ref('mocData/').once('value').then((snapshot) => {
         resolve ({
-            existingTownHallIds: existingTownHallIds,
-            MoCs: snapshot.val()
+          existingTownHallIds: existingTownHallIds,
+          MoCs: snapshot.val(),
         });
       });
     });
   });
-}
+};
 
 ScrapingModule.removeExistingIds = function(existingTownHallIds, eventIds) {
   existingTownHallIds.forEach(existingId => {
@@ -33,11 +33,11 @@ ScrapingModule.removeExistingIds = function(existingTownHallIds, eventIds) {
     }
   });
   return eventIds;
-}
+};
 
 ScrapingModule.unqiueFilter = function(value, index, self) {
   return self.findIndex(obj => obj.id === value.id) === index;
-}
+};
 
 ScrapingModule.submitTownhall = function(townhall) {
   var updates = {};
@@ -46,7 +46,8 @@ ScrapingModule.submitTownhall = function(townhall) {
     lastUpdated: Date.now(),
   };
   updates['/UserSubmission/' + townhall.eventId] = townhall;
-  return ScrapingModule.firebasedb.ref().update(updates);
-}
+  console.log(updates);
+  // return ScrapingModule.firebasedb.ref().update(updates);
+};
 
 module.exports = ScrapingModule;

@@ -63,7 +63,7 @@
           let obj = {
             govtrack_id : moc.govtrack_id || null,
             propublica_id : moc.propublica_id || null,
-            displayName : moc.displayName || null
+            displayName : moc.displayName || null,
           };
           if (moc.type === 'sen') {
             path = `mocByStateDistrict/${moc.state}/${moc.state_rank}/`;
@@ -109,7 +109,7 @@
               lastUpdatedBy : memberobj.lastUpdatedBy,
               lastUpdated : lastUpdated,
               daysAgo: days,
-              missingMember: memberobj.missingMember
+              missingMember: memberobj.missingMember,
             });
           }
         });
@@ -200,19 +200,14 @@
     data = Object.keys(Moc.allMocsObjs).map(function(key){
       return Moc.allMocsObjs[key];
     });
+    console.log(data);
     // prepare CSV data
     var csvData = new Array();
-    csvData.push('id, name, party, chamber, state, district, facebook_account');
+    csvData.push('id, name');
     data.forEach(function(item) {
       csvData.push(
-        '"' + item.govtrack_id +
-      '","' + item.displayName +
-      '","' + item.party +
-      '","' + item.type +
-      '","' + item.state +
-      '","' + item.district +
-      '","' + item.facebook_account +
-
+        '"' + item.id +
+      '","' + item.nameEntered +
       '"');
     });
 
@@ -220,7 +215,7 @@
     var fileName = 'mocs.csv';
     var buffer = csvData.join('\n');
     var blob = new Blob([buffer], {
-      'type': 'text/csv;charset=utf8;'
+      'type': 'text/csv;charset=utf8;',
     });
     var link = document.createElement('a');
 

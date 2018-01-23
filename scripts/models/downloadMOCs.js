@@ -1,7 +1,7 @@
 (function (module) {
   // var moment = require('moment');
 
-  function IndTownHall(cur) {
+  function MOCDownload(cur) {
     var address,
       zip,
       city;
@@ -42,5 +42,5 @@
 
 
 
-  module.IndTownHall = IndTownHall;
+  module.MOCDownload = MOCDownload;
 })(window);

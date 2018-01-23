@@ -2,10 +2,9 @@
 require('dotenv').load();
 var eventbriteToken = process.env.EVENTBRITE_TOKEN;
 
-var firebasedb = require('../server/lib/setupFirebase');
 var moment = require('moment');
 var request = require('request-promise'); // NB:  This is isn't the default request library!
-var scrapingModule = require('./scraping');
+var scrapingModule = require('../lib/scraping');
 var statesAb = require('../server/data/stateMap');
 
 // Res is an object with existingTownHallIds and MoCs
@@ -18,7 +17,7 @@ scrapingModule.getTownhalls().then(res => {
   Object.keys(MoCs).forEach(id => {
     let MoC = MoCs[id];
     if (MoC.in_office && MoC.hasOwnProperty('eventbrite_id') && typeof MoC.eventbrite_id ==='number') {
-      eventbritePromises.push(createEventbriteQuery(MoC, date))
+      eventbritePromises.push(createEventbriteQuery(MoC, date));
     }
   });
 
@@ -60,26 +59,26 @@ function createEventbriteQuery(MoC, startDate) {
   }).catch(() => {});
 }
 
-function transformEventbriteTownhall(eventbriteEvent) {
+function transformEventbriteTownhall(eventBriteEvent) {
   var district;
-  if (eventbriteEvent.MoC.type === 'sen') {
+  if (eventBriteEvent.MoC.type === 'sen') {
     district = 'Senate';
   } else {
-    district = eventbriteEvent.MoC.state + '-' + eventbriteEvent.MoC.district;
+    district = eventBriteEvent.MoC.state + '-' + eventBriteEvent.MoC.district;
   }
   let start = moment(eventBriteEvent.start.utc);
   let end = moment(eventBriteEvent.end.utc);
   var townhall = {
     eventId: 'eb_' + eventBriteEvent.id,
-    Member: eventbriteEvent.MoC.displayName,
-    govtrack_id: eventbriteEvent.MoC.govtrack_id,
-    Party: eventbriteEvent.MoC.party,
-    party: eventbriteEvent.MoC.party,
+    Member: eventBriteEvent.MoC.displayName,
+    govtrack_id: eventBriteEvent.MoC.govtrack_id,
+    Party: eventBriteEvent.MoC.party,
+    party: eventBriteEvent.MoC.party,
     District: district,
-    district: eventbriteEvent.MoC.district,
-    State: statesAb[eventbriteEvent.MoC.state],
-    stateName: statesAb[eventbriteEvent.MoC.state],
-    state: eventbriteEvent.MoC.state,
+    district: eventBriteEvent.MoC.district,
+    State: statesAb[eventBriteEvent.MoC.state],
+    stateName: statesAb[eventBriteEvent.MoC.state],
+    state: eventBriteEvent.MoC.state,
     eventName: eventBriteEvent.name.text,
     meetingType: 'unknown',
     link: eventBriteEvent.url,

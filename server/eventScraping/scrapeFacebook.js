@@ -2,10 +2,9 @@
 require('dotenv').load();
 var facebookToken = process.env.FACEBOOK_TOKEN;
 
-var firebasedb = require('../server/lib/setupFirebase');
 var moment = require('moment');
 var request = require('request-promise'); // NB:  This is isn't the default request library!
-var scrapingModule = require('./scraping');
+var scrapingModule = require('../lib/scraping');
 var statesAb = require('../server/data/stateMap');
 
 // Res is an object with existingTownHallIds and MoCs
@@ -46,7 +45,7 @@ scrapingModule.getTownhalls().then(res => {
           console.log('error submitting', error, eventToSubmit);
         });
       } else {
-      	console.log(transformFacebookTownhall(eventToSubmit))
+        console.log(transformFacebookTownhall(eventToSubmit));
       }
     });
   }).catch((error) => {
