@@ -1,9 +1,7 @@
-#!/usr/bin/env node
-require('dotenv').load();
 
 function ScrapingModule() {}
 
-ScrapingModule.firebasedb = require('../server/lib/setupFirebase');
+ScrapingModule.firebasedb = require('./setupFirebase');
 
 ScrapingModule.getTownhalls = function() {
   return new Promise(function(resolve) {
@@ -46,8 +44,7 @@ ScrapingModule.submitTownhall = function(townhall) {
     lastUpdated: Date.now(),
   };
   updates['/UserSubmission/' + townhall.eventId] = townhall;
-  console.log(updates);
-  // return ScrapingModule.firebasedb.ref().update(updates);
+  return ScrapingModule.firebasedb.ref().update(updates);
 };
 
 module.exports = ScrapingModule;

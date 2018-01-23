@@ -1,65 +1,23 @@
-#!/usr/bin/env node
-require('dotenv').load();
-var eventbriteToken = process.env.EVENTBRITE_TOKEN;
+const eventbriteToken = process.env.EVENTBRITE_TOKEN;
 
-var moment = require('moment');
-var request = require('request-promise'); // NB:  This is isn't the default request library!
-var scrapingModule = require('../lib/scraping');
-var statesAb = require('../server/data/stateMap');
+const moment = require('moment');
+const request = require('request-promise'); // NB:  This is isn't the default request library!
+const statesAb = require('../data/stateMap');
 
-// Res is an object with existingTownHallIds and MoCs
-scrapingModule.getTownhalls().then(res => {
-  var existingTownHallIds = res.existingTownHallIds;
-  var MoCs = res.MoCs;
-  var eventbritePromises = [];
-  var date = new Date().toISOString().split('.')[0]; // ISO without fractions of a second or timezone
+const eventBriteModule = {};
 
-  Object.keys(MoCs).forEach(id => {
-    let MoC = MoCs[id];
-    if (MoC.in_office && MoC.hasOwnProperty('eventbrite_id') && typeof MoC.eventbrite_id ==='number') {
-      eventbritePromises.push(createEventbriteQuery(MoC, date));
-    }
-  });
-
-  Promise.all(eventbritePromises).then(res => {
-    // Stop gap measure for while we have bad eventbrite id data and are getting undefined
-    res = res.filter(eventCollection => {
-      if (Array.isArray(eventCollection)) {
-        return eventCollection;
-      }
-    });
-    // Collapse into flat array
-    var eventbriteEvents = [].concat.apply([], res);
-    // console.log(eventbriteEvents.map(townhallevent => 'eb_' + townhallevent.id));
-    var newEventIds = scrapingModule.removeExistingIds(eventbriteEvents.map(townhallevent => 'eb_' + townhallevent.id), existingTownHallIds);
-    eventbriteEvents.forEach(eventToSubmit => {
-      if (newEventIds.indexOf('eb_' + eventToSubmit.id) !== -1) {
-        scrapingModule.submitTownhall(transformEventbriteTownhall(eventToSubmit))
-        .then(() => {
-          console.log('submitted');
-        })
-        .catch((error) => {
-          console.log('error submitting', error, eventToSubmit);
-        });
-      }
-    });
-  }).catch((error) => {
-    console.log('error with eventbrite Promise', error);
-  });
-});
-
-function createEventbriteQuery(MoC, startDate) {
+eventBriteModule.createEventbriteQuery = (MoC, startDate) => {
   return request({
     uri: 'https://www.eventbriteapi.com/v3/organizers/' + MoC.eventbrite_id + '/events/?start_date.range_start=' + startDate +'&token=' + eventbriteToken,
     json: true,
   }).then(res => {
     // Create references to MoCs for easy data lookup later
-    res.events.forEach(event => event.MoC = MoC);
+    res.events.forEach(evnt => evnt.MoC = MoC);
     return res.events || [];
   }).catch(() => {});
-}
+};
 
-function transformEventbriteTownhall(eventBriteEvent) {
+eventBriteModule.transformEventbriteTownhall = (eventBriteEvent) => {
   var district;
   if (eventBriteEvent.MoC.type === 'sen') {
     district = 'Senate';
@@ -103,4 +61,6 @@ function transformEventbriteTownhall(eventBriteEvent) {
   }
 
   return townhall;
-}
+};
+
+module.exports = eventBriteModule;

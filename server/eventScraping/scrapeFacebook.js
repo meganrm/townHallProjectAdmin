@@ -1,59 +1,13 @@
-#!/usr/bin/env node
-require('dotenv').load();
-var facebookToken = process.env.FACEBOOK_TOKEN;
+const facebookToken = process.env.FACEBOOK_TOKEN;
 
-var moment = require('moment');
-var request = require('request-promise'); // NB:  This is isn't the default request library!
-var scrapingModule = require('../lib/scraping');
-var statesAb = require('../server/data/stateMap');
+const moment = require('moment');
+const request = require('request-promise'); // NB:  This is isn't the default request library!
 
-// Res is an object with existingTownHallIds and MoCs
-scrapingModule.getTownhalls().then(res => {
-  var existingTownHallIds = res.existingTownHallIds;
-  var MoCs = res.MoCs;
-  var facebookPromises = [];
-  var startDate = Math.floor(new Date() / 1000); //Needs to be in Unix timestamp form
+const statesAb = require('../data/stateMap');
 
-  Object.keys(MoCs).forEach(id => {
-    let MoC = MoCs[id];
-    if (MoC.in_office) {
-      if (MoC.hasOwnProperty('facebook_official_account') && MoC.facebook_official_account && MoC.facebook_official_account.length > 0) {
-        facebookPromises.push(createFacebookQuery(MoC, MoC.facebook_official_account, startDate));
-      } else if (MoC.hasOwnProperty('facebook_account') && MoC.facebook_account && MoC.facebook_account.length > 0) {
-        facebookPromises.push(createFacebookQuery(MoC, MoC.facebook_account, startDate));
-      }
-    }
-  });
+const facebookModule = {};
 
-  Promise.all(facebookPromises).then(res => {
-    // Stop gap measure for while we have bad facebook id data and are getting undefined
-    res = res.filter(eventCollection => {
-      if (Array.isArray(eventCollection)) {
-        return eventCollection;
-      }
-    });
-    // Collapse into flat array
-    var facebookEvents = [].concat.apply([], res);
-    var newEventIds = scrapingModule.removeExistingIds(facebookEvents.map(townhallevent => 'fb_' + townhallevent.id), existingTownHallIds);
-    facebookEvents.forEach(eventToSubmit => {
-      if (newEventIds.indexOf('fb_' + eventToSubmit.id) !== -1) {
-        scrapingModule.submitTownhall(transformFacebookTownhall(eventToSubmit))
-        .then(() => {
-          console.log('submitted');
-        })
-        .catch((error) => {
-          console.log('error submitting', error, eventToSubmit);
-        });
-      } else {
-        console.log(transformFacebookTownhall(eventToSubmit));
-      }
-    });
-  }).catch((error) => {
-    console.log('error with facebook Promise', error);
-  });
-});
-
-function createFacebookQuery(MoC, facebookID, startDate) {
+facebookModule.createFacebookQuery = (MoC, facebookID, startDate) => {
   return request({
     uri: 'https://graph.facebook.com/v2.10/' + facebookID + '/events?since=' + startDate +'&access_token=' + facebookToken,
     json: true,
@@ -62,9 +16,9 @@ function createFacebookQuery(MoC, facebookID, startDate) {
     res.data.forEach(event => event.MoC = MoC);
     return res.data;
   }).catch(() => {});
-}
+};
 
-function transformFacebookTownhall(facebookEvent) {
+facebookModule.transformFacebookTownhall = (facebookEvent) => {
   var district;
   if (facebookEvent.MoC.type === 'sen') {
     district = 'Senate';
@@ -108,4 +62,6 @@ function transformFacebookTownhall(facebookEvent) {
   }
 
   return townhall;
-}
+};
+
+module.exports = facebookModule;
