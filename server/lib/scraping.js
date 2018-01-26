@@ -44,7 +44,10 @@ ScrapingModule.submitTownhall = function(townhall) {
     lastUpdated: Date.now(),
   };
   updates['/UserSubmission/' + townhall.eventId] = townhall;
-  return ScrapingModule.firebasedb.ref().update(updates);
+  if (process.env.NODE_ENV === 'production') {
+    return ScrapingModule.firebasedb.ref().update(updates);
+  }
+  return Promise.resolve(`test submit worked, ${townhall.eventId}`);
 };
 
 module.exports = ScrapingModule;

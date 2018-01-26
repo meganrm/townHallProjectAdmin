@@ -7,24 +7,29 @@ const statesAb = require('../data/stateMap');
 
 const facebookModule = {};
 
-facebookModule.createFacebookQuery = (MoC, facebookID, startDate) => {
+facebookModule.createFacebookQuery = (MoC, facebookID) => {
   return request({
-    uri: 'https://graph.facebook.com/v2.10/' + facebookID + '/events?since=' + startDate +'&access_token=' + facebookToken,
+    uri: `https://graph.facebook.com/v2.11/${facebookID}/events?time_filter=upcoming&access_token=${facebookToken}`,
     json: true,
   }).then(res => {
     // Create references to MoCs for easy data lookup later
     res.data.forEach(event => event.MoC = MoC);
     return res.data;
-  }).catch(() => {});
+  }).catch(err => {
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(err.message);
+    }
+  });
 };
 
-facebookModule.transformFacebookTownhall = (facebookEvent) => {
+facebookModule.transformFacebookTownhall = (facebookEvent, flag) => {
   var district;
   if (facebookEvent.MoC.type === 'sen') {
     district = 'Senate';
   } else {
     district = facebookEvent.MoC.state + '-' + facebookEvent.MoC.district;
   }
+
   var townhall = {
     eventId: 'fb_' + facebookEvent.id,
     Member: facebookEvent.MoC.displayName,
@@ -38,6 +43,7 @@ facebookModule.transformFacebookTownhall = (facebookEvent) => {
     state: facebookEvent.MoC.state,
     eventName: facebookEvent.name,
     meetingType: null,
+    iconFlag: flag || null,
     link: 'https://www.facebook.com/events/' + facebookEvent.id + '/',
     linkName: 'Facebook Link',
     dateObj: moment(facebookEvent.start_time).valueOf(),
@@ -60,7 +66,6 @@ facebookModule.transformFacebookTownhall = (facebookEvent) => {
       townhall.address = location.street + ', ' + location.city + ', ' + location.state + ' ' + location.zip;
     }
   }
-
   return townhall;
 };
 

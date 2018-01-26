@@ -4,7 +4,7 @@ const scrapingModule = require('../server/lib/scraping');
 const facebookModule = require('../server/eventScraping/scrapeFacebook');
 const eventBriteModule = require('../server/eventScraping/scrapeEventbrite');
 
-const submitPromises = (promises, transformFunction, existingTownHallIds, prefix) => {
+const submitPromises = (promises, transformFunction, existingTownHallIds, prefix, flag) => {
   Promise.all(promises).then(res => {
     // Stop gap measure for while we have bad eventbrite id data and are getting undefined
     res = res.filter(eventCollection => {
@@ -19,10 +19,8 @@ const submitPromises = (promises, transformFunction, existingTownHallIds, prefix
     var newEventIds = scrapingModule.removeExistingIds(existingTownHallIds, allIdsInReturnedData);
     eventsArray.forEach(eventToSubmit => {
       if (newEventIds.indexOf(prefix + eventToSubmit.id) > -1) {
-        scrapingModule.submitTownhall(transformFunction(eventToSubmit))
-        .then(() => {
-          console.log('submitted');
-        })
+        scrapingModule.submitTownhall(transformFunction(eventToSubmit, flag))
+        .then(console.log)
         .catch((error) => {
           console.log('error submitting', error);
         });
@@ -40,7 +38,7 @@ scrapingModule.getTownhalls().then(res => {
   let existingTownHallIds = res.existingTownHallIds;
   let MoCs = res.MoCs;
   let facebookPromises = [];
-  let startDate = Math.floor(new Date() / 1000); //Needs to be in Unix timestamp form
+  let facebookCampaignPromises = [];
   let eventbritePromises = [];
   let date = new Date().toISOString().split('.')[0]; // ISO without fractions of a second or timezone
 
@@ -48,15 +46,19 @@ scrapingModule.getTownhalls().then(res => {
     let MoC = MoCs[id];
     if (MoC.in_office) {
       if (MoC.hasOwnProperty('facebook_official_account') && MoC.facebook_official_account && MoC.facebook_official_account.length > 0) {
-        facebookPromises.push(facebookModule.createFacebookQuery(MoC, MoC.facebook_official_account, startDate));
+        facebookPromises.push(facebookModule.createFacebookQuery(MoC, MoC.facebook_official_account));
       } else if (MoC.hasOwnProperty('facebook_account') && MoC.facebook_account && MoC.facebook_account.length > 0) {
-        facebookPromises.push(facebookModule.createFacebookQuery(MoC, MoC.facebook_account, startDate));
+        facebookPromises.push(facebookModule.createFacebookQuery(MoC, MoC.facebook_account));
+      }
+      if (MoC.hasOwnProperty('facebook_campaign_account') && MoC.facebook_campaign_account && MoC.facebook_campaign_account.length > 0) {
+        facebookCampaignPromises.push(facebookModule.createFacebookQuery(MoC, MoC.facebook_campaign_account));
+      }
+      if (MoC.in_office && MoC.hasOwnProperty('eventbrite_id') && typeof MoC.eventbrite_id ==='number') {
+        eventbritePromises.push(eventBriteModule.createEventbriteQuery(MoC, date));
       }
     }
-    if (MoC.in_office && MoC.hasOwnProperty('eventbrite_id') && typeof MoC.eventbrite_id ==='number') {
-      eventbritePromises.push(eventBriteModule.createEventbriteQuery(MoC, date));
-    }
   });
+  submitPromises(facebookCampaignPromises, facebookModule.transformFacebookTownhall, existingTownHallIds, 'fb_', 'campaign');
   submitPromises(facebookPromises, facebookModule.transformFacebookTownhall, existingTownHallIds, 'fb_');
   submitPromises(eventbritePromises, eventBriteModule.transformEventbriteTownhall, existingTownHallIds, 'eb_');
 });
