@@ -153,6 +153,9 @@
     document.getElementById('download-csv-events-list').appendChild(para);
     var dates = eventHandler.getDateRange().dates;
     var key = $('#lookup-key').val();
+    if (key === 'Meeting_Type') {
+      key = 'meetingType';
+    }
     var value = $('#lookup-value').val();
     var totalCount = 0;
     var allEvents = [];
