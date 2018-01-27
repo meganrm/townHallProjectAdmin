@@ -49,8 +49,7 @@ class Moc {
     updates['/mocData/' + this.govtrack_id] = this;
     updates['/mocID/' + memberKey] = memberIDObject;
     console.log('updates', '/mocData/' + this.govtrack_id, this.displayName);
-    return Promise.resolve();
-    // return firebasedb.ref().update(updates);
+    return firebasedb.ref().update(updates);
   }
 
   update(path) {
