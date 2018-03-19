@@ -24,8 +24,8 @@ eventBriteModule.transformEventbriteTownhall = (eventBriteEvent) => {
   } else {
     district = eventBriteEvent.MoC.state + '-' + eventBriteEvent.MoC.district;
   }
-  let start = moment(eventBriteEvent.start.utc);
-  let end = moment(eventBriteEvent.end.utc);
+  let start = moment(eventBriteEvent.start.local)
+  let end = moment(eventBriteEvent.end.local)
   var townhall = {
     eventId: 'eb_' + eventBriteEvent.id,
     Member: eventBriteEvent.MoC.displayName,
@@ -41,13 +41,13 @@ eventBriteModule.transformEventbriteTownhall = (eventBriteEvent) => {
     meetingType: 'unknown',
     link: eventBriteEvent.url,
     linkName: 'Eventbrite Link',
-    dateObj: start.valueOf(),
-    dateString: moment.parseZone(start).format('ddd, MMM D, YYYY'),
-    Date: moment.parseZone(start).format('ddd, MMM D, YYYY'),
-    Time: moment.parseZone(start).format('LT'),
-    timeStart24: moment.parseZone(start).format('HH:mm:ss'),
-    timeEnd24: moment.parseZone(end).format('HH:mm:ss'),
-    yearMonthDay: moment.parseZone(start).format('YYYY-MM-DD'),
+    dateObj: moment(eventBriteEvent.start.utc).valueOf(),
+    dateString: start.format('ddd, MMM D, YYYY'),
+    Date: start.format('ddd, MMM D, YYYY'),
+    Time: start.format('LT'),
+    timeStart24: start.format('HH:mm:ss'),
+    timeEnd24: end.format('HH:mm:ss'),
+    yearMonthDay: start.format('YYYY-MM-DD'),
     lastUpdated: Date.now(),
   };
 
