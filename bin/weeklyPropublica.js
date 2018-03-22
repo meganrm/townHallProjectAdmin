@@ -56,13 +56,13 @@ function updateDatabaseWithNewMembers(newPropublicaMembers) {
           if (!snapshot.exists()) {
             return newMember.createNew(fullPropPublicaMember);
           }
-          return newMember.update(path)
-          .then(function(){
-            console.log('done');
-          }).catch(function(error){
-            let errorEmail = new ErrorReport(newMember.govtrack_id + ':' + error, 'Could not find propublica member');
-            errorEmail.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
-          });
+          // return newMember.update(path)
+          // .then(function(){
+          //   console.log('done');
+          // }).catch(function(error){
+          //   let errorEmail = new ErrorReport(newMember.govtrack_id + ':' + error, 'Could not find propublica member');
+          //   errorEmail.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
+          // });
         });
       })
       .catch(function(error) {

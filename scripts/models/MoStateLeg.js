@@ -26,29 +26,6 @@
   MoStateLeg.allMoStateLegsObjs = {};
   MoStateLeg.mocUpdated = [];
 
-  // MoStateLeg.getMember = function (member) {
-  //   var memberKey;
-  //   if (member.split(' ').length === 3) {
-  //     if (member.split(' ')[0].length === 1) {
-  //       memberKey = member.split(' ')[2].toLowerCase().replace(/\./g, '') + member.split(' ')[0].toLowerCase() + '_' + member.split(' ')[1].toLowerCase();
-  //     } else {
-  //       memberKey = member.split(' ')[1].toLowerCase() + member.split(' ')[2].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
-  //     }
-  //   } else {
-  //     memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
-  //   }
-  //   var memberid = MoStateLeg.allMoStateLegsObjs[memberKey].id;
-  //   return new Promise(function(resolve, reject){
-  //     firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
-  //       if (snapshot.exists()) {
-  //         resolve(snapshot.val());
-  //       } else {
-  //         reject('That member is not in our database, please check the spelling, and only use first and last name.');
-  //       }
-  //     });
-  //   });
-  // };
-
   MoStateLeg.updateWithArray = function(array){
     array.forEach(function(ele){
       if (!ele.thp_id) {
@@ -230,7 +207,7 @@
     return memberKey;
   };
 
-  MoStateLeg.download = function(){
+  MoStateLeg.download = function() {
     var data = Object.keys(MoStateLeg.allMoStateLegsObjs).map(function(key){
       return MoStateLeg.allMoStateLegsObjs[key];
     });
@@ -239,14 +216,13 @@
     csvData.push('id, name, party, chamber, state, district, facebook_account');
     data.forEach(function(item) {
       csvData.push(
-        '"' + item.govtrack_id +
+        '"' + item.thp_id +
       '","' + item.displayName +
       '","' + item.party +
       '","' + item.type +
       '","' + item.state +
       '","' + item.district +
       '","' + item.facebook_account +
-
       '"');
     });
 

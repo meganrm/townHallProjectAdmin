@@ -132,6 +132,8 @@
 
   $(document).ready(function () {
     $('#lookup-old-events-form').on('submit', eventHandler.lookupOldEvents);
+    $('#lookup-old-state-events-form').on('submit', eventHandler.lookupOldStateEvents);
+
     $('.sort').on('click', 'a', eventHandler.sortTable);
     $('.filter').on('click', 'a', eventHandler.filterTable);
     $('#filter-info').on('click', 'button.btn', eventHandler.removeFilter);

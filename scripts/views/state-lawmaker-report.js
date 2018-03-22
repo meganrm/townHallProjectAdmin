@@ -127,5 +127,6 @@
 
   $('.state-lawmaker-report-group button').on('click', stateLawmakerReportView.getLawMakerReport);
 
+  stateLawmakerReportView.init();
   module.stateLawmakerReportView = stateLawmakerReportView;
 })(window);

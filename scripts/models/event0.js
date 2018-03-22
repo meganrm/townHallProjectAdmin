@@ -50,13 +50,32 @@
     var db = firebasedb;
     var ref = db.ref('/townHallsOld/' + dateKey);
     var totals = new Set();
+    console.log(key, value);
     return new Promise (function(resolve){
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
-          let townHall = new TownHall(oldTownHall.val());
+          let townHall = new OldTownHall(oldTownHall.val());
+          if (!townHall[key]) {
+            return;
+          }
           if (townHall[key].toLowerCase() === value.toLowerCase()) {
             totals.add(townHall);
-          }
+          } 
+        });
+        resolve(totals);
+      });
+    });
+  };
+
+  TownHall.getOldStateData = function getOldStateData (state, dateKey) {
+    var db = firebasedb;
+    var ref = db.ref(`/state_townhalls_archive/${state}/${dateKey}`);
+    var totals = new Set();
+    return new Promise (function(resolve){
+      ref.once('value').then(function(snapshot) {
+        snapshot.forEach(function(oldTownHall) {
+          let townHall = new OldTownHall(oldTownHall.val());
+          totals.add(townHall);
         });
         resolve(totals);
       });

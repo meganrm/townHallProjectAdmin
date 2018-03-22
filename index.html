@@ -78,6 +78,7 @@
                 <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#for-approval-page-state">State pending approval</a></li>
                 <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#state-lawmaker-update">Lawmakers updated this week</a></li>
                 <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#state-lawmaker-editor">Lawmakers editor</a></li>
+                <li><a class="hash-link var-nav hidden admin" data-toggle="tab" href="#state-download-old-events">Download CSV</a></li>
               </ul>
             </div>
             <li><a class="hash-link var-nav hidden admin partner" data-toggle="tab" href="#download-center">Download Center</a></li>
@@ -122,7 +123,7 @@
                               <option value="Member">Member</option>
                               <option value="Meeting_Type">Event Type</option>
                               <option value="District">District</option>
-                              <option value="State">State</option>
+                              <option value="state">State</option>
                               <option value="Party">Party</option>
                               <option value="Date">Date</option>
                             </select>
@@ -517,6 +518,28 @@
                 </form>
               </section>
             </div>
+            <div role="tabpanel" class="tab-pane page" id="state-download-old-events">
+              <div class="btn-group state-lawmaker-report-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-default state-lawmaker-report" data-state="CO">CO</button>
+                <button type="button" class="btn btn-default state-lawmaker-report" data-state="AZ">AZ</button>
+                <button type="button" class="btn btn-default state-lawmaker-report" data-state="NC">NC</button>
+                <button type="button" class="btn btn-default state-lawmaker-report" data-state="VA">VA</button>
+              </div>
+              <form class="form-inline" id="lookup-old-state-events-form">
+                <div class="form-group">
+                  <label for="start-date">Start date</label>
+                  <input type="date" class="form-control" id="start-date" placeholder="MM/DD/YYYY">
+                </div>
+                <div class="form-group">
+                  <label for="end-date">End date</label>
+                  <input type="date" class="form-control" id="end-date" placeholder="MM/DD/YYYY">
+                </div>
+                <button type="submit" class="btn btn-default">View results</button>
+              </form>
+              <div id="state-buttons">
+
+              </div>
+            </div>
             <div role="tabpanel" class="tab-pane page" id="to-archive-page">
               <section class="">
                 <h3 class="text-primary table-title text-center">Events in the past</h3>
@@ -538,11 +561,6 @@
               <section class="">
                 <h3 class="text-primary table-title text-center">Download Center</h3>
                 <h4>For our partners</h4>
-                <!-- <div class="form-group">
-                  <label for="dateInput">Download events updated or added after:</label>
-                  <input type="text" class="form-control" id="dateInput" placeholder="DD/MM/YYYY">
-                  <span id="helpBlock" class="help-block">If blank will download all the events currenlty on the site.</span>
-                </div> -->
                 <ul id="ACLU-buttons" class="list-inline">
                 </ul>
                 <h4>THP Downloads</h4>

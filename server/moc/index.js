@@ -22,7 +22,19 @@ class Moc {
       this.party = 'Independent';
     }
     if (opts.state) {
+      this.state = opts.state;
       this.stateName = statesAb[opts.state];
+    } else if (opts.roles[0].state) {
+      let data = opts.roles[0];
+      this.state = data.state;
+      this.stateName = statesAb[this.state];
+      if (data.chamber === 'House') {
+        this.chamber = 'House';
+        this.district = data.district ;
+      }
+      if (data.chamber === 'Senate') {
+        this.chamber = 'Senate';
+      }
     }
     delete this.roles;
     delete this.facebook_account;
@@ -33,10 +45,10 @@ class Moc {
   createNew(newPropublicaMember) {
     let updates = {};
     this.displayName = this.first_name + ' ' + this.last_name;
-    this.state = newPropublicaMember.state;
-    this.district = newPropublicaMember.district;
-    this.stateName = statesAb[newPropublicaMember.state];
-
+    // this.state = newPropublicaMember.state;
+    // this.district = newPropublicaMember.district;
+    // this.stateName = statesAb[newPropublicaMember.state];
+    console.log(this.state, this.stateName);
     const lastname = this.last_name.replace(/\W/g, '');
     const firstname = this.first_name.replace(/\W/g, '');
     const memberKey = lastname.toLowerCase() + '_' + firstname.toLowerCase();
@@ -48,14 +60,13 @@ class Moc {
 
     updates['/mocData/' + this.govtrack_id] = this;
     updates['/mocID/' + memberKey] = memberIDObject;
-    console.log('updates', '/mocData/' + this.govtrack_id, this.displayName);
     return firebasedb.ref().update(updates);
   }
 
   update(path) {
     // if match - update only fields that may change (social media)
     console.log('existing member', this.govtrack_id);
-    return firebasedb.ref(path).update(this);
+    // return firebasedb.ref(path).update(this);
   }
 }
 

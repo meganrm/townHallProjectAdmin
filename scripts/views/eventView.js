@@ -4,18 +4,6 @@
   // object to hold the front end view functions
   var eventHandler = {};
 
-  // firebase.database().ref('MOCs').once('value').then(function (snapshot) {
-  //   snapshot.forEach(function(ele){
-  //     var mocData = ele.val()
-  //     if (mocData['govtrack_id']) {
-  //       var updates = {};
-  //       updates['/mocID/' + ele.key] = mocData['govtrack_id'];
-  //       updates['/mocData/' + mocData['govtrack_id']] = mocData;
-  //       firebase.database().ref().update(updates);
-  //     } else {
-  //     }
-  //   })
-  // })
   eventHandler.setupTypeaheads = function setupTypeaheads() {
     var typeaheadConfig = {
       fitToElement: true,
@@ -153,9 +141,7 @@
     document.getElementById('download-csv-events-list').appendChild(para);
     var dates = eventHandler.getDateRange().dates;
     var key = $('#lookup-key').val();
-    if (key === 'Meeting_Type') {
-      key = 'meetingType';
-    }
+
     var value = $('#lookup-value').val();
     var totalCount = 0;
     var allEvents = [];
@@ -171,6 +157,27 @@
           CSVTownHall.makeDownloadButton('Download Events (csv)', allEvents, fileDownloadName, 'download-csv-events-list');
         }
       });
+    });
+  };
+
+  eventHandler.lookupOldStateEvents = function(event){
+    event.preventDefault();
+    clearCSVOutput();
+    var para = document.createTextNode('Loading...');
+    document.getElementById('download-csv-events-list').appendChild(para);
+    var date = '2018-1';
+
+    var value = $('#lookup-value').val();
+    var totalCount = 0;
+    var allEvents = [];
+    var state = 'VA';
+    console.log('state');
+    TownHall.getOldStateData(state, date).then(function(returnedSet){
+      console.log(returnedSet);
+      var returnedArr = Array.from(returnedSet);
+
+      var fileDownloadName = 'town halls' + '.csv';
+      CSVTownHall.makeDownloadButton('Download Events (csv)', returnedArr, fileDownloadName, 'state-buttons');
     });
   };
 
@@ -305,7 +312,7 @@
       // eventHandler.checkLastUpdated(ele);
       // eventHandler.checkEndTime(ele);
       // eventHandler.checkTimeFormat(ele);
-      
+
       TownHall.allTownHallsFB[ele.eventId] = ele;
       TownHall.allTownHalls.push(ele);
       TownHall.addFilterIndexes(ele);
