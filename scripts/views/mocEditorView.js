@@ -11,7 +11,7 @@
         $(input).val(selection);
       },
     };
-    Moc.loadAll().then(function(allnames){
+    Moc.loadAllByName().then(function(allnames){
       Moc.allNames = allnames;
       $(input).typeahead($.extend({source: allnames}, typeaheadConfig));
           // newEventView.render();
@@ -50,7 +50,7 @@
     if (validateMember(member)) {
       $('#member-form-group').removeClass('has-error');
       var memberKey = Moc.getMemberKey(member);
-      var memberid = Moc.allMocsObjs[memberKey].id;
+      var memberid = Moc.allMocsObjsByName[memberKey].id;
       firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
         if (snapshot.exists()) {
           var mocdata = snapshot.val();

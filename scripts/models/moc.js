@@ -5,7 +5,8 @@
     }
   }
 
-  Moc.allMocsObjs = {};
+  Moc.allMocsObjsByID = {};
+  Moc.allMocsObjsByName = {};
   Moc.mocUpdated = [];
 
   Moc.getMember = function (member) {
@@ -15,7 +16,7 @@
     } else {
       memberKey = member.split(' ')[1].toLowerCase() + '_' + member.split(' ')[0].toLowerCase();
     }
-    var memberid = Moc.allMocsObjs[memberKey].id;
+    var memberid = Moc.allMocsObjsByName[memberKey].id;
     return new Promise(function(resolve, reject){
       firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
         if (snapshot.exists()) {
@@ -60,10 +61,13 @@
     Moc.loadAllData()
       .then((allMocs) => {
         allMocs.forEach((moc) => {
+          if (!moc.in_office) {
+            return;
+          }
           let obj = {
             govtrack_id : moc.govtrack_id || null,
             propublica_id : moc.propublica_id || null,
-            displayName : moc.displayName || null
+            displayName : moc.displayName || null,
           };
           if (moc.type === 'sen') {
             path = `mocByStateDistrict/${moc.state}/${moc.state_rank}/`;
@@ -77,7 +81,7 @@
             path = `mocByStateDistrict/${moc.state}-${district}/`;
           }
           console.log(path, obj);
-          // return firebasedb.ref(path).update(obj);
+          return firebasedb.ref(path).update(obj);
         });
       });
   };
@@ -99,7 +103,7 @@
               var timeAgo = moment(memberobj.lastUpdated);
               days = now.diff(timeAgo, 'days');
             }
-            Moc.allMocsObjs[member.key] = memberobj;
+            Moc.allMocsObjsByID[member.key] = memberobj;
             allupdated.push({
               id: member.key,
               name: name,
@@ -109,7 +113,7 @@
               lastUpdatedBy : memberobj.lastUpdatedBy,
               lastUpdated : lastUpdated,
               daysAgo: days,
-              missingMember: memberobj.missingMember
+              missingMember: memberobj.missingMember,
             });
           }
         });
@@ -129,13 +133,13 @@
     });
   };
 
-  Moc.loadAll = function(){
+  Moc.loadAllByName = function(){
     var allNames = [];
     return new Promise(function (resolve, reject) {
       firebasedb.ref('mocID/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){
           var memberobj = new Moc(member.val());
-          Moc.allMocsObjs[member.key] = memberobj;
+          Moc.allMocsObjsByName[member.key] = memberobj;
           var name = memberobj.nameEntered;
           if (!name) {
             console.log(member.key);
@@ -156,6 +160,7 @@
       firebasedb.ref('mocData/').once('value').then(function(snapshot){
         snapshot.forEach(function(member){
           var memberobj = new Moc(member.val());
+          Moc.allMocsObjsByID[memberobj.govtrack_id] = memberobj;
           allMocs.push(memberobj);
         });
         resolve(allMocs);
@@ -196,45 +201,51 @@
     return memberKey;
   };
 
-  Moc.download = function(){
-    data = Object.keys(Moc.allMocsObjs).map(function(key){
-      return Moc.allMocsObjs[key];
-    });
-    // prepare CSV data
-    var csvData = new Array();
-    csvData.push('id, name, party, chamber, state, district, facebook_account');
-    data.forEach(function(item) {
-      csvData.push(
-        '"' + item.govtrack_id +
-      '","' + item.displayName +
-      '","' + item.party +
-      '","' + item.type +
-      '","' + item.state +
-      '","' + item.district +
-      '","' + item.facebook_account +
-
-      '"');
-    });
+  Moc.download = function() {
+    Moc.loadAllData()
+    .then(()=> {
+      data = Object.keys(Moc.allMocsObjsByID)
+        .map(function(key){
+          return Moc.allMocsObjsByID[key];
+        })
+        .filter((moc)=> {
+          return moc.in_office;
+        });
+      // prepare CSV data
+      var csvData = [];
+      csvData.push('id, name, party, chamber, state, district, missing_member');
+      data.forEach(function(item) {
+        csvData.push(
+          '"' + item.govtrack_id +
+        '","' + item.displayName +
+        '","' + item.party +
+        '","' + item.type +
+        '","' + item.state +
+        '","' + item.district +
+        '","' + item.missingMember +
+        '"');
+      });
 
     // download stuff
-    var fileName = 'mocs.csv';
-    var buffer = csvData.join('\n');
-    var blob = new Blob([buffer], {
-      'type': 'text/csv;charset=utf8;'
-    });
-    var link = document.createElement('a');
+      var fileName = 'mocs.csv';
+      var buffer = csvData.join('\n');
+      var blob = new Blob([buffer], {
+        'type': 'text/csv;charset=utf8;',
+      });
+      var link = document.createElement('a');
 
-    if(link.download !== undefined) { // feature detection
+      if(link.download !== undefined) { // feature detection
       // Browsers that support HTML5 download attribute
-      link.setAttribute('href', window.URL.createObjectURL(blob));
-      link.setAttribute('download', fileName);
-    }
-    else {
+        link.setAttribute('href', window.URL.createObjectURL(blob));
+        link.setAttribute('download', fileName);
+      }
+      else {
       // it needs to implement server side export
-      link.setAttribute('href', 'http://www.example.com/export');
-    }
-    link.innerHTML = 'Download Mocs';
-    document.getElementById('THP-downloads').appendChild(link);
+        link.setAttribute('href', 'http://www.example.com/export');
+      }
+      link.innerHTML = 'Download Mocs';
+      document.getElementById('THP-downloads').appendChild(link);
+    });
   };
 
   module.Moc = Moc;

@@ -8,9 +8,9 @@
       highlighter: function(item) { return item; }, // Kill ugly highlight
       filter: function(selection) {
         $(input).val(selection);
-      }
+      },
     };
-    Moc.loadAll().then(function(allnames){
+    Moc.loadAllByName().then(function(allnames){
       Moc.allNames = allnames;
       $(input).typeahead($.extend({source: allnames}, typeaheadConfig));
     });

@@ -28,7 +28,7 @@
         $(input).val(selection);
       },
     };
-    Moc.loadAll().then(function(allnames){
+    Moc.loadAllByName().then(function(allnames){
       Moc.allNames = allnames;
       $(input).each(function(){
         $(this).typeahead({source: allnames}, typeaheadConfig);

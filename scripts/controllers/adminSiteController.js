@@ -20,6 +20,7 @@
     eventHandler.readDataUsers('/state_legislators_user_submission/CO', '#for-approval-state');
     eventHandler.readDataUsers('/state_legislators_user_submission/AZ', '#for-approval-state');
     eventHandler.renderNav('admin');
+    Moc.download();
   };
 
   adminSiteController.renderPartner = function(){
