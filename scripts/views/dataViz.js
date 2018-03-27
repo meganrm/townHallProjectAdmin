@@ -74,8 +74,6 @@
     var widthNoEvents = updatedNoEvents / total * 100;
     $total.width(widthNoEvents + '%');
     $total.text(updatedNoEvents);
-
-
   }
 
   dataviz.stateTotals = {
@@ -126,7 +124,7 @@
         newMember = true;
         memberSet.add(townhall.Member);
       }
-      if (townhall.Party === 'Republican') {
+      if (townhall.party === 'Republican') {
         var party = 'rep';
       } else {
         party = 'dem';
@@ -203,8 +201,8 @@
   dataviz.reset = function(){
     dataviz.initalProgressBar(100, $('.dem-senate'), $('.dem-aug-progress-senate'));
     dataviz.initalProgressBar(100, $('.rep-senate'), $('.rep-aug-progress-senate'));
-    dataviz.initalProgressBar(434, $('.dem-house'), $('.dem-aug-progress-house'));
-    dataviz.initalProgressBar(434, $('.rep-house'), $('.rep-aug-progress-house'));
+    dataviz.initalProgressBar(435, $('.dem-house'), $('.dem-aug-progress-house'));
+    dataviz.initalProgressBar(435, $('.rep-house'), $('.rep-aug-progress-house'));
     dataviz.resetGraph($('.dem-aug-total-house'));
     dataviz.resetGraph($('.rep-aug-total-house'));
     dataviz.resetGraph($('.dem-aug-total-senate'));
@@ -221,7 +219,12 @@
     var dates = dateRange.dates;
     var start = dateRange.start;
     var end = dateRange.end;
-
+    firebase.database().ref('townHalls/').once('value')
+      .then((snapshot)=> {
+        snapshot.forEach((townahll) => {
+          dataviz.recessProgress(townahll.val(), dataviz.lookupMembers, dataviz.houseMemberMapping, dataviz.sentateHouseMapping);
+        });
+      });
     dates.forEach(function(date){
       dataviz.getPastEvents('townHallsOld/' + date, start, end, dataviz.lookupMembers, dataviz.houseMemberMapping,  dataviz.sentateHouseMapping);
     });
@@ -230,8 +233,8 @@
   $('#progress-bar-form').on('submit', dataviz.lookUpEvents);
   dataviz.initalProgressBar(100, $('.dem-senate'));
   dataviz.initalProgressBar(100, $('.rep-senate'));
-  dataviz.initalProgressBar(434, $('.dem-house'));
-  dataviz.initalProgressBar(434, $('.rep-house'));
+  dataviz.initalProgressBar(435, $('.dem-house'));
+  dataviz.initalProgressBar(435, $('.rep-house'));
 
   module.dataviz = dataviz;
 })(window);
