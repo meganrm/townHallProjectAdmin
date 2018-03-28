@@ -70,10 +70,17 @@ googleMethods.read(oauth2Client).then((googleRows)=> {
         if (townhall.iconFlag === 'mfol') {
           thisRow[7] = true;
         }
+        thisRow[8] = null;
         let writeRange = `all MOCS!A${rowIndex}:Z${rowIndex}`;
-        if (!find(thisRow, townhall.eventId)) {
+        console.log(thisRow.indexOf(townhall.eventId));
+        console.log(typeof thisRow[9], typeof townhall.eventId);
+        if (thisRow.indexOf(townhall.eventId) === -1) {
           thisRow.push(townhall.eventId);
+          console.log(thisRow);
+        } else {
+          console.log('already there');
         }
+
         const toWrite = {
 
           'range': writeRange,
@@ -86,7 +93,6 @@ googleMethods.read(oauth2Client).then((googleRows)=> {
         data.push(toWrite);
       }
     });
-    console.log(data);
     googleMethods.write(oauth2Client, data);
 
   });
