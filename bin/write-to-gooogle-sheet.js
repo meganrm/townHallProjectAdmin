@@ -92,6 +92,17 @@ googleMethods.read(oauth2Client).then((googleRows)=> {
         data.push(toWrite);
       }
     });
+    const timestamp = {
+
+      'range': 'summary!A2',
+      'majorDimension': 'ROWS',
+      'values': [
+        [`${moment().format('MM/DD/YYYY, h:mm A')}`],
+      ],
+
+    };
+    data.push(timestamp);
+
     googleMethods.write(oauth2Client, data);
 
   })
