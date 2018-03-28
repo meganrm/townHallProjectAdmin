@@ -6,8 +6,8 @@ var readline = require('readline');
 var googleAuth = require('google-auth-library');
 
 
-const firebasedb = require('../lib/setupFirebase');
-const googleMethods = require('./readFromGoogle');
+const firebasedb = require('../server/lib/setupFirebase');
+const googleMethods = require('../server/recess-events/google-methods');
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 var clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -17,8 +17,8 @@ var auth = new googleAuth();
 var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
 const currentToken =
-  { access_token: 'ya29.GluKBTlf49GJOELhl-1U55aTGneOcCH1K6WuybUP6_A0AfqX4_acgyRH9el6o02nuA6JnmI-IWbCJ8_Doq-ezxOYF6cGPDzewBwX2Se02UMJK78Q1Wa17dahUv0F',
-    refresh_token: '1/OdZXnU-BOq22-t8s1NE5OwLCmTaKNpI37_lvz2IJ8BI',
+  { access_token: process.env.GOOGLE_ACCESS_TOKEN,
+    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
     token_type: 'Bearer',
     expiry_date: 1522106489761,
   };
@@ -42,7 +42,6 @@ function getNewToken(oauth2Client, callback) {
         return;
       }
       console.log('got token', token);
-      savedToken = token;
       oauth2Client.credentials = token;
       callback(oauth2Client);
     });
@@ -95,5 +94,8 @@ googleMethods.read(oauth2Client).then((googleRows)=> {
     });
     googleMethods.write(oauth2Client, data);
 
+  })
+  .catch(err => {
+    console.log('error reading sheet:', err.message);
   });
 });
