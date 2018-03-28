@@ -1,5 +1,7 @@
-const find = require('lodash').find;
+#!/usr/bin/env node
+
 const moment = require('moment');
+const find = require('lodash').find;
 const findIndex = require('lodash').findIndex;
 
 var readline = require('readline');
