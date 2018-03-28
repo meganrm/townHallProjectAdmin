@@ -1,5 +1,5 @@
-const moment = require('moment');
 const find = require('lodash').find;
+const moment = require('moment');
 const findIndex = require('lodash').findIndex;
 
 var readline = require('readline');
