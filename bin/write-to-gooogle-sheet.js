@@ -53,47 +53,61 @@ googleMethods.read(oauth2Client).then((googleRows)=> {
   .then((snapshot) => {
     const data = [];
     snapshot.forEach(ele => {
-
       const townhall = ele.val();
       if (
         moment(townhall.dateObj).isBetween('2018-03-23', '2018-04-09', [])
-        && townhall.govtrack_id
-        && townhall.meetingType === 'Town Hall'
-      ) {
-        const thisRow = find(googleRows, (row)=> {
-          return row[0] === townhall.govtrack_id;
-        });
-        const rowIndex = 1 + findIndex(googleRows, (row)=> {
-          return row[0] === townhall.govtrack_id;
-        });
-        if (townhall.iconFlag === 'mfol') {
+        && townhall.govtrack_id) {
+        if (townhall.meetingType === 'Town Hall') {
+          const thisRow = find(googleRows, (row)=> {
+            return row[0] === townhall.govtrack_id;
+          });
+          const rowIndex = 1 + findIndex(googleRows, (row)=> {
+            return row[0] === townhall.govtrack_id;
+          });
+          if (townhall.iconFlag === 'mfol') {
+            thisRow[7] = true;
+          }
+          thisRow[8] = null;
+          let writeRange = `all MOCS!A${rowIndex}:Z${rowIndex}`;
+          if (thisRow.indexOf(townhall.eventId) === -1) {
+            thisRow.push(townhall.eventId);
+            console.log(thisRow[1]);
+          }
+
+          const toWrite = {
+
+            'range': writeRange,
+            'majorDimension': 'ROWS',
+            'values': [
+              thisRow,
+            ],
+
+          };
+          data.push(toWrite);
+        } else if (townhall.iconFlag === 'mfol'){
+          console.log('mfol event');
+          const thisRow = find(googleRows, (row)=> {
+            return row[0] === townhall.govtrack_id;
+          });
+          const rowIndex = 1 + findIndex(googleRows, (row)=> {
+            return row[0] === townhall.govtrack_id;
+          });
           thisRow[7] = true;
+          thisRow[8] = null;
+          let writeRange = `all MOCS!A${rowIndex}:Z${rowIndex}`;
+          const toWrite = {
+
+            'range': writeRange,
+            'majorDimension': 'ROWS',
+            'values': [
+              thisRow,
+            ],
+          };
+          data.push(toWrite);
         }
-        thisRow[8] = null;
-        let writeRange = `all MOCS!A${rowIndex}:Z${rowIndex}`;
-        console.log(thisRow.indexOf(townhall.eventId));
-        console.log(typeof thisRow[9], typeof townhall.eventId);
-        if (thisRow.indexOf(townhall.eventId) === -1) {
-          thisRow.push(townhall.eventId);
-          console.log(thisRow);
-        } else {
-          console.log('already there');
-        }
-
-        const toWrite = {
-
-          'range': writeRange,
-          'majorDimension': 'ROWS',
-          'values': [
-            thisRow,
-          ],
-
-        };
-        data.push(toWrite);
       }
     });
     const timestamp = {
-
       'range': 'summary!A2',
       'majorDimension': 'ROWS',
       'values': [
