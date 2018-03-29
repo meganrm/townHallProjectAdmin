@@ -368,7 +368,9 @@
     case 'Adopt-A-District/State':
       $form.find('.general-inputs').removeClass('hidden');
       $form.find('.adopter-data').removeClass('hidden');
-      $form.find('#iconFlag').val('activism').addClass('edited');
+      if ($form.find('#iconFlag').val().length === 0) {
+        $form.find('#iconFlag').val('activism').addClass('edited');
+      }
       // setupTypeaheads('#districtAdopter');
       break;
     case 'Ticketed Event':
@@ -380,20 +382,28 @@
       $form.find('.general-inputs').removeClass('hidden');
       break;
     case 'Town Hall':
-      $form.find('#iconFlag').val('in-person').addClass('edited');
       $form.find('.general-inputs').removeClass('hidden');
+      if ($form.find('#iconFlag').val().length === 0) {
+        $form.find('#iconFlag').val('in-person').addClass('edited');
+      }
       break;
     case 'Candidate Town Hall':
-      $form.find('#iconFlag').val('campaign').addClass('edited');
       $form.find('.general-inputs').removeClass('hidden');
+      if ($form.find('#iconFlag').val().length === 0) {
+        $form.find('#iconFlag').val('campaign').addClass('edited');
+      }
       break;
     case 'Hearing':
-      $form.find('#iconFlag').val('').addClass('edited');
       $('.general-inputs').removeClass('hidden');
+      if ($form.find('#iconFlag').val().length === 0) {
+        $form.find('#iconFlag').val('').addClass('edited');
+      }
       break;
     case 'Empty Chair Town Hall':
-      $form.find('#iconFlag').val('activism').addClass('edited');
       $form.find('.general-inputs').removeClass('hidden');
+      if ($form.find('#iconFlag').val().length === 0) {
+        $form.find('#iconFlag').val('activism').addClass('edited');
+      }
       break;
     default:
       $form.find('.general-inputs').removeClass('hidden');
