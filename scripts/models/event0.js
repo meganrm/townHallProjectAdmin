@@ -60,7 +60,7 @@
           }
           if (townHall[key].toLowerCase() === value.toLowerCase()) {
             totals.add(townHall);
-          } 
+          }
         });
         resolve(totals);
       });
@@ -192,9 +192,9 @@
               }
             });
             if (!dup) {
-              firebasedb.ref('zipToDistrict/' + zip).push(obj).then(function(){
-                console.log('wrote', obj);
-              });
+              // firebasedb.ref('zipToDistrict/' + zip).push(obj).then(function(){
+              console.log('wrote', obj);
+              // });
             } else {
               console.log('already there', zip);
             }
