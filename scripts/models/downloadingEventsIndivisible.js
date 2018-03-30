@@ -43,7 +43,7 @@
   IndTownHall.download = function(){
     let data = TownHall.allTownHalls.filter(function(ele){
       return !ele.repeatingEvent && ele.meetingType != 'Tele-Town Hall' && moment(ele.dateObj).isAfter() && ele.meetingType !=='Tele-town Hall';}).reduce(function(acc, cur){
-        obj = new IndTownHall(cur);
+        let obj = new IndTownHall(cur);
         if (obj.event_address1 ) {
           acc.push(obj);
         }
@@ -52,7 +52,7 @@
     // prepare CSV data
     var csvData = new Array();
     csvData.push('"email", "name", "event_public_description","event_title", "event_starts_at_date", "event_starts_at_time", "event_starts_at_ampm","event_address1","event_city","event_postal", "event_venue", "action_meeting_type", "action_link_to_event_information"');
-    data.forEach(function(item, index) {
+    data.forEach(function(item) {
       csvData.push(
         '"' + item.email +
       '","' + item.name +

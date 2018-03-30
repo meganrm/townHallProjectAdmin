@@ -23,22 +23,20 @@ facebookModule.createFacebookQuery = (MoC, facebookID) => {
 };
 
 facebookModule.transformFacebookTownhall = (facebookEvent, flag) => {
-  var district;
+  let chamber;
   if (facebookEvent.MoC.type === 'sen') {
-    district = 'Senate';
+    chamber = 'upper';
   } else {
-    district = facebookEvent.MoC.state + '-' + facebookEvent.MoC.district;
+    chamber = 'lower';
   }
 
-  var townhall = {
+  let townhall = {
     eventId: 'fb_' + facebookEvent.id,
     Member: facebookEvent.MoC.displayName,
     govtrack_id: facebookEvent.MoC.govtrack_id,
-    Party: facebookEvent.MoC.party,
     party: facebookEvent.MoC.party,
-    District: district,
     district: facebookEvent.MoC.district,
-    State: statesAb[facebookEvent.MoC.state],
+    chamber: chamber,
     stateName: statesAb[facebookEvent.MoC.state],
     state: facebookEvent.MoC.state,
     eventName: facebookEvent.name,

@@ -18,21 +18,20 @@ eventBriteModule.createEventbriteQuery = (MoC, startDate) => {
 };
 
 eventBriteModule.transformEventbriteTownhall = (eventBriteEvent) => {
-  var district;
+  let chamber;
   if (eventBriteEvent.MoC.type === 'sen') {
-    district = 'Senate';
+    chamber = 'upper';
   } else {
-    district = eventBriteEvent.MoC.state + '-' + eventBriteEvent.MoC.district;
+    chamber = 'lower';
   }
-  let start = moment(eventBriteEvent.start.local)
-  let end = moment(eventBriteEvent.end.local)
+  let start = moment(eventBriteEvent.start.local);
+  let end = moment(eventBriteEvent.end.local);
   var townhall = {
     eventId: 'eb_' + eventBriteEvent.id,
     Member: eventBriteEvent.MoC.displayName,
     govtrack_id: eventBriteEvent.MoC.govtrack_id,
-    Party: eventBriteEvent.MoC.party,
     party: eventBriteEvent.MoC.party,
-    District: district,
+    chamber: chamber,
     district: eventBriteEvent.MoC.district,
     State: statesAb[eventBriteEvent.MoC.state],
     stateName: statesAb[eventBriteEvent.MoC.state],
