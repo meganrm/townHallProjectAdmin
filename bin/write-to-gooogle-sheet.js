@@ -63,6 +63,9 @@ googleMethods.read(oauth2Client).then((googleRows)=> {
           const thisRow = find(googleRows, (row)=> {
             return row[0] === townhall.govtrack_id;
           });
+          if (!thisRow) {
+            return console.log('no gov track id', townhall);
+          }
           const rowIndex = 1 + findIndex(googleRows, (row)=> {
             return row[0] === townhall.govtrack_id;
           });
@@ -91,6 +94,9 @@ googleMethods.read(oauth2Client).then((googleRows)=> {
           const thisRow = find(googleRows, (row)=> {
             return row[0] === townhall.govtrack_id;
           });
+          if (!thisRow) {
+            return console.log('no gov track id', townhall);
+          }
           const rowIndex = 1 + findIndex(googleRows, (row)=> {
             return row[0] === townhall.govtrack_id;
           });

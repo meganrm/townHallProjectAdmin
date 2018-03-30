@@ -9,7 +9,7 @@ googleMethods.read = (auth) => {
   return new Promise(function(resolve, reject) {
     sheets.spreadsheets.values.get({
       spreadsheetId: process.env.RECESS_SPREADSHEETID,
-      range: 'all MOCS!A1:R537',
+      range: 'all MOCS!A1:R538',
       auth: auth,
     }, function(err, result) {
       if(err) {
