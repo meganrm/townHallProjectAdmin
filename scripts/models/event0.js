@@ -1,4 +1,4 @@
-/*globals firebasedb*/
+/*globals firebasedb OldTownHall*/
 
 (function (module) {
 
@@ -6,6 +6,7 @@
     for (var keys in opts) {
       this[keys] = opts[keys];
     }
+    this.displayDistrict = this.district ? `${this.state}-${this.district}` : 'Senate';
   }
 
   // Global data state

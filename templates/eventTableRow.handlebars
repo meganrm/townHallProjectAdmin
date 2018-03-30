@@ -27,10 +27,30 @@
         <label class="sr-only" for="Member">Member</label>
         <input type="text" data-provide="typeahead" autocomplete="off" class="member-input form-control event-input" id="Member" placeholder="Member" value="{{Member}}">
       </div>
+      {{#if district}}
       <div class="form-group">
-        <label class="sr-only" for="District">District</label>
-        <input type="text" class="form-control event-input" id="District" placeholder="District (eg OH-08)" value="{{District}}">
+        <label class="sr-only" for="district">District</label>
+        <input type="text" class="form-control event-input" id="district" placeholder="zero padded number" value="{{district}}">
       </div>
+      {{/if}}
+      <div class="input-group">
+        <input type="text" class="form-control event-input" aria-label="..." id="chamber" value="{{chamber}}" readonly placeholder="chamber">
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right meeting-type-dropdown">
+            <li>
+              <a data-value="upper" href="#">Upper (senate)</a>
+            </li>
+            <li>
+              <a data-value="lower" href="#">Lower (house)</a>
+            </li>
+          </ul>
+        </div>
+        <!-- /btn-group -->
+      </div>
+      <!-- /input-group -->
       <div class="input-group">
         <input type="text" class="form-control event-input" aria-label="..." id="meetingType" value="{{meetingType}}" readonly>
         <div class="input-group-btn">
@@ -177,7 +197,7 @@
         <span class="member">
         <h4>
         {{Member}}
-        <small>({{Party}})  {{State}},   {{District}}
+        <small>({{party}})  {{state}},   {{displayDistrict}}
         </small>
       </h4>
       <span class="badge badge-default badge-pill pull-right">  {{meetingType}}</span>

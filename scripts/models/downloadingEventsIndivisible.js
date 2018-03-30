@@ -41,7 +41,7 @@
   }
 
   IndTownHall.download = function(){
-    data = TownHall.allTownHalls.filter(function(ele){
+    let data = TownHall.allTownHalls.filter(function(ele){
       return !ele.repeatingEvent && ele.meetingType != 'Tele-Town Hall' && moment(ele.dateObj).isAfter() && ele.meetingType !=='Tele-town Hall';}).reduce(function(acc, cur){
         obj = new IndTownHall(cur);
         if (obj.event_address1 ) {
@@ -74,7 +74,7 @@
     var fileName = 'townhalls.csv';
     var buffer = csvData.join('\n');
     var blob = new Blob([buffer], {
-      'type': 'text/csv;charset=utf8;'
+      'type': 'text/csv;charset=utf8;',
     });
     var link = document.createElement('a');
 
