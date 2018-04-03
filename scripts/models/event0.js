@@ -51,7 +51,6 @@
     var db = firebasedb;
     var ref = db.ref('/townHallsOld/' + dateKey);
     var totals = new Set();
-    console.log(key, value);
     return new Promise (function(resolve){
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
