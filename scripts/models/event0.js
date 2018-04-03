@@ -47,9 +47,9 @@
     });
   };
 
-  TownHall.getOldData = function getOldData (key, value, dateKey) {
+  TownHall.getFilteredData = function getFilteredData (path, key, value) {
     var db = firebasedb;
-    var ref = db.ref('/townHallsOld/' + dateKey);
+    var ref = db.ref(path);
     var totals = new Set();
     console.log(key, value);
     return new Promise (function(resolve){

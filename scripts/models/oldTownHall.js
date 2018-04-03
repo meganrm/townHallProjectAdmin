@@ -32,7 +32,7 @@
     this.Zone_ID = cur.zoneString ? cur.zoneString: ' ';
     this.Address = cur.address;
     this.Notes = cur.Notes ? cur.Notes.replace(/\"/g, '\''): ' ';
-
+    this.Map_Icon = cur.iconFlag;
     this.Link = cur.link ? cur.link : 'https://townhallproject.com/?eventId=' + cur.eventId;
     this.Link_Name = cur.linkName ? cur.linkName: ' ';
   }

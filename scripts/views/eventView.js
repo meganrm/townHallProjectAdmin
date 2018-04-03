@@ -139,24 +139,30 @@
     clearCSVOutput();
     var para = document.createTextNode('Loading...');
     document.getElementById('download-csv-events-list').appendChild(para);
-    var dates = eventHandler.getDateRange().dates;
+    var dateObj = eventHandler.getDateRange();
+    var dates = dateObj.dates;
     var key = $('#lookup-key').val();
-
+    
     var value = $('#lookup-value').val();
     var totalCount = 0;
-    var allEvents = [];
-    dates.forEach(function(date, index){
-      TownHall.getOldData(key, value, date).then(function(returnedSet){
-        totalCount = totalCount + returnedSet.size;
-        var returnedArr = Array.from(returnedSet);
-        allEvents = allEvents.concat(returnedArr);
-        if (index + 1 === dates.length) {
-          $('#lookup-results').val(totalCount);
-          clearCSVOutput();
-          var fileDownloadName = value + '.csv';
-          CSVTownHall.makeDownloadButton('Download Events (csv)', allEvents, fileDownloadName, 'download-csv-events-list');
-        }
-      });
+    let promiseArray = dates.map(date=> {
+      return TownHall.getFilteredData(`townHallsOld/${date}`, key, value );
+    });
+    if (moment().isSameOrAfter(dateObj.end, 'day')){
+      console.log('is today');
+      promiseArray.push(TownHall.getFilteredData('townHalls/', key, value));
+    }
+    const fileDownloadName = value + '.csv';
+    Promise.all(promiseArray).then(function(returnedSets){
+      totalCount =  returnedSets.reduce((acc, cur) => {
+        return acc + cur.size;
+      }, 0);
+      var allEvents = returnedSets.reduce((acc, cur)=> {
+        return acc.concat(Array.from(cur));
+      }, []);
+      $('#lookup-results').val(totalCount);
+      clearCSVOutput();
+      CSVTownHall.makeDownloadButton('Download Events (csv)', allEvents, fileDownloadName, 'download-csv-events-list');
     });
   };
 
