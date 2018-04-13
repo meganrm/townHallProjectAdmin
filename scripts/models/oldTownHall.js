@@ -4,10 +4,10 @@
     if (!cur.eventId) {
       return;
     }
-    if (cur.thp_id) {
-      console.log('state evet');
-      return;
-    }
+    // if (cur.thp_id) {
+    //   console.log('state evet');
+    //   return;
+    // }
     this.Member = cur.Member;
     this.Event_Name = cur.eventName ? cur.eventName: ' ';
     this.Location = cur.Location ? cur.Location: ' ';
@@ -15,6 +15,7 @@
     var district = cur.district ? '-' + cur.district : ' ';
     this.District = cur.state + district;
     this.Party = cur.party ? cur.party: cur.Party;
+    this.state = cur.state;
     this.State = cur.stateName? cur.stateName: cur.State;
     if (cur.repeatingEvent) {
       this.Repeating_Event = cur.repeatingEvent;
@@ -35,6 +36,7 @@
     this.Map_Icon = cur.iconFlag;
     this.Link = cur.link ? cur.link : 'https://townhallproject.com/?eventId=' + cur.eventId;
     this.Link_Name = cur.linkName ? cur.linkName: ' ';
+    this.dateNumber = cur.yearMonthDay;
   }
 
   module.OldTownHall = OldTownHall;

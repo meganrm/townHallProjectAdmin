@@ -76,6 +76,7 @@
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
           let townHall = new OldTownHall(oldTownHall.val());
+          console.log(townHall)
           totals.add(townHall);
         });
         resolve(totals);
