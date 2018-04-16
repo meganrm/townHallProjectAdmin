@@ -24,13 +24,21 @@ function errorReport(error, subject, to) {
 // settings for mailgun
 var mailgun_api_key = process.env.MAILGUN_API_KEY2;
 var domain = 'updates.townhallproject.com';
-var mailgun = require('mailgun-js')({apiKey: mailgun_api_key, domain: domain});
 
-errorReport.prototype.sendEmail = function(){
-  var data = this;
-  console.log('sending');
-  mailgun.messages().send(data, function () {
-  });
-};
+if (process.env.NODE_ENV==='production'){
+  var mailgun = require('mailgun-js')({apiKey: mailgun_api_key, domain: domain});
+  
+  errorReport.prototype.sendEmail = function(){
+    var data = this;
+    console.log('sending');
+    mailgun.messages().send(data, function () {
+    });
+  };
+} else {
+  errorReport.prototype.sendEmail = ()=> {
+    console.log('ERROR REPORT:', this)
+  }
+}
+
 
 module.exports = errorReport;
