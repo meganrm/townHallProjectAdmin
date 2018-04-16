@@ -160,6 +160,7 @@
       var allEvents = returnedSets.reduce((acc, cur)=> {
         return acc.concat(Array.from(cur));
       }, []);
+      eventHandler.allEvents = allEvents;
       $('#lookup-results').val(totalCount);
       clearCSVOutput();
       CSVTownHall.makeDownloadButton('Download Events (csv)', allEvents, fileDownloadName, 'download-csv-events-list');
@@ -171,18 +172,18 @@
     clearCSVOutput();
     var para = document.createTextNode('Loading...');
     document.getElementById('download-csv-events-list').appendChild(para);
-    var date = '2018-1';
+    var date = '2018-2';
 
     var value = $('#lookup-value').val();
     var totalCount = 0;
     var allEvents = [];
-    var state = 'VA';
+    var state = 'NC';
     console.log('state');
     TownHall.getOldStateData(state, date).then(function(returnedSet){
       console.log(returnedSet);
       var returnedArr = Array.from(returnedSet);
 
-      var fileDownloadName = 'town halls' + '.csv';
+      var fileDownloadName = 'nc state' + '.csv';
       CSVTownHall.makeDownloadButton('Download Events (csv)', returnedArr, fileDownloadName, 'state-buttons');
     });
   };

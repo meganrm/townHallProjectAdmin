@@ -10,21 +10,27 @@
     var preview = Handlebars.getTemplate('previewEvent');
     var updated = $form.find('.edited').get();
     var id = $form.attr('id').split('-form')[0];
+    var timeFormats = ['hh:mm A', 'h:mm A'];
     var updates = updated.reduce(function (newObj, cur) {
       var $curValue = $(cur).val();
       switch (cur.id) {
       case 'timeStart24':
-        newObj.timeStart24 = $curValue + ':00';
-        newObj.Time = updateEventView.humanTime($curValue);
+        newObj.timeStart24 = moment($curValue, timeFormats).format('HH:mm:ss');
+        newObj.Time = moment($curValue, timeFormats).format('h:mm A');
+        var tempEnd = moment($curValue, timeFormats).add(2, 'h');
+        newObj.timeEnd24 = moment(tempEnd).format('HH:mm:ss');
+        newObj.timeEnd = moment(tempEnd).format('h:mm A');
         break;
       case 'timeEnd24':
-        newObj.timeEnd24 = $curValue + ':00';
-        newObj.timeEnd = updateEventView.humanTime($curValue);
+        newObj.timeEnd24 = moment($curValue, timeFormats).format('HH:mm:ss');
+        newObj.timeEnd = moment($curValue, timeFormats).format('h:mm A');
         break;
       case 'yearMonthDay':
         newObj[cur.id] = $curValue;
-        newObj.Date = new Date($curValue.replace(/-/g, '/')).toDateString();
-        break;
+        var dateFormats = ['YYYY-MM-DD', 'MM/DD/YYYY', 'MM-DD-YYYY', 'MMMM D, YYYY'];
+        newObj.dateString = moment($curValue, dateFormats).format('ddd, MMM D YYYY');
+        newObj.Date = moment($curValue, dateFormats).format('ddd, MMM D YYYY');
+        break; 
       default:
         newObj[cur.id] = $curValue;
       }
