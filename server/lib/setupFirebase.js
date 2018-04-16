@@ -4,14 +4,14 @@ var firebasekey = process.env.FIREBASE_TOKEN.replace(/\\n/g, '\n');
 
 admin.initializeApp({
   credential: admin.credential.cert({
-    projectId: 'townhallproject-86312',
-    clientEmail: 'herokuadmin@townhallproject-86312.iam.gserviceaccount.com',
+    projectId: process.env.FIREBASE_ID,
+    clientEmail: process.env.FIREBASE_EMAIL,
     privateKey: firebasekey,
     databaseAuthVariableOverride: {
       uid: 'read-only',
     },
   }),
-  databaseURL: 'https://townhallproject-86312.firebaseio.com',
+  databaseURL: process.env.FIREBASE_DB_URL,
 });
 
 module.exports = admin.database();
