@@ -36,8 +36,8 @@ if (process.env.NODE_ENV==='production'){
   };
 } else {
   errorReport.prototype.sendEmail = ()=> {
-    console.log('ERROR REPORT:', this)
-  }
+    console.log('ERROR REPORT:', this);
+  };
 }
 
 

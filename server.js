@@ -5,7 +5,7 @@ const firebasedb = require('./server/lib/setupFirebase.js');
 const eventValid = require('./server/eventValidation.js');
 
 let mailgun;
-if (process.env.NODE_ENV==="production"){
+if (process.env.NODE_ENV==='production'){
   mailgun = require('mailgun-js')({apiKey: mailgun_api_key, domain: domain});
 }
 
@@ -24,7 +24,7 @@ app.listen(port, function() {
   console.log('Server started on port ' + port + '!');
 });
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === 'production') {
   eventValid();
   firebasedb.ref('townHalls/').on('child_added', function(snapshot){
     var townhall = snapshot.val();
