@@ -15,9 +15,9 @@ facebookModule.createFacebookQuery = (MoC, facebookID) => {
     res.data.forEach(event => event.MoC = MoC);
     return res.data;
   }).catch(err => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('error getting', err.message);
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    console.log('error getting', err.message);
+    // }
     return [];
   });
 };
