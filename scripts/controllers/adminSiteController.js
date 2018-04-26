@@ -132,7 +132,6 @@
   };
 
   $(document).ready(function () {
-    // $('#lookup-old-events-form').on('submit', eventHandler.lookupOldEvents);
     $('#download-old-events-form').submit(function(event) {
       event.preventDefault();
       var inputArray = $(this).serializeArray();

@@ -47,7 +47,7 @@
     });
   };
 
-  TownHall.getMatchingData = function testObjSearch (path, obj) {
+  TownHall.getMatchingData = function getMatchingData (path, obj) {
     var db = firebasedb;
     var ref = db.ref(path);
     var totals = new Set();
