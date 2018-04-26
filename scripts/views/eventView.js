@@ -114,9 +114,9 @@
   };
 
   eventHandler.getDateRange = function() {
-    var dateStart = moment($('#start-date').val()).startOf('day');
+    var dateStart = moment($('#start-date').val()).startOf('day').isValid() ? moment($('#start-date').val()).startOf('day') : moment($('#download-start-date').val()).startOf('day');
     dateStart = dateStart.isValid() ? dateStart : moment('2017-01-01').startOf('day');
-    var dateEnd = moment($('#end-date').val()).endOf('day');
+    var dateEnd = moment($('#end-date').val()).endOf('day').isValid() ? moment($('#end-date').val()).endOf('day') : moment($('#download-end-date').val()).endOf('day');
     dateEnd = dateEnd.isValid() ? dateEnd : moment().endOf('day');
     var start = dateStart.valueOf();
     var end = dateEnd.valueOf();
@@ -134,36 +134,25 @@
     };
   };
 
-  eventHandler.lookupOldEvents = function(event){
-    event.preventDefault();
+  eventHandler.lookupOldEvents = function(searchObj) {
     clearCSVOutput();
-    var para = document.createTextNode('Loading...');
-    document.getElementById('download-csv-events-list').appendChild(para);
     var dateObj = eventHandler.getDateRange();
     var dates = dateObj.dates;
-    var key = $('#lookup-key').val();
-    
-    var value = $('#lookup-value').val();
-    var totalCount = 0;
+
     let promiseArray = dates.map(date=> {
-      return TownHall.getFilteredData(`townHallsOld/${date}`, key, value );
+      return TownHall.getMatchingData(`townHallsOld/${date}`, searchObj);
     });
-    if (moment().isSameOrAfter(dateObj.end, 'day')){
-      console.log('is today');
-      promiseArray.push(TownHall.getFilteredData('townHalls/', key, value));
-    }
-    const fileDownloadName = value + '.csv';
     Promise.all(promiseArray).then(function(returnedSets){
-      totalCount =  returnedSets.reduce((acc, cur) => {
-        return acc + cur.size;
-      }, 0);
       var allEvents = returnedSets.reduce((acc, cur)=> {
         return acc.concat(Array.from(cur));
       }, []);
-      eventHandler.allEvents = allEvents;
-      $('#lookup-results').val(totalCount);
+      if (allEvents.length === 0) {
+        alert('No data found');
+        return;
+      }
+      const fileDownloadName = 'Results' + '.csv';
       clearCSVOutput();
-      CSVTownHall.makeDownloadButton('Download Events (csv)', allEvents, fileDownloadName, 'download-csv-events-list');
+      CSVTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
     });
   };
 
@@ -184,7 +173,7 @@
       var returnedArr = Array.from(returnedSet);
 
       var fileDownloadName = 'nc state' + '.csv';
-      CSVTownHall.makeDownloadButton('Download Events (csv)', returnedArr, fileDownloadName, 'state-buttons');
+      CSVTownHall.makeDownloadButton('Download CSV', returnedArr, fileDownloadName, 'state-buttons');
     });
   };
 

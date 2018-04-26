@@ -47,19 +47,30 @@
     });
   };
 
-  TownHall.getFilteredData = function getFilteredData (path, key, value) {
+  TownHall.getMatchingData = function testObjSearch (path, obj) {
     var db = firebasedb;
     var ref = db.ref(path);
     var totals = new Set();
-    console.log(key, value);
-    return new Promise (function(resolve){
+    return new Promise (function(resolve) {
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
           let townHall = new OldTownHall(oldTownHall.val());
-          if (!townHall[key]) {
-            return;
+          var match = true;
+          if (townHall.dateNumber) {
+            if (obj.start_time || obj.end_time) {
+              var curDateRange = dateRange(obj.start_time , obj.end_time);
+              if (!moment(townHall.dateNumber).isBetween(curDateRange.start, curDateRange.end)) {
+                match = false;
+              }
+            }
           }
-          if (townHall[key].toLowerCase() === value.toLowerCase()) {
+          for (var prop in obj) {
+            if (prop === 'end_time' || prop === 'start_time') {continue;}
+            if (!townHall[prop] || townHall[prop].toLowerCase() !== obj[prop].toLowerCase()) {
+              match = false;
+            }
+          }
+          if (match === true) {
             totals.add(townHall);
           }
         });
@@ -67,6 +78,23 @@
       });
     });
   };
+
+  var dateRange = function dateRange(startDate, endDate) {
+    if (startDate) {
+      var dateStart = startDate;
+    }
+    dateStart = dateStart ? dateStart : '2017-01-01';
+    var dateEnd = moment().endOf('day').format('YYYY-MM-DD');
+    if (endDate) {
+      dateEnd = endDate;
+    }
+
+    return {
+      start: dateStart,
+      end: dateEnd,
+    };
+  };
+
 
   TownHall.getOldStateData = function getOldStateData (state, dateKey) {
     var db = firebasedb;

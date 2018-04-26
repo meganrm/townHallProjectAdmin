@@ -132,7 +132,23 @@
   };
 
   $(document).ready(function () {
-    $('#lookup-old-events-form').on('submit', eventHandler.lookupOldEvents);
+    // $('#lookup-old-events-form').on('submit', eventHandler.lookupOldEvents);
+    $('#download-old-events-form').submit(function(event) {
+      event.preventDefault();
+      var inputArray = $(this).serializeArray();
+      var searchObj = {};
+      inputArray.forEach(function(element) {
+        if (element.value) {
+          searchObj[element.name]= element.value;
+        }
+      });
+      if ($.isEmptyObject(searchObj)) {
+        alert('Please add valid input to form.');
+        return;
+      }
+      eventHandler.lookupOldEvents(searchObj);
+    });
+
     $('#lookup-old-state-events-form').on('submit', eventHandler.lookupOldStateEvents);
 
     $('.sort').on('click', 'a', eventHandler.sortTable);
