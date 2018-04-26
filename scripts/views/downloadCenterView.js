@@ -15,7 +15,7 @@
     });
   }
 
-  CSVTownHall.makeDownloadButton = function(buttonName, data, inputFileName, appendToId) {
+  PartnerCsvTownHall.makeDownloadButton = function(buttonName, data, inputFileName, appendToId) {
     if (data.length === 0) {
       return;
     }

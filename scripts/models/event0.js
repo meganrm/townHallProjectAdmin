@@ -1,4 +1,4 @@
-/*globals firebasedb OldTownHall*/
+/*globals firebasedb CsvTownHall*/
 
 (function (module) {
 
@@ -54,7 +54,7 @@
     return new Promise (function(resolve) {
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
-          let townHall = new OldTownHall(oldTownHall.val());
+          let townHall = new CsvTownHall(oldTownHall.val());
           var match = true;
           if (townHall.dateNumber) {
             if (obj.start_time || obj.end_time) {
@@ -103,8 +103,7 @@
     return new Promise (function(resolve){
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
-          let townHall = new OldTownHall(oldTownHall.val());
-          console.log(townHall)
+          let townHall = new CsvTownHall(oldTownHall.val());
           totals.add(townHall);
         });
         resolve(totals);

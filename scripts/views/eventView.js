@@ -1,4 +1,4 @@
-/*globals CSVTownHall ACLUTownHall updateEventView DownLoadCenter*/
+/*globals PartnerCsvTownHall ACLUTownHall updateEventView DownLoadCenter*/
 
 (function (module) {
   // object to hold the front end view functions
@@ -152,7 +152,7 @@
       }
       const fileDownloadName = 'Results' + '.csv';
       clearCSVOutput();
-      CSVTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
+      PartnerCsvTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
     });
   };
 
@@ -173,7 +173,7 @@
       var returnedArr = Array.from(returnedSet);
 
       var fileDownloadName = 'nc state' + '.csv';
-      CSVTownHall.makeDownloadButton('Download CSV', returnedArr, fileDownloadName, 'state-buttons');
+      PartnerCsvTownHall.makeDownloadButton('Download CSV', returnedArr, fileDownloadName, 'state-buttons');
     });
   };
 
@@ -293,8 +293,8 @@
       eventHandler.setupTypeaheadsAllMocs('#for-approval .member-input');
       eventHandler.setupTypeaheads();
       DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download, false);
-      DownLoadCenter.downloadButtonHandler('CAP-download', CSVTownHall.download, false, 'CAP CSV download');
-      DownLoadCenter.downloadButtonHandler('SC-download', CSVTownHall.download, false, 'Sierra Club CSV download');
+      DownLoadCenter.downloadButtonHandler('CAP-download', PartnerCsvTownHall.download, false, 'CAP CSV download');
+      DownLoadCenter.downloadButtonHandler('SC-download', PartnerCsvTownHall.download, false, 'Sierra Club CSV download');
     });
     $('[data-toggle="tooltip"]').tooltip();
   };
