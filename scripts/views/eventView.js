@@ -353,6 +353,24 @@
     });
   };
 
+  ///Archive userSubmissions
+  eventHandler.archiveSubmission = function(event){ 
+    firebase.database().ref(event.target.dataset.path).child(event.target.dataset.id).once('value')
+      .then(function (snapshot) {
+        var townHall = snapshot.val();
+        var year = new Date(townHall.dateObj).getFullYear();
+        var month = new Date(townHall.dateObj).getMonth();
+        var dateKey = year + '-' + month;
+
+        firebase.database().ref('/townHallsOld/' + dateKey + '/' + event.target.dataset.id).update(townHall);
+
+        firebase.database().ref(event.target.dataset.path).child(event.target.dataset.id).remove();
+        $(`#${event.target.dataset.id}`).remove();
+        console.log('Event archived');
+      })
+      .catch(console.log);
+  };
+
 
   module.eventHandler = eventHandler;
 })(window);
