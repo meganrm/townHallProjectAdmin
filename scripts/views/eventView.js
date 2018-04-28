@@ -150,8 +150,22 @@
         alert('No data found');
         return;
       }
-      const fileDownloadName = 'Results' + '.csv';
-      clearCSVOutput();
+      
+      let fileDownloadName = 'Results';
+
+      if (searchObj['Member']) {
+        fileDownloadName = searchObj['Member'];
+      } else if (searchObj['state']) {
+        fileDownloadName = searchObj['state'];
+      } else if (searchObj['Meeting_Type']) {
+        fileDownloadName = searchObj['Meeting_Type'];
+      } else if (searchObj['District']) {
+        fileDownloadName = searchObj['Meeting_Type'];
+      } else if (searchObj['Party']) {
+        fileDownloadName = searchObj['Party'];
+      }
+      
+      fileDownloadName.concat('.csv');
       PartnerCsvTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
     });
   };
