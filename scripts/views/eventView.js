@@ -150,7 +150,7 @@
         alert('No data found');
         return;
       }
-      
+
       let fileDownloadName = 'Results';
 
       if (searchObj['Member']) {
@@ -164,6 +164,7 @@
       } else if (searchObj['Party']) {
         fileDownloadName = searchObj['Party'];
       }
+      
       fileDownloadName.concat('.csv');
 
       PartnerCsvTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
