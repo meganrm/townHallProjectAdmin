@@ -1,6 +1,6 @@
 (function (module) {
 
-  function CSVTownHall(cur) {
+  function PartnerCsvTownHall(cur) {
     if (!cur.eventId) {
       return;
     }
@@ -41,14 +41,14 @@
     this.lastUpdatedHuman = cur.lastUpdatedHuman;
   }
 
-  CSVTownHall.download = function(buttonName){
+  PartnerCsvTownHall.download = function(buttonName){
     var $date = $('#dateInput').val();
     if ($date && moment($date).isValid) {
       var cutoff = moment($date);
     }
     data = TownHall.allTownHalls.filter(function(ele){
       return moment(ele.dateObj).isValid();}).reduce(function(acc, cur){
-        obj = new CSVTownHall(cur);
+        obj = new PartnerCsvTownHall(cur);
         if (obj.address) {
           if (cutoff) {
             var lastUpdated = moment(cur.lastUpdated);
@@ -101,5 +101,5 @@
     document.getElementById('ACLU-buttons').appendChild(li);
   };
 
-  module.CSVTownHall = CSVTownHall;
+  module.PartnerCsvTownHall = PartnerCsvTownHall;
 })(window);

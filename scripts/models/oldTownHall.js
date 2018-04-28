@@ -1,6 +1,6 @@
 (function (module) {
 
-  function OldTownHall(cur) {
+  function CsvTownHall(cur) {
     if (!cur.eventId) {
       return;
     }
@@ -39,5 +39,5 @@
     this.dateNumber = cur.yearMonthDay;
   }
 
-  module.OldTownHall = OldTownHall;
+  module.CsvTownHall = CsvTownHall;
 })(window);
