@@ -6,19 +6,19 @@ const request = require('request-promise'); // NB:  This is isn't the default re
 const statesAb = require('../data/stateMap');
 
 const facebookModule = {};
-
 facebookModule.createFacebookQuery = (MoC, facebookID) => {
   return request({
-    uri: `https://graph.facebook.com/v2.11/${facebookID}/events?time_filter=upcoming&access_token=${facebookToken}`,
+    uri: `https://graph.facebook.com/v2.12/${facebookID}/events?time_filter=upcoming&access_token=${facebookToken}`,
     json: true,
   }).then(res => {
     // Create references to MoCs for easy data lookup later
     res.data.forEach(event => event.MoC = MoC);
     return res.data;
   }).catch(err => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(err.message);
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    console.log('error getting', err.message);
+    // }
+    return [];
   });
 };
 

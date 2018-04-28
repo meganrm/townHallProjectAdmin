@@ -502,6 +502,7 @@
   $('.events-table').on('click', '#archive', updateEventView.archiveEvent);
   $('.events-table').on('submit', 'form', updateEventView.submitUpdateForm);
   $('.events-table').on('click', '#delete', updateEventView.deleteEvent);
+  $('.events-table').on('click', '#archive-button', eventHandler.archiveSubmission);
   $('#archived-lookup').on('submit', updateEventView.loadOldEvents);
   $('#for-approval').on('change', '#Member', updateEventView.memberChanged);
 
