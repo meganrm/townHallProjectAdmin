@@ -68,13 +68,13 @@
     }
   }
 
+  ///I don't think this does anything, had to update the Moc.currentMoc object directly in saveMoc function
   function changeDropdown(event) {
     event.preventDefault();
     var $input = $(this).parents('.input-group').find('input');
     var value = $(this).attr('data-value');
     if (value === 'true') { value = true; }
     if (value === 'false') { value = false; }
-    $input.val(value);
     Moc.currentMoc[$input.attr('id')] = value;
   }
 
@@ -99,6 +99,12 @@
       });
       mocID.updateDisplayName();
     }
+
+    ///If value of key is string true or false, convert to bool
+    Object.keys(Moc.currentMoc).forEach(key => {
+      if (Moc.currentMoc[key] === 'true') { Moc.currentMoc[key] = true;}
+      if (Moc.currentMoc[key] === 'false') { Moc.currentMoc[key] = false; }
+    });
 
     var moc = Moc.currentMoc;
     moc.updateFB().then(function(){
