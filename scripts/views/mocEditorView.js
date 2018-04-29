@@ -113,10 +113,46 @@
     });
   }
 
+  ///adds lookup for a new field
+  function addField(){
+    ///ToDO: Show all possible fields that are not there already
+    ///ToDo: These fields won't show up in the card. Need to do something for that
+    $('#added-field').append($('<input>', { 
+      type: 'text', 
+      id:'field-lookup', 
+      class: 'input-underline', 
+      placeholder:'Field name', 
+      value:'', 
+      autocomplete:'off' })).append($('<button>', {
+        type: 'button',
+        id: 'new-field',
+        value: 'create',
+      }).text('Create Field')).append($('<button>', {
+        type: 'button',
+        id: 'delete-field',
+        value: 'delete',
+      }).text('X'));
+  }
+
+  function newField(){
+    ///Add input field with yes/no
+    ///add it to Moc
+    console.log('New field added');
+  }
+
+  function deleteField(){
+    ///Remove #field-lookup #new-field #delete-field from #added-field
+    console.log('Field deleted');
+    
+  }
+
   $('#moc-editor-form').on('change', '#member-lookup', lookupMember);
   $('#moc-editor-form').on('change', '.moc-input', updateMember);
   $('#moc-editor-form').on('change', '#displayName', updateDisplayName);
   $('#moc-editor-form').on('click', '.member-info a', changeDropdown);
+  $('#moc-editor-form').on('click', '#add-field', addField);
+  $('#moc-editor-form').on('click', '#new-field', newField);
+  $('#moc-editor-form').on('click', '#delete-field', deleteField);
   $('#moc-editor-form').on('submit', saveMOC);
 
   module.mocEditorView = mocEditorView;

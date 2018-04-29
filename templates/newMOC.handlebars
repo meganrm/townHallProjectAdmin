@@ -65,5 +65,33 @@
           </div><!-- /btn-group -->
         </div><!-- /input-group -->
       </div>
+      <div class="form-group col-md-12">
+        <label for="in_office">In Office?</label>
+        <div class="input-group">
+          <input type="text" class="form-control" aria-label="..." id="in_office" value="{{in_office}}" placeholder="is in office"
+            readonly>
+          <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li>
+                <a data-value="true" href="#">true</a>
+              </li>
+              <li>
+                <a data-value="false" href="#">false</a>
+              </li>
+            </ul>
+          </div>
+          <!-- /btn-group -->
+        </div>
+        <!-- /input-group -->
+      </div>
+      <section id="new-fields">
+        <div id="added-field"></div>
+      </section>
+      <div>
+        <button type="button" name="addField" id="add-field" class="to-remove">+</button>
+      </div>
   </section>
 <button type="submit" name="button" class="to-remove">Update MOC data</button>
