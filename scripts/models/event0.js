@@ -55,22 +55,34 @@
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
           let townHall = new CsvTownHall(oldTownHall.val());
-          var match = true;
-          if (townHall.dateNumber) {
-            if (obj.start_time || obj.end_time) {
-              var curDateRange = dateRange(obj.start_time , obj.end_time);
-              if (!moment(townHall.dateNumber).isBetween(curDateRange.start, curDateRange.end)) {
-                match = false;
-              }
+
+          let match = true;
+          let withinDateRange = null;
+
+          // check if town hall is within specified date range
+          if ((obj.start_time || obj.end_time) && townHall.dateNumber) {
+            var curDateRange = dateRange(obj.start_time , obj.end_time);
+            if (moment(townHall.dateNumber).isBetween(curDateRange.start, curDateRange.end)) {
+              withinDateRange = true;
+            } else {
+              withinDateRange = false;
             }
           }
-          for (var prop in obj) {
-            if (prop === 'end_time' || prop === 'start_time') {continue;}
+
+          // check if search object ALL props match town hall props
+          // skip prop if it is date, which should already be handled
+          for (let prop in obj) {
+            if (prop === 'start_time' || prop === 'end_time') {
+              continue;
+            }
             if (!townHall[prop] || townHall[prop].toLowerCase() !== obj[prop].toLowerCase()) {
               match = false;
             }
           }
-          if (match === true) {
+
+          // if match is true and within date range is true or not specified--> 'null'
+          // add town hall to total for download
+          if (match === true && (withinDateRange === true || withinDateRange === null)) {
             totals.add(townHall);
           }
         });

@@ -163,9 +163,9 @@
         fileDownloadName = searchObj['Meeting_Type'];
       } else if (searchObj['Party']) {
         fileDownloadName = searchObj['Party'];
-      }
-      
-      fileDownloadName.concat('.csv');
+      } 
+
+      fileDownloadName = fileDownloadName.concat('.csv');
 
       PartnerCsvTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
     });
