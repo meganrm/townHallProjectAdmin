@@ -58,7 +58,7 @@
           Moc.currentMoc = new Moc(mocdata);
           $('#moc-editor-form').append(compiledTemplate(mocdata));
           Object.keys(mocdata).forEach(function(key){
-            if(typeof mocdata[key] === 'boolean'){
+            if(typeof mocdata[key] === 'boolean' && key !== 'in_office'){
               var boolField = {key: key, value: mocdata[key]};
               $('#new-fields').append(boolFieldsTemplate(boolField));
             }
@@ -119,15 +119,14 @@
     });
   }
 
-  ///adds lookup for a new field
+  ///adds entry for a new field
   function addField(){
-    ///ToDO: Show all possible fields that are not there already
     $('#added-field').append($('<input>', { 
       type: 'text', 
       id:'field-lookup', 
       class: 'input-underline', 
       placeholder:'Field name', 
-      value:'', 
+      value:'',
       autocomplete:'off' })).append($('<button>', {
         type: 'button',
         id: 'new-field',
@@ -144,13 +143,18 @@
   }
 
   function newField(event){
-    var databaseName = event.target.value.replace(/[^A-Z0-9]+/ig, '_');
-    var boolFieldsTemplate = Handlebars.getTemplate('mocBoolField');
-    var boolField = { key: databaseName, value: false };
-    $('#new-fields').append(boolFieldsTemplate(boolField));
-    ///Update moc card
-    Moc.currentMoc[databaseName] = false;
-    deleteField();
+    if(event.target.value){
+      var databaseName = event.target.value.replace(/[^A-Z0-9]+/ig, '_');
+      var boolFieldsTemplate = Handlebars.getTemplate('mocBoolField');
+      var boolField = { key: databaseName, value: false };
+      $('#new-fields').append(boolFieldsTemplate(boolField));
+      ///Update moc card
+      Moc.currentMoc[databaseName] = false;
+      deleteField();
+    } else {
+      $('#field-lookup').attr('placeholder', 'Please add a field name');
+    }
+   
   }
 
   function deleteField(){
