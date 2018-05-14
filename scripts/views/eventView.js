@@ -1,4 +1,4 @@
-/*globals CSVTownHall ACLUTownHall updateEventView DownLoadCenter*/
+/*globals PartnerCsvTownHall ACLUTownHall updateEventView DownLoadCenter*/
 
 (function (module) {
   // object to hold the front end view functions
@@ -114,9 +114,9 @@
   };
 
   eventHandler.getDateRange = function() {
-    var dateStart = moment($('#start-date').val()).startOf('day');
+    var dateStart = moment($('#start-date').val()).startOf('day').isValid() ? moment($('#start-date').val()).startOf('day') : moment($('#download-start-date').val()).startOf('day');
     dateStart = dateStart.isValid() ? dateStart : moment('2017-01-01').startOf('day');
-    var dateEnd = moment($('#end-date').val()).endOf('day');
+    var dateEnd = moment($('#end-date').val()).endOf('day').isValid() ? moment($('#end-date').val()).endOf('day') : moment($('#download-end-date').val()).endOf('day');
     dateEnd = dateEnd.isValid() ? dateEnd : moment().endOf('day');
     var start = dateStart.valueOf();
     var end = dateEnd.valueOf();
@@ -134,36 +134,39 @@
     };
   };
 
-  eventHandler.lookupOldEvents = function(event){
-    event.preventDefault();
+  eventHandler.lookupOldEvents = function(searchObj) {
     clearCSVOutput();
-    var para = document.createTextNode('Loading...');
-    document.getElementById('download-csv-events-list').appendChild(para);
     var dateObj = eventHandler.getDateRange();
     var dates = dateObj.dates;
-    var key = $('#lookup-key').val();
-    
-    var value = $('#lookup-value').val();
-    var totalCount = 0;
+
     let promiseArray = dates.map(date=> {
-      return TownHall.getFilteredData(`townHallsOld/${date}`, key, value );
+      return TownHall.getMatchingData(`townHallsOld/${date}`, searchObj);
     });
-    if (moment().isSameOrAfter(dateObj.end, 'day')){
-      console.log('is today');
-      promiseArray.push(TownHall.getFilteredData('townHalls/', key, value));
-    }
-    const fileDownloadName = value + '.csv';
-    Promise.all(promiseArray).then(function(returnedSets){
-      totalCount =  returnedSets.reduce((acc, cur) => {
-        return acc + cur.size;
-      }, 0);
+    Promise.all(promiseArray).then((returnedSets) => {
       var allEvents = returnedSets.reduce((acc, cur)=> {
         return acc.concat(Array.from(cur));
       }, []);
-      eventHandler.allEvents = allEvents;
-      $('#lookup-results').val(totalCount);
-      clearCSVOutput();
-      CSVTownHall.makeDownloadButton('Download Events (csv)', allEvents, fileDownloadName, 'download-csv-events-list');
+      if (allEvents.length === 0) {
+        alert('No data found');
+        return;
+      }
+      $('#search-total').html(`Search returned ${allEvents.length} events`)
+      let fileDownloadName = 'Results';
+
+      if (searchObj['Member']) {
+        fileDownloadName = searchObj['Member'];
+      } else if (searchObj['state']) {
+        fileDownloadName = searchObj['state'];
+      } else if (searchObj['Meeting_Type']) {
+        fileDownloadName = searchObj['Meeting_Type'];
+      } else if (searchObj['District']) {
+        fileDownloadName = searchObj['Meeting_Type'];
+      } else if (searchObj['Party']) {
+        fileDownloadName = searchObj['Party'];
+      }
+      fileDownloadName = fileDownloadName.concat('.csv');
+
+      PartnerCsvTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
     });
   };
 
@@ -184,7 +187,7 @@
       var returnedArr = Array.from(returnedSet);
 
       var fileDownloadName = 'nc state' + '.csv';
-      CSVTownHall.makeDownloadButton('Download Events (csv)', returnedArr, fileDownloadName, 'state-buttons');
+      PartnerCsvTownHall.makeDownloadButton('Download CSV', returnedArr, fileDownloadName, 'state-buttons');
     });
   };
 
@@ -304,8 +307,8 @@
       eventHandler.setupTypeaheadsAllMocs('#for-approval .member-input');
       eventHandler.setupTypeaheads();
       DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download, false);
-      DownLoadCenter.downloadButtonHandler('CAP-download', CSVTownHall.download, false, 'CAP CSV download');
-      DownLoadCenter.downloadButtonHandler('SC-download', CSVTownHall.download, false, 'Sierra Club CSV download');
+      DownLoadCenter.downloadButtonHandler('CAP-download', PartnerCsvTownHall.download, false, 'CAP CSV download');
+      DownLoadCenter.downloadButtonHandler('SC-download', PartnerCsvTownHall.download, false, 'Sierra Club CSV download');
     });
     $('[data-toggle="tooltip"]').tooltip();
   };

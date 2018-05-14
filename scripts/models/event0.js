@@ -1,4 +1,4 @@
-/*globals firebasedb OldTownHall*/
+/*globals firebasedb CsvTownHall*/
 
 (function (module) {
 
@@ -47,19 +47,42 @@
     });
   };
 
-  TownHall.getFilteredData = function getFilteredData (path, key, value) {
+  TownHall.getMatchingData = function getMatchingData (path, obj) {
     var db = firebasedb;
     var ref = db.ref(path);
     var totals = new Set();
-    console.log(key, value);
-    return new Promise (function(resolve){
+    return new Promise (function(resolve) {
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
-          let townHall = new OldTownHall(oldTownHall.val());
-          if (!townHall[key]) {
-            return;
+          let townHall = new CsvTownHall(oldTownHall.val());
+
+          let match = true;
+          let withinDateRange = null;
+
+          // check if town hall is within specified date range
+          if ((obj.start_time || obj.end_time) && townHall.dateNumber) {
+            var curDateRange = dateRange(obj.start_time , obj.end_time);
+            if (moment(townHall.dateNumber).isBetween(curDateRange.start, curDateRange.end)) {
+              withinDateRange = true;
+            } else {
+              withinDateRange = false;
+            }
           }
-          if (townHall[key].toLowerCase() === value.toLowerCase()) {
+
+          // check if search object ALL props match town hall props
+          // skip prop if it is date, which should already be handled
+          for (let prop in obj) {
+            if (prop === 'start_time' || prop === 'end_time') {
+              continue;
+            }
+            if (!townHall[prop] || townHall[prop].toLowerCase() !== obj[prop].toLowerCase()) {
+              match = false;
+            }
+          }
+
+          // if match is true and within date range is true or not specified--> 'null'
+          // add town hall to total for download
+          if (match === true && (withinDateRange === true || withinDateRange === null)) {
             totals.add(townHall);
           }
         });
@@ -68,6 +91,23 @@
     });
   };
 
+  var dateRange = function dateRange(startDate, endDate) {
+    if (startDate) {
+      var dateStart = startDate;
+    }
+    dateStart = dateStart ? dateStart : '2017-01-01';
+    var dateEnd = moment().endOf('day').format('YYYY-MM-DD');
+    if (endDate) {
+      dateEnd = endDate;
+    }
+
+    return {
+      start: dateStart,
+      end: dateEnd,
+    };
+  };
+
+
   TownHall.getOldStateData = function getOldStateData (state, dateKey) {
     var db = firebasedb;
     var ref = db.ref(`/state_townhalls_archive/${state}/${dateKey}`);
@@ -75,8 +115,7 @@
     return new Promise (function(resolve){
       ref.once('value').then(function(snapshot) {
         snapshot.forEach(function(oldTownHall) {
-          let townHall = new OldTownHall(oldTownHall.val());
-          console.log(townHall)
+          let townHall = new CsvTownHall(oldTownHall.val());
           totals.add(townHall);
         });
         resolve(totals);
