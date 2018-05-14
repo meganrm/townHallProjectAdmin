@@ -142,7 +142,7 @@
     let promiseArray = dates.map(date=> {
       return TownHall.getMatchingData(`townHallsOld/${date}`, searchObj);
     });
-    Promise.all(promiseArray).then(function(returnedSets){
+    Promise.all(promiseArray).then((returnedSets) => {
       var allEvents = returnedSets.reduce((acc, cur)=> {
         return acc.concat(Array.from(cur));
       }, []);
@@ -150,7 +150,7 @@
         alert('No data found');
         return;
       }
-
+      $('#search-total').html(`Search returned ${allEvents.length} events`)
       let fileDownloadName = 'Results';
 
       if (searchObj['Member']) {
@@ -163,7 +163,7 @@
         fileDownloadName = searchObj['Meeting_Type'];
       } else if (searchObj['Party']) {
         fileDownloadName = searchObj['Party'];
-        
+      }
       fileDownloadName = fileDownloadName.concat('.csv');
 
       PartnerCsvTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
