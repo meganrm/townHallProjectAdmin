@@ -78,6 +78,70 @@
     Moc.currentMoc[$input.attr('id')] = value;
   }
 
+  mocEditorView.uploadCSV = function(files){
+    if(window.FileReader){
+      var reader = new FileReader();
+      reader.readAsText(files[0]);
+      reader.onload = csvReader;
+      reader.onerror = errorHandler;
+    }else {
+      alert('not supported!');
+    }
+  };
+
+  function csvReader(event){
+    var csv = event.target.result;
+    processData(csv);
+  }
+
+  function processData(csv){
+    //map function:
+      ///Moc.currentMoc.updateFB()
+    var allTextLines = csv.split(/\r\n|\n/);
+    var lines = [];
+    for (var i = 0; i < allTextLines.length; i++) {
+      var data = allTextLines[i].split(',');
+      var tarr = [];
+      for (var j = 0; j < data.length; j++) {
+        tarr.push(data[j]);
+      }
+      lines.push(tarr);
+    }
+
+    var headers = lines.shift();
+
+    lines.map(function(member){
+      if(member[0] !== ''){
+        var memberKey = Moc.getMemberKey(member[0]);
+        var memberid = Moc.allMocsObjsByName[memberKey].id;
+        firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
+          if (snapshot.exists()) {
+            var mocdata = snapshot.val();
+            Moc.currentMoc = new Moc(mocdata);
+            
+            for(var i=1; i < headers.length; i++){
+              Moc.currentMoc[headers[i]] = member[i].toLowerCase();
+            }
+            Moc.currentMoc.updateFB().then(function(){
+              console.log(`Updated ${member[0]}`);
+            });
+          } else {
+            console.log('No user by that name');
+          }
+        })
+          .catch(function (error) {
+            console.error(error);
+          });
+
+      }});
+  }
+
+  function errorHandler(evt) {
+    if (evt.target.error.name == 'NotReadableError') {
+      alert('Cannot read file!');
+    }
+  }
+
   function updateMember(event) {
     event.preventDefault();
     var $input = $(this);
