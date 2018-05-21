@@ -95,8 +95,6 @@
   }
 
   function processData(csv){
-    //map function:
-      ///Moc.currentMoc.updateFB()
     var allTextLines = csv.split(/\r\n|\n/);
     var lines = [];
     for (var i = 0; i < allTextLines.length; i++) {
@@ -107,9 +105,7 @@
       }
       lines.push(tarr);
     }
-
     var headers = lines.shift();
-
     lines.map(function(member){
       if(member[0] !== ''){
         var memberKey = Moc.getMemberKey(member[0]);
@@ -117,8 +113,7 @@
         firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
           if (snapshot.exists()) {
             var mocdata = snapshot.val();
-            Moc.currentMoc = new Moc(mocdata);
-            
+            Moc.currentMoc = new Moc(mocdata);         
             for(var i=1; i < headers.length; i++){
               Moc.currentMoc[headers[i]] = member[i].toLowerCase();
             }
@@ -132,7 +127,6 @@
           .catch(function (error) {
             console.error(error);
           });
-
       }});
   }
 
