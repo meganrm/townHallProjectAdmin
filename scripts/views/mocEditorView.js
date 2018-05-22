@@ -85,7 +85,7 @@
       reader.onload = csvReader;
       reader.onerror = errorHandler;
     }else {
-      alert('not supported!');
+      alert('This feature is not supported in your browser!');
     }
   };
 
