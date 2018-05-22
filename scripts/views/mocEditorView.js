@@ -106,27 +106,34 @@
       lines.push(tarr);
     }
     var headers = lines.shift();
+    headers = headers.map(function(heading){
+      return heading.replace(/[^A-Z0-9]+/ig, '_');
+    });
     lines.map(function(member){
       if(member[0] !== ''){
         var memberKey = Moc.getMemberKey(member[0]);
-        var memberid = Moc.allMocsObjsByName[memberKey].id;
-        firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
-          if (snapshot.exists()) {
-            var mocdata = snapshot.val();
-            Moc.currentMoc = new Moc(mocdata);         
-            for(var i=1; i < headers.length; i++){
-              Moc.currentMoc[headers[i]] = member[i].toLowerCase();
+        if (!Moc.allMocsObjsByName[memberKey]){
+          console.log(`${member[0]} is not in the database`);
+        } else {
+          var memberid = Moc.allMocsObjsByName[memberKey].id;
+          firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
+            if (snapshot.exists()) {
+              var mocdata = snapshot.val();
+              Moc.currentMoc = new Moc(mocdata);
+              for (var i = 1; i < headers.length; i++) {
+                Moc.currentMoc[headers[i]] = member[i].toLowerCase();
+              }
+              Moc.currentMoc.updateFB().then(function () {
+                console.log(`Updated ${member[0]}`);
+              });
+            } else {
+              console.log('No user by that name');
             }
-            Moc.currentMoc.updateFB().then(function(){
-              console.log(`Updated ${member[0]}`);
+          })
+            .catch(function (error) {
+              console.error(error);
             });
-          } else {
-            console.log('No user by that name');
-          }
-        })
-          .catch(function (error) {
-            console.error(error);
-          });
+        }
       }});
   }
 
