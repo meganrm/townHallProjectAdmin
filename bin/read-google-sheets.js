@@ -1,12 +1,9 @@
 #!/usr/bin/env node
 
-const moment = require('moment');
-const find = require('lodash').find;
-const findIndex = require('lodash').findIndex;
-const states = require('../server/data/stateMap')
+const states = require('../server/data/stateMap');
 var readline = require('readline');
 var googleAuth = require('google-auth-library');
-const Pledger = require('../server/pledger/model')
+const Pledger = require('../server/pledger/model');
 
 const firebasedb = require('../server/lib/setupFirebase');
 const googleMethods = require('../server/recess-events/google-methods');
@@ -62,39 +59,40 @@ googleMethods.getSheets(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2
       googleRows.forEach((sheet) => {
         let data = [];
         let sheetName = sheet.range;
-        let state = sheetName.split(' ')[0].split('\'')[1]
+        let state = sheetName.split(' ')[0].split('\'')[1];
         let values = sheet.values;
         let columnNames = values[0];
-        for(let i = 1; i < values.length; i++){
+        for (let i = 1; i < values.length; i++){
           let row = values[i];
-          let obj = row.reduce((acc, cur, index) => {
-            let columnName = columnNames[index];
-            acc[columnName] = cur;
-            return acc;
-          }, {});
-          if (obj.Candidate && obj.Candidate.length > 0){
-            let newPledger = new Pledger(obj, state);
-            let key = row[row.length - 1];
-            if (key === 'end'){
-              key = firebasedb.ref(`town_hall_pledges/${newPledger.state}`).push().key;
-              row[row.length - 1] = key;
-              let writeRange = `${sheetName.split('!')[0]}!A${i+ 1}:M${i + 1}`;
-
-              let toUpdate = {
-                'range': writeRange,
-                'majorDimension': 'ROWS',
-                'values': [
-                  row,
-                ],
+          if (row.length === columnNames.length){
+            let obj = row.reduce((acc, cur, index) => {
+              let columnName = columnNames[index];
+              acc[columnName] = cur;
+              return acc;
+            }, {});
+            if (obj.Candidate && obj.Candidate.length > 0){
+              let newPledger = new Pledger(obj, state);
+              let key = row[row.length - 1];
+              if (key === 'end') {
+                key = firebasedb.ref(`town_hall_pledges/${newPledger.state}`).push().key;
+                row[row.length - 1] = key;
+                let writeRange = `${sheetName.split('!')[0]}!A${i+ 1}:M${i + 1}`;
+  
+                let toUpdate = {
+                  'range': writeRange,
+                  'majorDimension': 'ROWS',
+                  'values': [
+                    row,
+                  ],
+                };
+                data.push(toUpdate);
               }
-              data.push(toUpdate)
+              firebasedb.ref(`town_hall_pledges/${newPledger.state}/${key}`).update(newPledger);
             }
-            
-            firebasedb.ref(`town_hall_pledges/${newPledger.state}/${key}`).update(newPledger)
           }
         }
-        console.log(data)
-        googleMethods.write(oauth2Client, '13A0YBvYVLglRqVdtKDHVExymrPhxS3LVsY8GH0_kmH0', data)
+        console.log(data);
+        googleMethods.write(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2p2g', data);
       });
     });
   })
