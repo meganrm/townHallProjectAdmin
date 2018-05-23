@@ -1,0 +1,23 @@
+{{#each field}} Key: {{this.key}} Value = {{this.value}} {{/each}}
+<div class="form-group col-md-12">
+    <label for="{{this.key}}">{{this.key}}?</label>
+    <div class="input-group">
+        <input type="text" class="form-control" aria-label="..." id="{{this.key}}" value="{{this.value}}" placeholder="{{this.key}}"
+            readonly>
+        <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+                <li>
+                    <a data-value="true" href="#">true</a>
+                </li>
+                <li>
+                    <a data-value="false" href="#">false</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /btn-group -->
+    </div>
+    <!-- /input-group -->
+</div>
