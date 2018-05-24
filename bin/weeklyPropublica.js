@@ -49,7 +49,7 @@ function updateDatabaseWithNewMembers(newPropublicaMembers) {
         var newMember = new Moc(fullPropPublicaMember);
         newMember.type = type;
         if (!fullPropPublicaMember.govtrack_id) {
-          return console.log('no govtrack_id', fullPropPublicaMember.member_id);
+          return console.log('no govtrack_id', fullPropPublicaMember.member_id );
         }
         var path = '/mocData/' + fullPropPublicaMember.govtrack_id;
         firebasedb.ref(path).once('value').then(function(snapshot) {
