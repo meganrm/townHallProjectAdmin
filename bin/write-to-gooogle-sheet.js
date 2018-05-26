@@ -4,13 +4,13 @@ const moment = require('moment');
 const find = require('lodash').find;
 const findIndex = require('lodash').findIndex;
 
-var readline = require('readline');
+// var readline = require('readline');
 var googleAuth = require('google-auth-library');
 
 
 const firebasedb = require('../server/lib/setupFirebase');
 const googleMethods = require('../server/recess-events/google-methods');
-var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+// var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 var clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 var clientId = process.env.GOOGLE_CLIENT_ID;
@@ -27,30 +27,30 @@ const currentToken =
 
 oauth2Client.credentials = currentToken;
 
-function getNewToken(oauth2Client, callback) {
-  var authUrl = oauth2Client.generateAuthUrl({
-    scope: SCOPES,
-  });
-  console.log('Authorize this app by visiting this url: ', authUrl);
-  var rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  rl.question('Enter the code from that page here: ', function(code) {
-    rl.close();
-    oauth2Client.getToken(code, function(err, token) {
-      if (err) {
-        console.log('Error while trying to retrieve access token', err);
-        return;
-      }
-      console.log('got token', token);
-      oauth2Client.credentials = token;
-      callback(oauth2Client);
-    });
-  });
-}
+// function getNewToken(oauth2Client, callback) {
+//   var authUrl = oauth2Client.generateAuthUrl({
+//     scope: SCOPES,
+//   });
+//   console.log('Authorize this app by visiting this url: ', authUrl);
+//   var rl = readline.createInterface({
+//     input: process.stdin,
+//     output: process.stdout,
+//   });
+//   rl.question('Enter the code from that page here: ', function(code) {
+//     rl.close();
+//     oauth2Client.getToken(code, function(err, token) {
+//       if (err) {
+//         console.log('Error while trying to retrieve access token', err);
+//         return;
+//       }
+//       console.log('got token', token);
+//       oauth2Client.credentials = token;
+//       callback(oauth2Client);
+//     });
+//   });
+// }
 
-googleMethods.read(oauth2Client).then((googleRows)=> {
+googleMethods.read(oauth2Client, process.env.RECESS_SPREADSHEETID, 'all MOCS!A1:R538').then((googleRows)=> {
   firebasedb.ref('townHalls/').once('value')
   .then((snapshot) => {
     const data = [];

@@ -5,11 +5,11 @@ const google = require('googleapis');
 const sheets = google.sheets('v4');
 // getNewToken(oauth2Client, read);
 const googleMethods = {};
-googleMethods.read = (auth) => {
+googleMethods.read = (auth, spreadsheetId, range) => {
   return new Promise(function(resolve, reject) {
     sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.RECESS_SPREADSHEETID,
-      range: 'all MOCS!A1:R538',
+      spreadsheetId: spreadsheetId,
+      range: range,
       auth: auth,
     }, function(err, result) {
       if(err) {
@@ -25,9 +25,51 @@ googleMethods.read = (auth) => {
   });
 };
 
-googleMethods.write = (auth, data) => {
+googleMethods.readMultipleRanges = (auth, spreadsheetId, ranges) => {
+  return new Promise(function (resolve, reject) {
+    sheets.spreadsheets.values.batchGet({
+      spreadsheetId: spreadsheetId,
+      ranges: ranges,
+      auth: auth,
+    }, function (err, result) {
+      if (err) {
+        // Handle error
+        console.log(err);
+        reject(err);
+      } else {
+        var numRows = result.valueRanges ? result.valueRanges.length : 0;
+        console.log('%d rows retrieved.', numRows);
+        resolve(result.valueRanges);
+      }
+    });
+  });
+};
+
+googleMethods.getSheets = (auth, spreadsheetId) => {
+  return new Promise(function (resolve, reject) {
+    sheets.spreadsheets.get({
+      spreadsheetId: spreadsheetId,
+      auth: auth,
+      includeGridData: false,
+      ranges: [],
+    }, function (err, result) {
+      if (err) {
+        // Handle error
+        console.log(err);
+        reject(err);
+      } else {
+        let toReturn = result.sheets.map(ele => {
+          return ele.properties.title;
+        });
+        resolve(toReturn);
+      }
+    });
+  });
+};
+
+googleMethods.write = (auth, sheetId, data) => {
   sheets.spreadsheets.values.batchUpdate({
-    spreadsheetId: process.env.RECESS_SPREADSHEETID,
+    spreadsheetId: sheetId,
     auth: auth,
     resource: {
       valueInputOption: 'USER_ENTERED',
