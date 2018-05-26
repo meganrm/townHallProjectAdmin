@@ -75,7 +75,18 @@
             if (prop === 'start_time' || prop === 'end_time') {
               continue;
             }
-            if (!townHall[prop] || townHall[prop].toLowerCase() !== obj[prop].toLowerCase()) {
+            if (prop === 'district'){
+              let districtMatcher = Number(obj[prop]);
+              let townhallnumber = townHall.District.split('-').length === 2 ? Number(townHall.District.split('-')[1]): null;
+              if (townhallnumber){
+                if (townhallnumber !== districtMatcher){
+                  match = false;
+                }
+              } else {
+                match = false;
+              }
+            }
+            else if (!townHall[prop] || townHall[prop].toLowerCase() !== obj[prop].toLowerCase()) {
               match = false;
             }
           }
