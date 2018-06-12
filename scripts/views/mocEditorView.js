@@ -78,6 +78,13 @@
     Moc.currentMoc[$input.attr('id')] = value;
   }
 
+  function convertToBool(prop){
+    var value = prop.toLowerCase(); 
+    if (value === 'true') { return value = true; }
+    else if (value === 'false') { return value = false; }
+    else { return prop; }
+  }
+
   mocEditorView.uploadCSV = function(files){
     if(window.FileReader){
       var reader = new FileReader();
@@ -94,6 +101,22 @@
     processData(csv);
   }
 
+  function createHeaders(headers){
+    return headers.map(function (heading) {
+      return heading.toLowerCase() !== 'missingmember' && heading.toLowerCase() !== 'missing member' ? heading.replace(/[^A-Z0-9]+/ig, '_').toLowerCase() : 'missingMember';
+    });
+  }
+
+  function createNewMoc(member, headers){
+    var newMember = {};
+    member.reduce(function (accumulator, currentValue, currentIndex) {
+      return newMember[headers[currentIndex]] = convertToBool(currentValue);
+    }, {});
+    var moc = new Moc(newMember);
+    moc['id'] = moc['govtrack_id'];
+    return moc;
+  }
+
   function processData(csv){
     var allTextLines = csv.split(/\r\n|\n/);
     var lines = [];
@@ -105,15 +128,22 @@
       }
       lines.push(tarr);
     }
-    var headers = lines.shift();
-    headers = headers.map(function(heading){
-      return heading.replace(/[^A-Z0-9]+/ig, '_');
-    });
+    var headers = createHeaders(lines.shift());
+
     lines.map(function(member){
       if(member[0] !== ''){
-        var memberKey = Moc.getMemberKey(member[0]);
+        var memberName = `${member[0]} ${member[1]}`;
+        var memberKey = Moc.getMemberKey(memberName);
         if (!Moc.allMocsObjsByName[memberKey]){
-          console.log(`${member[0]} is not in the database`);
+          var govtrackIndex = headers.indexOf('govtrack_id');
+          if(govtrackIndex > -1){
+            var moc = createNewMoc(member,headers);
+            moc.updateFB().then(function () {
+              console.log(`${member[0]} ${member[1]} added!`);
+            });
+          } else {
+            console.log(`No govtrack_id for ${member[0]} ${member[1]}, they were not added to the database.`);
+          }   
         } else {
           var memberid = Moc.allMocsObjsByName[memberKey].id;
           firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
@@ -121,10 +151,12 @@
               var mocdata = snapshot.val();
               Moc.currentMoc = new Moc(mocdata);
               for (var i = 1; i < headers.length; i++) {
-                Moc.currentMoc[headers[i]] = member[i].toLowerCase();
+                if (member[i]) {
+                  Moc.currentMoc[headers[i]] = convertToBool(member[i]);
+                }
               }
               Moc.currentMoc.updateFB().then(function () {
-                console.log(`Updated ${member[0]}`);
+                console.log(`Updated ${member[0]} ${member[1]}`);
               });
             } else {
               console.log('No user by that name');
@@ -135,11 +167,13 @@
             });
         }
       }});
+    $('#moc-uploads')[0].reset();
+    $('#upload-message')[0].innerHTML = 'Upload complete';
   }
 
   function errorHandler(evt) {
     if (evt.target.error.name == 'NotReadableError') {
-      alert('Cannot read file!');
+      $('#upload-message')[0].innerHTML = 'Unable to read the file!';
     }
   }
 
