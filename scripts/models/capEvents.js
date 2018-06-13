@@ -46,9 +46,9 @@
     if ($date && moment($date).isValid) {
       var cutoff = moment($date);
     }
-    data = TownHall.allTownHalls.filter(function(ele){
+    const data = TownHall.allTownHalls.filter(function(ele){
       return moment(ele.dateObj).isValid();}).reduce(function(acc, cur){
-        obj = new PartnerCsvTownHall(cur);
+        let obj = new PartnerCsvTownHall(cur);
         if (obj.address) {
           if (cutoff) {
             var lastUpdated = moment(cur.lastUpdated);
@@ -67,7 +67,7 @@
     var csvData = new Array();
     csvData.push(Object.keys(data[0]).join(', '));
 
-    data.forEach(function(item, index) {
+    data.forEach(function(item) {
       var row = '"' + item['event_title'] + '"';
       Object.keys(item);
       for (var i = 1; i < Object.keys(item).length; i++) {

@@ -45,10 +45,11 @@ class Moc {
   createNew(newPropublicaMember) {
     let updates = {};
     this.displayName = this.first_name + ' ' + this.last_name;
-    // this.state = newPropublicaMember.state;
-    // this.district = newPropublicaMember.district;
-    // this.stateName = statesAb[newPropublicaMember.state];
-    console.log(this.state, this.stateName);
+    this.state = newPropublicaMember.roles[0].state;
+    this.end_date = newPropublicaMember.roles[0].end_date;
+
+    this.district = newPropublicaMember.roles[0].district || null;
+    this.stateName = statesAb[this.state];
     const lastname = this.last_name.replace(/\W/g, '');
     const firstname = this.first_name.replace(/\W/g, '');
     const memberKey = lastname.toLowerCase() + '_' + firstname.toLowerCase();
@@ -66,7 +67,7 @@ class Moc {
   update(path) {
     // if match - update only fields that may change (social media)
     console.log('existing member', this.govtrack_id);
-    // return firebasedb.ref(path).update(this);
+    return firebasedb.ref(path).update(this);
   }
 }
 
