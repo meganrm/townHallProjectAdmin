@@ -117,6 +117,20 @@
     return moc;
   }
 
+  function createReportLi(content){
+    var $report = $('#upload-report')[0];
+    var li = document.createElement('li');
+    li.innerHTML = content;
+    $report.appendChild(li);
+  }
+  
+  function clearReport(event){
+    event.preventDefault();
+    $('#upload-report').empty();
+    $('#clear-report').remove();
+    $('#upload-message').empty();
+  }
+
   function processData(csv){
     var allTextLines = csv.split(/\r\n|\n/);
     var lines = [];
@@ -136,13 +150,13 @@
         var memberKey = Moc.getMemberKey(memberName);
         if (!Moc.allMocsObjsByName[memberKey]){
           var govtrackIndex = headers.indexOf('govtrack_id');
-          if(govtrackIndex > -1){
+          if(govtrackIndex > -1 && member[govtrackIndex]){
             var moc = createNewMoc(member,headers);
             moc.updateFB().then(function () {
-              console.log(`${member[0]} ${member[1]} added!`);
+              createReportLi(`${member[0]} ${member[1]} added`);
             });
           } else {
-            console.log(`No govtrack_id for ${member[0]} ${member[1]}, they were not added to the database.`);
+            createReportLi(`No govtrack_id for ${member[0]} ${member[1]}, they were not added to the database`);
           }   
         } else {
           var memberid = Moc.allMocsObjsByName[memberKey].id;
@@ -156,7 +170,7 @@
                 }
               }
               Moc.currentMoc.updateFB().then(function () {
-                console.log(`Updated ${member[0]} ${member[1]}`);
+                createReportLi(`Updated ${member[0]} ${member[1]}`);
               });
             } else {
               console.log('No user by that name');
@@ -167,8 +181,15 @@
             });
         }
       }});
+    var clearButton = document.createElement('button');
+    clearButton.innerHTML = 'Clear report';
+    clearButton.setAttribute('id','clear-report');
+    clearButton.setAttribute('style', 'display:block');
+
     $('#moc-uploads')[0].reset();
     $('#upload-message')[0].innerHTML = 'Upload complete';
+    $('#upload-message')[0].append(clearButton);
+    $('#clear-report').on('click', clearReport);
   }
 
   function errorHandler(evt) {
