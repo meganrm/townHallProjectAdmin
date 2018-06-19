@@ -48,8 +48,8 @@
     event.preventDefault();
     var preview = Handlebars.getTemplate('editedResults');
     var id = $(this).attr('data-id');
-    var oldTownHall = TownHall.allTownHallsFB[id];
-    oldTownHall.removeOld().then(function (removed) {
+    //var oldTownHall = TownHall.allTownHallsFB[id];
+    eventHandler.archiveSubmission(event).then(function (removed) {
       console.log(removed);
       print.writtenId = removed.eventId;
       print.edit = 'archived';
