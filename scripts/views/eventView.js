@@ -368,23 +368,62 @@
   };
 
   ///Archive userSubmissions
-  eventHandler.archiveSubmission = function(event){ 
+
+  // eventHandler.archiveSubmission = function(event){
+  //   return new Promise(function(resolve, reject){
+  //     firebase.database().ref('townHalls').child(event.target.dataset.id).once('value').then(function(snapshot){
+  //       var townHall = snapshot.val();
+  //       var year = new Date(townHall.dateObj).getFullYear();
+  //       var month = new Date(townHall.dateObj).getMonth();
+  //       var dateKey = year + '-' + month;
+
+  //       firebase.database().ref('/townHallsOld/' + dateKey + '/' + event.target.dataset.id).update(townHall);
+
+  //       firebase.database().ref('townHalls').child(event.target.dataset.id).remove();
+  //       $(`#${event.target.dataset.id}`).remove();
+  //       console.log('Event archived');
+  //       resolve(townHall);
+  //     }).catch(console.log);
+  //   }); 
+  // };
+  eventHandler.archiveSubmission = function(event){
+    var state = event.target.dataset.district.substr(0,2).toUpperCase();
+    var path = '/state_townhalls/' + state + '/';
+
     return new Promise(function(resolve,reject) {
-      firebase.database().ref(event.target.dataset.path).child(event.target.dataset.id).once('value')
+      firebase.database().ref(path).child(event.target.dataset.id).once('value')
         .then(function (snapshot) {
-          var townHall = snapshot.val();
-          var year = new Date(townHall.dateObj).getFullYear();
-          var month = new Date(townHall.dateObj).getMonth();
-          var dateKey = year + '-' + month;
+          console.log(snapshot.exists());
+          
+          if(snapshot.exists()){
+            var townHall = snapshot.val();
+            var year = new Date(townHall.dateObj).getFullYear();
+            var month = new Date(townHall.dateObj).getMonth();
+            var dateKey = year + '-' + month;
 
-          firebase.database().ref('/townHallsOld/' + dateKey + '/' + event.target.dataset.id).update(townHall);
+            firebase.database().ref('/state_townhalls_archive/' + state + '/' + dateKey + '/' + event.target.dataset.id).update(townHall);
 
-          firebase.database().ref(event.target.dataset.path).child(event.target.dataset.id).remove();
-          $(`#${event.target.dataset.id}`).remove();
-          console.log('Event archived');
-          resolve(townHall);
-        })
-        .catch(console.log);
+            firebase.database().ref(event.target.dataset.path).child(event.target.dataset.id).remove();
+            $(`#${event.target.dataset.id}`).remove();
+            console.log('Event archived');
+            resolve(townHall);
+          }else {
+            firebase.database().ref('townHalls').child(event.target.dataset.id).once('value')
+              .then(function (snapshot) {
+                var townHall = snapshot.val();
+                var year = new Date(townHall.dateObj).getFullYear();
+                var month = new Date(townHall.dateObj).getMonth();
+                var dateKey = year + '-' + month;
+
+                firebase.database().ref('/townHallsOld/' + dateKey + '/' + event.target.dataset.id).update(townHall);
+
+                firebase.database().ref('townHalls').child(event.target.dataset.id).remove();
+                $(`#${event.target.dataset.id}`).remove();
+                console.log('Event archived');
+                resolve(townHall);
+              });
+          }
+        }).catch(console.log);
     });
   };
 
