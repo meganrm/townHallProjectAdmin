@@ -134,8 +134,17 @@
     };
   };
 
+  eventHandler.createUILoader = function() {
+    $('#load-modal').modal('show');
+  };
+
+  eventHandler.deleteUILoader = function() {
+    $('#load-modal').modal('hide');
+  };
+
   eventHandler.lookupOldEvents = function(searchObj) {
     clearCSVOutput();
+    eventHandler.createUILoader();
     var dateObj = eventHandler.getDateRange();
     var dates = dateObj.dates;
 
@@ -166,6 +175,7 @@
       }
       fileDownloadName = fileDownloadName.concat('.csv');
 
+      eventHandler.deleteUILoader();
       PartnerCsvTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
     });
   };
