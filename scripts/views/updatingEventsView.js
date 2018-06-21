@@ -48,7 +48,6 @@
     event.preventDefault();
     var preview = Handlebars.getTemplate('editedResults');
     var id = $(this).attr('data-id');
-    //var oldTownHall = TownHall.allTownHallsFB[id];
     eventHandler.archiveSubmission(event).then(function (removed) {
       console.log(removed);
       print.writtenId = removed.eventId;
@@ -502,7 +501,7 @@
   $('.events-table').on('click', '#archive', updateEventView.archiveEvent);
   $('.events-table').on('submit', 'form', updateEventView.submitUpdateForm);
   $('.events-table').on('click', '#delete', updateEventView.deleteEvent);
-  $('.events-table').on('click', '#archive-button', eventHandler.archiveSubmission);
+  $('.events-table').on('click', '#archive-button', updateEventView.archiveEvent);
   $('#archived-lookup').on('submit', updateEventView.loadOldEvents);
   $('#for-approval').on('change', '#Member', updateEventView.memberChanged);
 

@@ -361,6 +361,7 @@
       var buttonInfo = {
         eventId: ele.eventId,
         path: path,
+        state: TownHall.allTownHallsFB[ele.eventId].state,
       };
       $toAppend.find('.btns').html(approveButtons(buttonInfo));
       $(table).append($toAppend);
@@ -368,59 +369,53 @@
   };
 
   ///Archive userSubmissions
-
-  // eventHandler.archiveSubmission = function(event){
-  //   return new Promise(function(resolve, reject){
-  //     firebase.database().ref('townHalls').child(event.target.dataset.id).once('value').then(function(snapshot){
-  //       var townHall = snapshot.val();
-  //       var year = new Date(townHall.dateObj).getFullYear();
-  //       var month = new Date(townHall.dateObj).getMonth();
-  //       var dateKey = year + '-' + month;
-
-  //       firebase.database().ref('/townHallsOld/' + dateKey + '/' + event.target.dataset.id).update(townHall);
-
-  //       firebase.database().ref('townHalls').child(event.target.dataset.id).remove();
-  //       $(`#${event.target.dataset.id}`).remove();
-  //       console.log('Event archived');
-  //       resolve(townHall);
-  //     }).catch(console.log);
-  //   }); 
-  // };
   eventHandler.archiveSubmission = function(event){
-    var state = event.target.dataset.district.substr(0,2).toUpperCase();
-    var path = '/state_townhalls/' + state + '/';
+    var id = event.target.dataset.id;
+    var state = event.target.dataset.state ? event.target.dataset.state : event.target.dataset.district.substr(0,2).toUpperCase();
+    var path = event.target.dataset.path ? event.target.dataset.path : '/state_townhalls/' + state + '/';
+    var firebasedb = firebase.database();
 
     return new Promise(function(resolve,reject) {
-      firebase.database().ref(path).child(event.target.dataset.id).once('value')
-        .then(function (snapshot) {
-          console.log(snapshot.exists());
-          
+      firebasedb.ref(path).child(id).once('value')
+        .then(function (snapshot) {          
           if(snapshot.exists()){
             var townHall = snapshot.val();
             var year = new Date(townHall.dateObj).getFullYear();
             var month = new Date(townHall.dateObj).getMonth();
             var dateKey = year + '-' + month;
 
-            firebase.database().ref('/state_townhalls_archive/' + state + '/' + dateKey + '/' + event.target.dataset.id).update(townHall);
-
-            firebase.database().ref(event.target.dataset.path).child(event.target.dataset.id).remove();
-            $(`#${event.target.dataset.id}`).remove();
-            console.log('Event archived');
-            resolve(townHall);
-          }else {
-            firebase.database().ref('townHalls').child(event.target.dataset.id).once('value')
+            firebasedb.ref('/state_townhalls/').child(state).once('value').then(function(snapshot){
+              var isStateSubmission = snapshot.exists() ? true : false;
+              if (isStateSubmission) {
+                firebasedb.ref('/state_townhalls_archive/' + state + '/' + dateKey + '/' + id).update(townHall);
+              } else {
+                firebasedb.ref('/townHallsOld/' + dateKey + '/' + id).update(townHall);
+              }
+              firebasedb.ref(path).child(id).remove();
+              $(`#${id}`).remove();
+              console.log('Event archived');
+              resolve(townHall);
+            }); 
+          } else {
+            firebasedb.ref('townHalls').child(id).once('value')
               .then(function (snapshot) {
                 var townHall = snapshot.val();
                 var year = new Date(townHall.dateObj).getFullYear();
                 var month = new Date(townHall.dateObj).getMonth();
                 var dateKey = year + '-' + month;
 
-                firebase.database().ref('/townHallsOld/' + dateKey + '/' + event.target.dataset.id).update(townHall);
-
-                firebase.database().ref('townHalls').child(event.target.dataset.id).remove();
-                $(`#${event.target.dataset.id}`).remove();
-                console.log('Event archived');
-                resolve(townHall);
+                firebasedb.ref('/state_townhalls/').child(state).once('value').then(function (snapshot) {
+                  var isStateSubmission = snapshot.exists() ? true : false;
+                  if (isStateSubmission) {
+                    firebasedb.ref('/state_townhalls_archive/' + state + '/' + dateKey + '/' + id).update(townHall);
+                  } else {
+                    firebasedb.ref('/townHallsOld/' + dateKey + '/' + id).update(townHall);
+                  }
+                  firebasedb.ref(path).child(id).remove();
+                  $(`#${id}`).remove();
+                  console.log('Event archived');
+                  resolve(townHall);
+                });
               });
           }
         }).catch(console.log);
