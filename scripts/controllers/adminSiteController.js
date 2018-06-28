@@ -145,6 +145,7 @@
         alert('Please add valid input to form.');
         return;
       }
+      console.log(searchObj);
       eventHandler.lookupOldEvents(searchObj);
     });
 

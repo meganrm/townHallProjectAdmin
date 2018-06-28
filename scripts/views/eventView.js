@@ -17,6 +17,7 @@
 
     $('#stateTypeahead').typeahead($.extend({ source: TownHall.allStates }, typeaheadConfig));
     $('#memberTypeahead').typeahead($.extend({ source: TownHall.allMoCs }, typeaheadConfig));
+    // $('#member-input').typeahead($.extend({ source: TownHall.allMoCs }, typeaheadConfig));
   };
 
   eventHandler.setupTypeaheadsAllMocs = function(input) {
@@ -281,6 +282,7 @@
   };
 
   eventHandler.readData = function (path) {
+    console.log('read data');
     var $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;
