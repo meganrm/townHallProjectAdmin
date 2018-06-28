@@ -156,6 +156,7 @@
         return acc.concat(Array.from(cur));
       }, []);
       if (allEvents.length === 0) {
+        eventHandler.deleteUILoader();
         alert('No data found');
         return;
       }
