@@ -1,3 +1,5 @@
+/*globals firebasedb*/
+
 (function (module) {
   function Moc(opts) {
     for (keys in opts) {

@@ -62,7 +62,7 @@
           // check if town hall is within specified date range
           if ((obj.start_time || obj.end_time) && townHall.dateNumber) {
             var curDateRange = dateRange(obj.start_time , obj.end_time);
-            if (moment(townHall.dateNumber).isBetween(curDateRange.start, curDateRange.end)) {
+            if (townHall.dateNumber && moment(townHall.dateNumber).isBetween(curDateRange.start, curDateRange.end)) {
               withinDateRange = true;
             } else {
               withinDateRange = false;

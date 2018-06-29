@@ -17,7 +17,6 @@
 
     $('#stateTypeahead').typeahead($.extend({ source: TownHall.allStates }, typeaheadConfig));
     $('#memberTypeahead').typeahead($.extend({ source: TownHall.allMoCs }, typeaheadConfig));
-    // $('#member-input').typeahead($.extend({ source: TownHall.allMoCs }, typeaheadConfig));
   };
 
   eventHandler.setupTypeaheadsAllMocs = function(input) {
@@ -157,6 +156,7 @@
         return acc.concat(Array.from(cur));
       }, []);
       if (allEvents.length === 0) {
+        eventHandler.deleteUILoader();
         alert('No data found');
         return;
       }
@@ -292,7 +292,6 @@
   };
 
   eventHandler.readData = function (path) {
-    console.log('read data');
     var $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;
@@ -317,6 +316,7 @@
     });
     firebase.database().ref(path).once('value').then(function(){
       eventHandler.setupTypeaheadsAllMocs('#for-approval .member-input');
+      eventHandler.setupTypeaheadsAllMocs('#searchInput');
       eventHandler.setupTypeaheads();
       DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download, false);
       DownLoadCenter.downloadButtonHandler('CAP-download', PartnerCsvTownHall.download, false, 'CAP CSV download');
