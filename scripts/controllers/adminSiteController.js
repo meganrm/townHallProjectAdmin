@@ -36,6 +36,7 @@
   };
 
   adminSiteController.renderMain= function(ctx){
+    adminSiteController.renderAdmin();
     if (ctx.Auth) {
       switch (ctx.Auth) {
       case 'isAdmin':
