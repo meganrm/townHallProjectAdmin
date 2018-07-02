@@ -47,7 +47,7 @@
     });
   };
 
-  TownHall.getMatchingData = function getMatchingData (path, obj) {
+  TownHall.getMatchingData = function getMatchingData(path, obj) {
     var db = firebasedb;
     var ref = db.ref(path);
     var totals = new Set();
@@ -72,7 +72,7 @@
           // check if search object ALL props match town hall props
           // skip prop if it is date, which should already be handled
           for (let prop in obj) {
-            if (prop === 'start_time' || prop === 'end_time') {
+            if (prop === 'start_time' || prop === 'end_time' || prop === 'Member') {
               continue;
             }
             if (prop === 'district'){
@@ -85,8 +85,9 @@
               } else {
                 match = false;
               }
-            }
-            else if (!townHall[prop] || townHall[prop].toLowerCase() !== obj[prop].toLowerCase()) {
+            } else if (prop === 'govtrack_id' && townHall[prop] !== obj[prop]) {
+              match = false;
+            } else if (!townHall[prop] || townHall[prop].toLowerCase() !== obj[prop].toLowerCase()) {
               match = false;
             }
           }

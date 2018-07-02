@@ -14,6 +14,7 @@
     this.Meeting_Type = cur.meetingType;
     var district = cur.district ? '-' + cur.district : ' ';
     this.District = cur.state + district;
+    this.govtrack_id = cur.govtrack_id || ' ';
     this.Party = cur.party ? cur.party: cur.Party;
     this.state = cur.state;
     this.State = cur.stateName? cur.stateName: cur.State;

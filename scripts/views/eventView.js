@@ -1,4 +1,4 @@
-/*globals PartnerCsvTownHall ACLUTownHall updateEventView DownLoadCenter*/
+/*globals PartnerCsvTownHall ACLUTownHall updateEventView DownLoadCenter getGovtrackIDHandler*/
 
 (function (module) {
   // object to hold the front end view functions
@@ -144,6 +144,17 @@
 
   eventHandler.lookupOldEvents = function(searchObj) {
     clearCSVOutput();
+    if (searchObj['Member']) {
+      getGovtrackIDHandler.getIdFromName(searchObj['Member']).then(function(data) {
+        searchObj.govtrack_id = data.toString();
+        eventHandler.searchEvents(searchObj);
+      });
+    } else {
+      eventHandler.searchEvents(searchObj);
+    }
+  };
+
+  eventHandler.searchEvents = function searchEvents(searchObj) {
     eventHandler.createUILoader();
     var dateObj = eventHandler.getDateRange();
     var dates = dateObj.dates;
