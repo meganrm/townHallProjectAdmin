@@ -114,20 +114,17 @@
   }
 
   function createNewMoc(member, headers){
-    var newMember = {};
-    member.reduce(function (accumulator, currentValue, currentIndex) {
-      return newMember[headers[currentIndex]] = convertToBool(currentValue);
-    }, {});
+    var newMember = member.reduce(function (accumulator, currentValue, currentIndex) {
+      return accumulator[headers[currentIndex]] = convertToBool(currentValue);
+    });
+    newMember['nameEntered'] = `${newMember['first_name']} ${newMember['last_name']}`;
     var moc = new Moc(newMember);
     moc['id'] = moc['govtrack_id'];
     return moc;
   }
 
   function createReportLi(content){
-    var $report = $('#upload-report')[0];
-    var li = document.createElement('li');
-    li.innerHTML = content;
-    $report.appendChild(li);
+    $($('#upload-report')[0]).append(`<li>${content}</li>`);
   }
   
   function clearReport(event){
@@ -159,6 +156,7 @@
           if(govtrackIndex > -1 && member[govtrackIndex]){
             var moc = createNewMoc(member,headers);
             moc.updateFB().then(function () {
+              moc.updateDisplayName();
               createReportLi(`${member[0]} ${member[1]} added`);
             });
           } else {
