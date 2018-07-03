@@ -142,12 +142,14 @@
     $('#load-modal').modal('hide');
   };
 
-  eventHandler.lookupOldEvents = function(searchObj) {
+  eventHandler.lookupEvents = function(searchObj) {
     clearCSVOutput();
     if (searchObj['Member']) {
       getGovtrackIDHandler.getIdFromName(searchObj['Member']).then(function(data) {
         searchObj.govtrack_id = data.toString();
         eventHandler.searchEvents(searchObj);
+      }).catch((err) =>{
+        alert('No data found');
       });
     } else {
       eventHandler.searchEvents(searchObj);
@@ -158,7 +160,6 @@
     eventHandler.createUILoader();
     var dateObj = eventHandler.getDateRange();
     var dates = dateObj.dates;
-
     let promiseArray = dates.map(date=> {
       return TownHall.getMatchingData(`townHallsOld/${date}`, searchObj);
     });
@@ -169,27 +170,32 @@
       if (allEvents.length === 0) {
         eventHandler.deleteUILoader();
         alert('No data found');
+        $('#search-total').html(``);
         return;
       }
-      $('#search-total').html(`Search returned ${allEvents.length} events`)
-      let fileDownloadName = 'Results';
-
-      if (searchObj['Member']) {
-        fileDownloadName = searchObj['Member'];
-      } else if (searchObj['state']) {
-        fileDownloadName = searchObj['state'];
-      } else if (searchObj['Meeting_Type']) {
-        fileDownloadName = searchObj['Meeting_Type'];
-      } else if (searchObj['District']) {
-        fileDownloadName = searchObj['Meeting_Type'];
-      } else if (searchObj['Party']) {
-        fileDownloadName = searchObj['Party'];
-      }
-      fileDownloadName = fileDownloadName.concat('.csv');
-
+      $('#search-total').html(`Search returned ${allEvents.length} events`);
+      var fileDownloadName = eventHandler.createFileName(searchObj);
       eventHandler.deleteUILoader();
       PartnerCsvTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
     });
+  };
+
+  eventHandler.createFileName = function(searchObj) {
+    let fileName = 'Results';
+    if (searchObj['Member']) {
+      fileName = searchObj['Member'];
+    } else if (searchObj['state']) {
+      fileName = searchObj['state'];
+    } else if (searchObj['Meeting_Type']) {
+      fileName = searchObj['Meeting_Type'];
+    } else if (searchObj['District']) {
+      fileName = searchObj['Meeting_Type'];
+    } else if (searchObj['Party']) {
+      fileName = searchObj['Party'];
+    }
+    fileName = fileName.concat('.csv');
+
+    return fileName;
   };
 
   eventHandler.lookupOldStateEvents = function(event){

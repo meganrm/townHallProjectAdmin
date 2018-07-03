@@ -51,49 +51,39 @@
     var db = firebasedb;
     var ref = db.ref(path);
     var totals = new Set();
-    return new Promise (function(resolve) {
-      ref.once('value').then(function(snapshot) {
-        snapshot.forEach(function(oldTownHall) {
+    return new Promise(function (resolve) {
+      ref.once('value').then(function (snapshot) {
+        snapshot.forEach(function (oldTownHall) {
           let townHall = new CsvTownHall(oldTownHall.val());
-
           let match = true;
           let withinDateRange = null;
-
           // check if town hall is within specified date range
           if ((obj.start_time || obj.end_time) && townHall.dateNumber) {
-            var curDateRange = dateRange(obj.start_time , obj.end_time);
+            var curDateRange = dateRange(obj.start_time, obj.end_time);
             if (townHall.dateNumber && moment(townHall.dateNumber).isBetween(curDateRange.start, curDateRange.end)) {
               withinDateRange = true;
             } else {
               withinDateRange = false;
             }
           }
-
-          // check if search object ALL props match town hall props
-          // skip prop if it is date, which should already be handled
           for (let prop in obj) {
             if (prop === 'start_time' || prop === 'end_time' || prop === 'Member') {
               continue;
             }
-            if (prop === 'district'){
-              let districtMatcher = Number(obj[prop]);
-              let townhallnumber = townHall.District.split('-').length === 2 ? Number(townHall.District.split('-')[1]): null;
-              if (townhallnumber){
-                if (townhallnumber !== districtMatcher){
-                  match = false;
-                }
-              } else {
-                match = false;
-              }
-            } else if (prop === 'govtrack_id' && townHall[prop] !== obj[prop]) {
+            if (prop === 'district') {
+              match = checkDistrict(obj[prop], townHall);
+            } else if (prop === 'govtrack_id' && townHall[prop] !== obj[prop]) { // govtrack doesn't match
               match = false;
-            } else if (!townHall[prop] || townHall[prop].toLowerCase() !== obj[prop].toLowerCase()) {
+            } else if (townHall[prop] && (townHall[prop].toLowerCase() !== obj[prop].toLowerCase())) {
+              match = false;
+            } else if (!townHall[prop]) {
               match = false;
             }
+            if (match === false) { 
+              break;    // prevent an iteration on 'match = false' to be changed to true
+            }
           }
-
-          // if match is true and within date range is true or not specified--> 'null'
-          // add town hall to total for download
+          // if match is true and within date range is true or not specified--> 'null' add town hall
           if (match === true && (withinDateRange === true || withinDateRange === null)) {
             totals.add(townHall);
           }
@@ -101,6 +91,21 @@
         resolve(totals);
       });
     });
+  };
+
+  // check district
+  var checkDistrict = function checkDistrict(dist, townHall) {
+    let localMatch = true;
+    let districtMatcher = Number(dist);
+    let townhallNumber = townHall.District.split('-').length === 2 ? Number(townHall.District.split('-')[1]) : null;
+    if (townhallNumber) {
+      if (townhallNumber !== districtMatcher) {
+        localMatch = false;
+      }
+    } else {  // no valid district number
+      localMatch = false;
+    }
+    return localMatch;
   };
 
   var dateRange = function dateRange(startDate, endDate) {
@@ -112,7 +117,6 @@
     if (endDate) {
       dateEnd = endDate;
     }
-
     return {
       start: dateStart,
       end: dateEnd,
