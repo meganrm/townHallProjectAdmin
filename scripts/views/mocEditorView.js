@@ -84,6 +84,124 @@
     Moc.currentMoc[$input.attr('id')] = value;
   }
 
+  function convertToBool(prop){
+    var value = prop.toLowerCase(); 
+    if (value === 'true') { return value = true; }
+    else if (value === 'false') { return value = false; }
+    else { return prop; }
+  }
+
+  mocEditorView.uploadCSV = function(files){
+    if(window.FileReader){
+      var reader = new FileReader();
+      reader.readAsText(files[0]);
+      reader.onload = csvReader;
+      reader.onerror = errorHandler;
+    }else {
+      alert('This feature is not supported in your browser!');
+    }
+  };
+
+  function csvReader(event){
+    var csv = event.target.result;
+    processData(csv);
+  }
+
+  function createHeaders(headers){
+    return headers.map(function (heading) {
+      return heading.toLowerCase() !== 'missingmember' && heading.toLowerCase() !== 'missing member' ? heading.replace(/[^A-Z0-9]+/ig, '_').toLowerCase() : 'missingMember';
+    });
+  }
+
+  function createNewMoc(member, headers){
+    var newMember = member.reduce(function (accumulator, currentValue, currentIndex) {
+      return accumulator[headers[currentIndex]] = convertToBool(currentValue);
+    });
+    newMember['nameEntered'] = `${newMember['first_name']} ${newMember['last_name']}`;
+    var moc = new Moc(newMember);
+    moc['id'] = moc['govtrack_id'];
+    return moc;
+  }
+
+  function createReportLi(content){
+    $($('#upload-report')[0]).append(`<li>${content}</li>`);
+  }
+  
+  function clearReport(event){
+    event.preventDefault();
+    $('#upload-report').empty();
+    $('#clear-report').remove();
+    $('#upload-message').empty();
+  }
+
+  function processData(csv){
+    var allTextLines = csv.split(/\r\n|\n/);
+    var lines = [];
+    for (var i = 0; i < allTextLines.length; i++) {
+      var data = allTextLines[i].split(',');
+      var tarr = [];
+      for (var j = 0; j < data.length; j++) {
+        tarr.push(data[j]);
+      }
+      lines.push(tarr);
+    }
+    var headers = createHeaders(lines.shift());
+
+    lines.map(function(member){
+      if(member[0] !== ''){
+        var memberName = `${member[0]} ${member[1]}`;
+        var memberKey = Moc.getMemberKey(memberName);
+        if (!Moc.allMocsObjsByName[memberKey]){
+          var govtrackIndex = headers.indexOf('govtrack_id');
+          if(govtrackIndex > -1 && member[govtrackIndex]){
+            var moc = createNewMoc(member,headers);
+            moc.updateFB().then(function () {
+              moc.updateDisplayName();
+              createReportLi(`${member[0]} ${member[1]} added`);
+            });
+          } else {
+            createReportLi(`No govtrack_id for ${member[0]} ${member[1]}, they were not added to the database`);
+          }   
+        } else {
+          var memberid = Moc.allMocsObjsByName[memberKey].id;
+          firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
+            if (snapshot.exists()) {
+              var mocdata = snapshot.val();
+              Moc.currentMoc = new Moc(mocdata);
+              for (var i = 1; i < headers.length; i++) {
+                if (member[i]) {
+                  Moc.currentMoc[headers[i]] = convertToBool(member[i]);
+                }
+              }
+              Moc.currentMoc.updateFB().then(function () {
+                createReportLi(`Updated ${member[0]} ${member[1]}`);
+              });
+            } else {
+              console.log('No user by that name');
+            }
+          })
+            .catch(function (error) {
+              console.error(error);
+            });
+        }
+      }});
+    var clearButton = document.createElement('button');
+    clearButton.innerHTML = 'Clear report';
+    clearButton.setAttribute('id','clear-report');
+    clearButton.setAttribute('style', 'display:block');
+
+    $('#moc-uploads')[0].reset();
+    $('#upload-message')[0].innerHTML = 'Upload complete';
+    $('#upload-message')[0].append(clearButton);
+    $('#clear-report').on('click', clearReport);
+  }
+
+  function errorHandler(evt) {
+    if (evt.target.error.name == 'NotReadableError') {
+      $('#upload-message')[0].innerHTML = 'Unable to read the file!';
+    }
+  }
+
   function updateMember(event) {
     event.preventDefault();
     var $input = $(this);

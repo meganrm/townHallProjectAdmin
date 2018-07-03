@@ -559,6 +559,11 @@
             <div role="tabpanel" class="tab-pane page" id="moc-editor">
               <section>
                 <h3 class="text-primary table-title text-center">Edit or add MOCs</h3>
+                <label for="uploadCSV">Upload Bulk Changes</label>
+                <form id="moc-uploads"><input type="file" id="uploadCSV" onchange="mocEditorView.uploadCSV(this.files)" accept=".csv">
+                <h4 id="upload-message"></h4>
+                <ul id="upload-report"></ul>
+                </form>
                 <form class="" id="moc-editor-form">
                   <h4>Member of Congress Information<br>
                     <small>Enter their full name to look up current MOC <span class="text-success" id="update-successful"></span></small>
