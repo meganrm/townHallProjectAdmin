@@ -39,7 +39,7 @@ eventBriteModule.transformEventbriteTownhall = (eventBriteEvent) => {
     eventName: eventBriteEvent.name.text,
     meetingType: 'unknown',
     link: eventBriteEvent.url,
-    linkName: 'Eventbrite Link',
+    linkName: 'Eventbrite RSVP',
     dateObj: moment(eventBriteEvent.start.utc).valueOf(),
     dateString: start.format('ddd, MMM D, YYYY'),
     Date: start.format('ddd, MMM D, YYYY'),
