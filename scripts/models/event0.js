@@ -48,48 +48,45 @@
   };
 
   TownHall.getMatchingData = function getMatchingData(path, obj) {
-    var db = firebasedb;
-    var ref = db.ref(path);
+    let ref = firebasedb.ref(path);
     var totals = new Set();
-    return new Promise(function (resolve) {
-      ref.once('value').then(function (snapshot) {
-        snapshot.forEach(function (oldTownHall) {
-          let townHall = new CsvTownHall(oldTownHall.val());
-          let match = true;
-          let withinDateRange = null;
-          // check if town hall is within specified date range
-          if ((obj.start_time || obj.end_time) && townHall.dateNumber) {
-            var curDateRange = dateRange(obj.start_time, obj.end_time);
-            if (townHall.dateNumber && moment(townHall.dateNumber).isBetween(curDateRange.start, curDateRange.end)) {
-              withinDateRange = true;
-            } else {
-              withinDateRange = false;
-            }
+    return ref.once('value').then(function (snapshot) {
+      snapshot.forEach(function (oldTownHall) {
+        let townHall = new CsvTownHall(oldTownHall.val());
+        let match = true;
+        let withinDateRange = null;
+        // check if town hall is within specified date range
+        if ((obj.start_time || obj.end_time) && townHall.dateNumber) {
+          var curDateRange = dateRange(obj.start_time, obj.end_time);
+          if (townHall.dateNumber && moment(townHall.dateNumber).isBetween(curDateRange.start, curDateRange.end)) {
+            withinDateRange = true;
+          } else {
+            withinDateRange = false;
           }
-          for (let prop in obj) {
-            if (prop === 'start_time' || prop === 'end_time' || prop === 'Member') {
-              continue;
-            }
-            if (prop === 'district') {
-              match = checkDistrict(obj[prop], townHall);
-            } else if (prop === 'govtrack_id' && townHall[prop] !== obj[prop]) { // govtrack doesn't match
-              match = false;
-            } else if (townHall[prop] && (townHall[prop].toLowerCase() !== obj[prop].toLowerCase())) {
-              match = false;
-            } else if (!townHall[prop]) {
-              match = false;
-            }
-            if (match === false) { 
-              break;    // prevent an iteration on 'match = false' to be changed to true
-            }
+        }
+        for (let prop in obj) {
+          if (prop === 'start_time' || prop === 'end_time' || prop === 'Member') {
+            continue;
           }
-          // if match is true and within date range is true or not specified--> 'null' add town hall
-          if (match === true && (withinDateRange === true || withinDateRange === null)) {
-            totals.add(townHall);
+          if (prop === 'district') {
+            match = checkDistrict(obj[prop], townHall);
+          } else if (prop === 'govtrack_id' && townHall[prop] !== obj[prop]) { // govtrack doesn't match
+            match = false;
+          } else if (townHall[prop] && (townHall[prop].toLowerCase() !== obj[prop].toLowerCase())) {
+            match = false;
+          } else if (!townHall[prop]) {
+            match = false;
           }
-        });
-        resolve(totals);
+          if (match === false) {
+            break;    // prevent an iteration on 'match = false' to be changed to true
+          }
+        }
+        // if match is true and within date range is true or not specified--> 'null' add town hall
+        if (match === true && (withinDateRange === true || withinDateRange === null)) {
+          totals.add(townHall);
+        }
       });
+      return totals;
     });
   };
 
