@@ -218,10 +218,6 @@
         if (newTownHall.Date) {
           newTownHall = updateEventView.validateDate(id, databaseTH, newTownHall);
         }
-        // Clear district if the chamber has been changed to upper
-        if (newTownHall.chamber === 'upper') {
-          newTownHall.district = null;
-        }
         if (newTownHall) {
           var path = '/townHalls/';
           if (listID === 'state-events-table') {
@@ -352,15 +348,20 @@
     event.preventDefault();
     let $form = $(this).parents('form');
     var value = $(this).attr('data-value');
-    let $districtForm = $(this).parents('.input-group').prev();
     $form.find('#chamber').val(value).addClass('edited');
     $form.find('#chamber').change();
+    var $listgroup = $(this).parents('.list-group-item');
+    let $districtForm = $(this).parents('.input-group').prev();
     if (value === 'upper') {
       $districtForm.addClass('hidden');
+      $districtForm.find('#district').val(null);
+      updateEventView.formChanged.call($districtForm.find('#district'));
     } else {
       $districtForm.removeClass('hidden');
     }
-  }
+
+    updateEventView.updatedView($form, $listgroup);
+  };
 
   updateEventView.changeDeleteReason = function (event) {
     event.preventDefault();
