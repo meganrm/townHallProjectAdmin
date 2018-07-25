@@ -218,6 +218,10 @@
         if (newTownHall.Date) {
           newTownHall = updateEventView.validateDate(id, databaseTH, newTownHall);
         }
+        // Clear district if the chamber has been changed to upper
+        if (newTownHall.chamber === 'upper') {
+          newTownHall.district = null;
+        }
         if (newTownHall) {
           var path = '/townHalls/';
           if (listID === 'state-events-table') {
@@ -343,6 +347,20 @@
     $form.find('#meetingType').val(value).addClass('edited');
     $form.find('#meetingType').change();
   };
+
+  updateEventView.changeChamberType = function (event) {
+    event.preventDefault();
+    let $form = $(this).parents('form');
+    var value = $(this).attr('data-value');
+    let $districtForm = $(this).parents('.input-group').prev();
+    $form.find('#chamber').val(value).addClass('edited');
+    $form.find('#chamber').change();
+    if (value === 'upper') {
+      $districtForm.addClass('hidden');
+    } else {
+      $districtForm.removeClass('hidden');
+    }
+  }
 
   updateEventView.changeDeleteReason = function (event) {
     event.preventDefault();
@@ -500,6 +518,7 @@
 
   // event listeners for table interactions
   $('.events-table').on('click', '#geocode-button', updateEventView.geoCode);
+  $('.events-table').on('click', '.chamber-dropdown a', updateEventView.changeChamberType);
   $('.events-table').on('click', '.meeting-type-dropdown a', updateEventView.changeMeetingType);
   $('.events-table').on('click', '.delete-reason-choice a', updateEventView.changeDeleteReason);
   $('.events-table').on('click', '.icon-flag-dropdown a', updateEventView.changeIconFlag);
