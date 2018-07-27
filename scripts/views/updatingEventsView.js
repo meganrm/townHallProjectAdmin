@@ -362,6 +362,15 @@
     $form.find('#iconFlag').change();
   };
 
+  updateEventView.changeParty = function(event) {
+    event.preventDefault();
+    console.log(this);
+    let $form = $(this).parents('form');
+    var value = $(this).attr('data-value');
+    $form.find('#party').val(value);
+    $form.find('#party').change();
+  };
+
   updateEventView.showHideMeetingTypeFields = function(value, $form) {
     switch (value) {
     case 'Tele-Town Hall':
@@ -494,8 +503,10 @@
   $('.events-table').on('click', '.meeting-type-dropdown a', updateEventView.changeMeetingType);
   $('.events-table').on('click', '.delete-reason-choice a', updateEventView.changeDeleteReason);
   $('.events-table').on('click', '.icon-flag-dropdown a', updateEventView.changeIconFlag);
+  $('.events-table').on('click', '.party-dropdown a', updateEventView.changeParty);
   $('.events-table').on('change', '#meetingType', updateEventView.meetingTypeChanged);
   $('.events-table').on('change', '#iconFlag', updateEventView.formChanged);
+  $('.events-table').on('change', '#party', updateEventView.formChanged);
   $('.events-table').on('keyup', '.event-input', updateEventView.formChanged);
   $('.events-table').on('change', '.datetime', updateEventView.dateChanged);
   $('.events-table').on('change', '.date-string', updateEventView.dateString);
