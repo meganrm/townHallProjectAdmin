@@ -60,4 +60,4 @@ const updateCandidates = () => {
     });
 };
 
-updateCandidates()
+updateCandidates();
