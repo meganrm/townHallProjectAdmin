@@ -8,6 +8,9 @@ class Pledger {
     this.role = Number(row.District) ? 'Rep' : row.District;
     this.chamber = Number(row.District) ? 'lower' : 'upper';
     let plegedDate = row['Pledge Returned Date'] ? row['Pledge Returned Date'] : '';
+    if (!moment(plegedDate).isValid()){
+      console.log(state, row.Candidate)
+    }
     this.pledged = moment(plegedDate).isValid() ? true : false;
     this.incumbent = row['Incumbent'] && row['Incumbent'].toLowerCase() === 'x' ? true : false;
     this.party = row.Party;

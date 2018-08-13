@@ -44,17 +44,17 @@
   };
 
   ACLUTownHall.download = function(){
-    data = TownHall.allTownHalls.filter(function(ele){
+    let data = TownHall.allTownHalls.filter(function(ele){
       return !ele.repeatingEvent && ACLUTownHall.include(ele.meetingType);
     }).reduce(function(acc, cur){
-      obj = new ACLUTownHall(cur);
+      let obj = new ACLUTownHall(cur);
 
       acc.push(obj);
       return acc;
     },[]);
 
     // prepare CSV data
-    var csvData = new Array();
+    var csvData = [];
     csvData.push('"Title","Venue","Address","City","State","Zip","Categories","Date","Description","Time","Host","Directions"');
     data.forEach(function(item) {
       csvData.push(
@@ -77,7 +77,7 @@
     var fileName = 'townhalls.csv';
     var buffer = csvData.join('\n');
     var blob = new Blob([buffer], {
-      'type': 'text/csv;charset=utf8;'
+      'type': 'text/csv;charset=utf8;',
     });
     var link = document.createElement('a');
 

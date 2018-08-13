@@ -5,18 +5,19 @@
       return;
     }
     this.event_title;
+    var district = cur.district ? `${cur.state}-${cur.district}` : 'Senate';
     if (cur.iconFlag === 'staff') {
-      this.event_title = 'Staff Office Hours: ' + cur.Member + ' (' + cur.District + ')';
+      this.event_title = 'Staff Office Hours: ' + cur.Member + ' (' + district + ')';
     } else {
-      this.event_title = cur.Member + ' (' + cur.District + ') ' + cur.meetingType;
+      this.event_title = cur.Member + ' (' + district + ') ' + cur.meetingType;
     }
     this.eventName = cur.eventName ? cur.eventName: ' ';
     this.Location = cur.Location ? cur.Location: ' ';
     this.meetingType = cur.meetingType;
     this.Member = cur.Member;
-    this.District = cur.District;
-    this.Party = cur.Party;
-    this.State = cur.State;
+    this.District = district;
+    this.Party = cur.party;
+    this.State = cur.state;
     if (cur.repeatingEvent) {
       this.repeatingEvent = cur.repeatingEvent;
       this.Date = ' ';
@@ -64,7 +65,7 @@
         return acc;
       },[]);
     // prepare CSV data
-    var csvData = new Array();
+    var csvData = [];
     csvData.push(Object.keys(data[0]).join(', '));
 
     data.forEach(function(item) {
@@ -73,7 +74,7 @@
       for (var i = 1; i < Object.keys(item).length; i++) {
         row = row +  ',' +  '"' + item[Object.keys(item)[i]] + '"';
       }
-      row = row + '\n';
+      // row = row + '\n';
       csvData.push(row);
     });
 
