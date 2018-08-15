@@ -2,11 +2,11 @@
 (function (module) {
   const eventLookUpToolsView = {};
 
-  eventLookUpToolsView.createUILoader = function () {
+  const createUILoader = function () {
     $('#load-modal').modal('show');
   };
 
-  eventLookUpToolsView.deleteUILoader = function () {
+  const deleteUILoader = function () {
     $('#load-modal').modal('hide');
   };
 
@@ -17,30 +17,47 @@
       highlighter: function (item) {
         return item;
       }, // Kill ugly highlight
-      filter: function (selection) {
+      filter(selection) {
         $(input).val(selection);
       },
-      updater: function (selection) {
-        const memberKey = Moc.converNameToKey(selection);
+      afterSelect(selection) {
+        const memberKey = Moc.convertNameToKey(selection);
         const member = Moc.allMocsObjsByName[memberKey];
         if (member){
           eventLookUpToolsView.govtrack_id = member.id;
         }
       },
     };
-      
     Moc.loadAllByName().then(function (allnames) {
       Moc.allNames = allnames;
-      $(input).each(function () {
-        $(this).typeahead({
-          source: allnames,
-        }, typeaheadConfig);
-      });
+      $(input).attr('readonly', false);
+      $(input).typeahead($.extend({
+        source: allnames,
+      }, typeaheadConfig));
     });
+
+  };
+
+  const createFileName = function createFileName(searchObj) {
+    let fileName = 'Results';
+    if (searchObj['Member']) {
+      fileName = searchObj['Member'];
+    } else if (searchObj['state']) {
+      fileName = searchObj['state'];
+    } else if (searchObj['Meeting_Type']) {
+      fileName = searchObj['Meeting_Type'];
+    } else if (searchObj['District']) {
+      fileName = searchObj['Meeting_Type'];
+    } else if (searchObj['Party']) {
+      fileName = searchObj['Party'];
+    }
+    fileName = fileName.concat('.csv');
+
+    return fileName;
   };
 
   eventLookUpToolsView.searchEvents = function searchEvents(searchObj) {
-    eventLookUpToolsView.createUILoader();
+    createUILoader();
     var dateObj = eventHandler.getDateRange();
     var dates = dateObj.dates;
     let promiseArray = dates.map(date => {
@@ -51,14 +68,14 @@
         return acc.concat(Array.from(cur));
       }, []);
       if (allEvents.length === 0) {
-        eventLookUpToolsView.deleteUILoader();
+        deleteUILoader();
         alert('No data found');
         $('#search-total').html(``);
         return;
       }
       $('#search-total').html(`Search returned ${allEvents.length} events`);
-      var fileDownloadName = eventHandler.createFileName(searchObj);
-      eventHandler.deleteUILoader();
+      var fileDownloadName = createFileName(searchObj);
+      deleteUILoader();
       PartnerCsvTownHall.makeDownloadButton('Download CSV', allEvents.map(townhall => townhall.convertToCsvTownHall()), fileDownloadName, 'download-csv-events-list');
     });
   };

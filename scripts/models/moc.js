@@ -31,7 +31,7 @@
       });
     }
 
-    convertNameToKey(nameEntered){
+    static convertNameToKey(nameEntered){
       var memberKey;
       if (nameEntered.split(' ').length === 3) {
         memberKey = nameEntered.split(' ')[1].toLowerCase() + nameEntered.split(' ')[2].toLowerCase() + '_' + nameEntered.split(' ')[0].toLowerCase();
