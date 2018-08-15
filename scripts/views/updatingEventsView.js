@@ -343,6 +343,25 @@
     $form.find('#meetingType').change();
   };
 
+  updateEventView.changeChamberType = function (event) {
+    event.preventDefault();
+    let $form = $(this).parents('form');
+    var value = $(this).attr('data-value');
+    $form.find('#chamber').val(value).addClass('edited');
+    $form.find('#chamber').change();
+    var $listgroup = $(this).parents('.list-group-item');
+    let $districtForm = $(this).parents('.input-group').prev();
+    if (value === 'upper') {
+      $districtForm.addClass('hidden');
+      $districtForm.find('#district').val(null);
+      updateEventView.formChanged.call($districtForm.find('#district'));
+    } else {
+      $districtForm.removeClass('hidden');
+    }
+
+    updateEventView.updatedView($form, $listgroup);
+  };
+
   updateEventView.changeDeleteReason = function (event) {
     event.preventDefault();
     let $form = $(this).parents('form');
@@ -359,6 +378,15 @@
     var value = $(this).attr('data-value');
     $form.find('#iconFlag').val(value);
     $form.find('#iconFlag').change();
+  };
+
+  updateEventView.changeParty = function(event) {
+    event.preventDefault();
+    console.log(this);
+    let $form = $(this).parents('form');
+    var value = $(this).attr('data-value');
+    $form.find('#party').val(value);
+    $form.find('#party').change();
   };
 
   updateEventView.showHideMeetingTypeFields = function(value, $form) {
@@ -490,11 +518,14 @@
 
   // event listeners for table interactions
   $('.events-table').on('click', '#geocode-button', updateEventView.geoCode);
+  $('.events-table').on('click', '.chamber-dropdown a', updateEventView.changeChamberType);
   $('.events-table').on('click', '.meeting-type-dropdown a', updateEventView.changeMeetingType);
   $('.events-table').on('click', '.delete-reason-choice a', updateEventView.changeDeleteReason);
   $('.events-table').on('click', '.icon-flag-dropdown a', updateEventView.changeIconFlag);
+  $('.events-table').on('click', '.party-dropdown a', updateEventView.changeParty);
   $('.events-table').on('change', '#meetingType', updateEventView.meetingTypeChanged);
   $('.events-table').on('change', '#iconFlag', updateEventView.formChanged);
+  $('.events-table').on('change', '#party', updateEventView.formChanged);
   $('.events-table').on('keyup', '.event-input', updateEventView.formChanged);
   $('.events-table').on('change', '.datetime', updateEventView.dateChanged);
   $('.events-table').on('change', '.date-string', updateEventView.dateString);

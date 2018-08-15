@@ -27,12 +27,10 @@
         <label class="sr-only" for="Member">Member</label>
         <input type="text" data-provide="typeahead" autocomplete="off" class="member-input form-control event-input" id="Member" placeholder="Member" value="{{Member}}">
       </div>
-      {{#if district}}
-      <div class="form-group">
+      <div class="form-group {{#unless district}}hidden{{/unless}}">
         <label class="sr-only" for="district">District</label>
         <input type="text" class="form-control event-input" id="district" placeholder="zero padded number" value="{{district}}">
       </div>
-      {{/if}}
       <div class="input-group">
         <input type="text" class="form-control event-input" aria-label="..." id="chamber" value="{{chamber}}" readonly placeholder="chamber">
         <div class="input-group-btn">
@@ -83,6 +81,18 @@
             <li><a data-value="activism" href="#"><span class="event-icon event-icon__activism"></span>Organized by activists</a></li>
             <li><a data-value="tele" href="#"><span class="event-icon event-icon__tele"></span>Tele-Town hall or online event</a></li>
             <li><a data-value="campaign" href="#"><span class="event-icon event-icon__campaign"></span>Campaign event</a></li>
+          </ul>
+        </div><!-- /btn-group -->
+      </div><!-- /input-group -->
+      <label class="sr-only " for="party">Party</label>
+      <div class="input-group">
+        <input type="text" class="form-control event-input" id="party" value="{{party}}" readonly placeholder="Party">
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+          <ul class="dropdown-menu dropdown-menu-right party-dropdown">
+            <li><a data-value="Democratic" href="#">Democratic</a></li>
+            <li><a data-value="Republican" href="#">Republican</a></li>
+            <li><a data-value="Independent" href="#">Independent</a></li>
           </ul>
         </div><!-- /btn-group -->
       </div><!-- /input-group -->
