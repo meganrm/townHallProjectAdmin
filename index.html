@@ -122,10 +122,10 @@
                           <section class="member-info">
                             <h4>Member(s) Information</h4>
                             <div class="form-group col-sm-12">
-                              <input id="searchInput" name="Member" type="text" data-provide="typeahead" data-filter="Member" class="form-control dropdown-item filter" placeholder="Member Full Name" autocomplete="off" value="">
+                              <input id="member-search-input" name="Member" type="text" data-provide="typeahead" data-filter="Member" class="form-control dropdown-item filter" placeholder="Member Full Name" autocomplete="off" value="" readonly>
                             </div>
                             <div class="form-group col-sm-12">
-                              <input list="party-options" id="party-input" name="Party" type="text" class="form-control" placeholder="Party">
+                              <input list="party-options" id="party-search-input" name="Party" type="text" class="form-control" placeholder="Party">
                               <datalist id="party-options">
                                 <option value="Republican">
                                 <option value="Democratic">
@@ -691,6 +691,7 @@
     <script src="/scripts/views/dataViz.js"></script>
     <script src="/scripts/views/updatingEventsView.js"></script>
     <script src="/scripts/views/downloadCenterView.js"></script>
+    <script src="/scripts/views/eventLookUpTools.js"></script>
 
     <script src="/scripts/views/mocReportView.js"></script>
     <script src="/scripts/views/mocEditorView.js"></script>
