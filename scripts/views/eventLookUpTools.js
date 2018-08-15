@@ -40,19 +40,18 @@
 
   const createFileName = function createFileName(searchObj) {
     let fileName = 'Results';
-    if (searchObj['Member']) {
-      fileName = searchObj['Member'];
-    } else if (searchObj['state']) {
-      fileName = searchObj['state'];
-    } else if (searchObj['Meeting_Type']) {
-      fileName = searchObj['Meeting_Type'];
-    } else if (searchObj['District']) {
-      fileName = searchObj['Meeting_Type'];
-    } else if (searchObj['Party']) {
-      fileName = searchObj['Party'];
+    if (searchObj.Member) {
+      fileName = searchObj.Member;
+    } else if (searchObj.district && searchObj.state) {
+      fileName = `${searchObj.state}-${searchObj.district}`;
+    } else if (searchObj.state) {
+      fileName = searchObj.state;
+    } else if (searchObj.meetingType) {
+      fileName = searchObj.meetingType;
+    } else if (searchObj.party) {
+      fileName = searchObj.party;
     }
     fileName = fileName.concat('.csv');
-
     return fileName;
   };
 
