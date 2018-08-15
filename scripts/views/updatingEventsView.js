@@ -1,4 +1,4 @@
-
+/* globals eventHandler */
 (function (module) {
 // For handling user submitted events.
 
