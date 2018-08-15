@@ -275,7 +275,6 @@
             }
           }
           for (let prop in searchParams) {
-            console.log(townHall[prop])
             if (prop === 'start_time' || prop === 'end_time' || prop === 'Member') {
               continue;
             }
