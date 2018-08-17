@@ -1,4 +1,4 @@
-/*globals PartnerCsvTownHall ACLUTownHall updateEventView DownLoadCenter*/
+/*globals PartnerCsvTownHall eventLookUpToolsView ACLUTownHall updateEventView DownLoadCenter */
 
 (function (module) {
   // object to hold the front end view functions
@@ -134,80 +134,6 @@
     };
   };
 
-  eventHandler.createUILoader = function() {
-    $('#load-modal').modal('show');
-  };
-
-  eventHandler.deleteUILoader = function() {
-    $('#load-modal').modal('hide');
-  };
-
-  eventHandler.lookupOldEvents = function(searchObj) {
-    clearCSVOutput();
-    eventHandler.createUILoader();
-    var dateObj = eventHandler.getDateRange();
-    var dates = dateObj.dates;
-
-    let promiseArray = dates.map(date=> {
-      return TownHall.getMatchingData(`townHallsOld/${date}`, searchObj);
-    });
-    Promise.all(promiseArray).then((returnedSets) => {
-      var allEvents = returnedSets.reduce((acc, cur)=> {
-        return acc.concat(Array.from(cur));
-      }, []);
-      if (allEvents.length === 0) {
-        eventHandler.deleteUILoader();
-        alert('No data found');
-        return;
-      }
-      $('#search-total').html(`Search returned ${allEvents.length} events`)
-      let fileDownloadName = 'Results';
-
-      if (searchObj['Member']) {
-        fileDownloadName = searchObj['Member'];
-      } else if (searchObj['state']) {
-        fileDownloadName = searchObj['state'];
-      } else if (searchObj['Meeting_Type']) {
-        fileDownloadName = searchObj['Meeting_Type'];
-      } else if (searchObj['District']) {
-        fileDownloadName = searchObj['Meeting_Type'];
-      } else if (searchObj['Party']) {
-        fileDownloadName = searchObj['Party'];
-      }
-      fileDownloadName = fileDownloadName.concat('.csv');
-
-      eventHandler.deleteUILoader();
-      PartnerCsvTownHall.makeDownloadButton('Download CSV', allEvents, fileDownloadName, 'download-csv-events-list');
-    });
-  };
-
-  eventHandler.lookupOldStateEvents = function(event){
-    event.preventDefault();
-    clearCSVOutput();
-    var para = document.createTextNode('Loading...');
-    document.getElementById('download-csv-events-list').appendChild(para);
-    var date = '2018-2';
-
-    var value = $('#lookup-value').val();
-    var totalCount = 0;
-    var allEvents = [];
-    var state = 'NC';
-    console.log('state');
-    TownHall.getOldStateData(state, date).then(function(returnedSet){
-      console.log(returnedSet);
-      var returnedArr = Array.from(returnedSet);
-
-      var fileDownloadName = 'nc state' + '.csv';
-      PartnerCsvTownHall.makeDownloadButton('Download CSV', returnedArr, fileDownloadName, 'state-buttons');
-    });
-  };
-
-  var clearCSVOutput = function() {
-    var list = document.getElementById('download-csv-events-list');
-    while(list.firstChild) {
-      list.removeChild(list.firstChild);
-    }
-  };
 
 // url hash for direct links to subtabs
 // slightly hacky routing
@@ -316,6 +242,7 @@
     });
     firebase.database().ref(path).once('value').then(function(){
       eventHandler.setupTypeaheadsAllMocs('#for-approval .member-input');
+      eventLookUpToolsView.setupTypeaheadsAllMocs('#member-search-input');
       eventHandler.setupTypeaheads();
       DownLoadCenter.downloadButtonHandler('ACLU-download', ACLUTownHall.download, false);
       DownLoadCenter.downloadButtonHandler('CAP-download', PartnerCsvTownHall.download, false, 'CAP CSV download');
