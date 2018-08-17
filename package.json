@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "do-your-job": "node server/lib/doyourjob"
+    "do-your-job": "node server/lib/doyourjob",
+    "postinstall": "bower install && grunt dist-css"
   },
   "repository": {
     "type": "git",
