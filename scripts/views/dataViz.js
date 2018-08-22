@@ -54,8 +54,6 @@
     }
   }
 
-
-
   function updateStateProgressBar($bar, $total, total, hasbeenUpdated) {
     if (hasbeenUpdated) {
       var current = Number($bar.attr('data-count'));
@@ -119,7 +117,7 @@
   dataviz.recessProgress = function (townhall, memberSet, houseMapping, senateMapping) {
     var total;
     var newMember = false;
-    if (townhall.meetingType ==='Town Hall') {
+    if (townhall.meetingType ==='Town Hall' && townhall.iconFlag === 'in-person') {
       if (!memberSet.has(townhall.Member)) {
         newMember = true;
         memberSet.add(townhall.Member);

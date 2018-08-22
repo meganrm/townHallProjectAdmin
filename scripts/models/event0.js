@@ -229,7 +229,7 @@
       let district = this.district ? '-' + this.district : ' ';
       convertedTownHall.District = this.state + district;
       convertedTownHall.govtrack_id = this.govtrack_id || ' ';
-      convertedTownHall.Party = this.party ? this.party : this.Party;
+      convertedTownHall.Party = this.party;
       convertedTownHall.state = this.state;
       convertedTownHall.State = this.stateName ? this.stateName : this.State;
       if (this.repeatingEvent) {
