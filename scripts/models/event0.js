@@ -263,7 +263,7 @@
         .then(snapshot => {
           let toReturn =[];
           snapshot.forEach(ele => {
-            toReturn.push(ele.val());
+            toReturn.push(new TownHall(ele.val()));
           });
           return toReturn;
         });

@@ -65,11 +65,10 @@
     promiseArray.push(TownHall.getDataByDate(`townHalls/`, dateObj.start, dateObj.end));
     Promise.all(promiseArray).then((returnedSets) => {
 
-      var allEvents = returnedSets.reduce((acc, cur) => {
+      var allEvents = returnedSets
+      .reduce((acc, cur) => {
         return acc.concat(Array.from(cur));
-      }, []).map(eventData => {
-        return new TownHall(eventData);
-      })
+      }, [])
       .filter(currentTownHall => {
         return currentTownHall.isMatch(searchObj);
       });
