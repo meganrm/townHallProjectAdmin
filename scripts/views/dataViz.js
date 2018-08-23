@@ -134,6 +134,7 @@
         total = 100;
         chamber = 'senate';
       }
+      dataviz.total++;
       addToMapping(chamber, townhall.Member, houseMapping, senateMapping);
       parseBars(party, chamber, newMember, total, '-aug-progress-');
     }
@@ -207,14 +208,18 @@
     dataviz.lookupMembers = new Set();
     dataviz.houseMemberMapping = {};
     dataviz.sentateHouseMapping = {};
+    dataviz.total = 0;
     var dateRange = eventHandler.getDateRange();
     var dates = dateRange.dates;
     var start = dateRange.start;
     var end = dateRange.end;
     firebase.database().ref('townHalls/').once('value')
       .then((snapshot)=> {
-        snapshot.forEach((townahll) => {
-          dataviz.recessProgress(townahll.val(), dataviz.lookupMembers, dataviz.houseMemberMapping, dataviz.sentateHouseMapping);
+        snapshot.forEach((ele) => {
+          let townhall = ele.val();
+          if (townhall.dateObj < end) {
+            dataviz.recessProgress(townhall, dataviz.lookupMembers, dataviz.houseMemberMapping, dataviz.sentateHouseMapping);
+          }
         });
       });
     dates.forEach(function(date){
