@@ -295,7 +295,7 @@
         else if (prop === 'govtrack_id' && townHall[prop] !== searchParams[prop]) { // govtrack doesn't match
           return false;
         }
-        else if (townHall[prop] && (townHall[prop].toLowerCase() !== searchParams[prop].toLowerCase())) {
+        else if (townHall[prop].toLowerCase() !== searchParams[prop].toLowerCase()) {
           return false;
         }
       }
