@@ -60,12 +60,20 @@
     var dateObj = eventHandler.getDateRange();
     var dates = dateObj.dates;
     let promiseArray = dates.map(date => {
-      return TownHall.getMatchingData(`townHallsOld/${date}`, searchObj);
+      return TownHall.getDataByDate(`townHallsOld/${date}`, dateObj.start, dateObj.end);
     });
+    promiseArray.push(TownHall.getDataByDate(`townHalls/`, dateObj.start, dateObj.end));
     Promise.all(promiseArray).then((returnedSets) => {
+
       var allEvents = returnedSets.reduce((acc, cur) => {
         return acc.concat(Array.from(cur));
-      }, []);
+      }, []).map(eventData => {
+        return new TownHall(eventData);
+      })
+      .filter(currentTownHall => {
+        return currentTownHall.isMatch(searchObj);
+      });
+
       if (allEvents.length === 0) {
         deleteUILoader();
         alert('No data found');
