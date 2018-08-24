@@ -256,51 +256,50 @@
       convertedTownHall.dateNumber = this.yearMonthDay;
       return convertedTownHall;
     }
-    static getMatchingData(path, searchParams) {
-      let ref = firebasedb.ref(path);
-      let totals = new Set();
-      return ref.once('value').then(function (snapshot) {
-        snapshot.forEach(function (oldTownHall) {
-          let townHall = new TownHall(oldTownHall.val());
-          let match = true;
-          let withinDateRange = null;
-          // check if town hall is within specified date range
-          if ((searchParams.start_time || searchParams.end_time) && townHall.dateNumber) {
-            var curDateRange = dateRange(searchParams.start_time, searchParams.end_time);
-            if (townHall.dateNumber && moment(townHall.dateNumber).isBetween(curDateRange.start, curDateRange.end)) {
-              withinDateRange = true;
-            }
-            else {
-              withinDateRange = false;
-            }
-          }
-          for (let prop in searchParams) {
-            if (prop === 'start_time' || prop === 'end_time' || prop === 'Member') {
-              continue;
-            }
-            if (prop === 'district') {
-              match = checkDistrict(searchParams[prop], townHall);
-            }
-            else if (prop === 'govtrack_id' && townHall[prop] !== searchParams[prop]) { // govtrack doesn't match
-              match = false;
-            }
-            else if (townHall[prop] && (townHall[prop].toLowerCase() !== searchParams[prop].toLowerCase())) {
-              match = false;
-            }
-            else if (!townHall[prop]) {
-              match = false;
-            }
-            if (match === false) {
-              break; // prevent an iteration on 'match = false' to be changed to true
-            }
-          }
-          // if match is true and within date range is true or not specified--> 'null' add town hall
-          if (match === true && (withinDateRange === true || withinDateRange === null)) {
-            totals.add(townHall);
-          }
+
+    static getDataByDate(path, dateStart, dateEnd) {
+      var ref = firebase.database().ref(path);
+      return ref.orderByChild('dateObj').startAt(dateStart).endAt(dateEnd).once('value')
+        .then(snapshot => {
+          let toReturn =[];
+          snapshot.forEach(ele => {
+            toReturn.push(new TownHall(ele.val()));
+          });
+          return toReturn;
         });
-        return totals;
-      });
+    }
+
+    checkDistrictForMatch(dist) {
+      let districtMatcher = Number(dist);
+      let thisDistrict = Number(this.district);
+      if (!isNaN(thisDistrict) && !isNaN(districtMatcher) && thisDistrict === districtMatcher) {
+        return true;
+      } else if (dist === 'At-Large' && this.district === 'At-Large') {
+        return true;
+      }
+      return false;
+    }
+
+    isMatch(searchParams) {
+      const townHall = this;
+      for (let prop in searchParams) {
+        if (prop === 'start_time' || prop === 'end_time' || prop === 'Member') {
+          continue;
+        }
+        if (!townHall[prop]) {
+          return false;
+        }
+        else if (prop === 'district' && !townHall.checkDistrictForMatch(searchParams[prop])) {
+          return false;
+        }
+        else if (prop === 'govtrack_id' && townHall[prop] !== searchParams[prop]) { // govtrack doesn't match
+          return false;
+        }
+        else if (townHall[prop].toLowerCase() !== searchParams[prop].toLowerCase()) {
+          return false;
+        }
+      }
+      return true;
     }
 
     static getOldStateData(state, dateKey) {
@@ -453,61 +452,6 @@
     State: '',
   };
   TownHall.isCurrentContext = false;
-  TownHall.isMap = false;
-
-
-
-
-  // check district
-  var checkDistrict = function checkDistrict(dist, townHall) {
-    let localMatch = true;
-    let districtMatcher = Number(dist);
-    if (townHall.district) {
-      if (Number(townHall.district) !== districtMatcher) {
-        localMatch = false;
-      }
-    } else {  // no valid district number
-      localMatch = false;
-    }
-    return localMatch;
-  };
-
-  var dateRange = function dateRange(startDate, endDate) {
-    if (startDate) {
-      var dateStart = startDate;
-    }
-    dateStart = dateStart ? dateStart : '2017-01-01';
-    var dateEnd = moment().endOf('day').format('YYYY-MM-DD');
-    if (endDate) {
-      dateEnd = endDate;
-    }
-    return {
-      start: dateStart,
-      end: dateEnd,
-    };
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   TownHall.allIdsGoogle = [];
   TownHall.allIdsFirebase = [];
 
