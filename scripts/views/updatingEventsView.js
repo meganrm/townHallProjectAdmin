@@ -418,7 +418,7 @@
     case 'Town Hall':
       $form.find('.general-inputs').removeClass('hidden');
       if ($form.find('#iconFlag').val().length === 0) {
-        $form.find('#iconFlag').val('in-person').addClass('edited');
+        $form.find('#iconFlag').val('campaign').addClass('edited');
       }
       break;
     case 'Candidate Town Hall':
