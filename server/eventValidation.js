@@ -219,21 +219,21 @@ function eventValidation() {
     });
   });
   
-  DATES.forEach((date) => {
-    let path = `townHallsOld/${date}`;
-    firebasedb.ref(path).on('child_added', function (snapshot) {
-      const townhall = snapshot.val();
-      if (townhall.meetingType && townhall.govtrack_id && townhall.dateObj && townhall.zoneString) {
-        firebasedb.ref(`mocData/${townhall.govtrack_id}/confirmed_events`)
-          .update({
-            [townhall.meetingType]: {
-              [townhall.eventId]: moment.tz(townhall.dateObj, townhall.zoneString).format(),
-            },
-          })
-          .catch(console.log);
-      }
-    });
-  });
+  // DATES.forEach((date) => {
+  //   let path = `townHallsOld/${date}`;
+  //   firebasedb.ref(path).on('child_added', function (snapshot) {
+  //     const townhall = snapshot.val();
+  //     if (townhall.meetingType && townhall.govtrack_id && townhall.dateObj && townhall.zoneString) {
+  //       firebasedb.ref(`mocData/${townhall.govtrack_id}/confirmed_events`)
+  //         .update({
+  //           [townhall.meetingType]: {
+  //             [townhall.eventId]: moment.tz(townhall.dateObj, townhall.zoneString).format(),
+  //           },
+  //         })
+  //         .catch(console.log);
+  //     }
+  //   });
+  // });
 
 }
 
