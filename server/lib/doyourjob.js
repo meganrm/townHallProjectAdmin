@@ -44,7 +44,7 @@ const writeOut = (mm, displayName, party) => {
     pledger_party: party,
   };
   if (mm.state === 'PA'){
-    const email = new ErrorReport(`new do your job district in PA: ${JSON.stringify(updateObject)}`, 'new do your job in PA');
+    const email = new ErrorReport(`new do your job district in PA ${mm.district}: ${JSON.stringify(updateObject)}`, 'new do your job in PA');
     return email.sendEmail();
   }
   if (Number(mm.district)) {
@@ -54,10 +54,10 @@ const writeOut = (mm, displayName, party) => {
       .then(snapshot => {
         updateObject.district = district;
         if (!snapshot.exists()) {
-          const email = new ErrorReport(`new do your job district: ${JSON.stringify(updateObject)}`, 'new do your job');
+          const email = new ErrorReport(`new do your job district: ${mm.state}-${district} ${JSON.stringify(updateObject)}`, 'new do your job');
           firebasedb.ref(`do_your_job_districts/${mm.state}-${district}`)
             .update(updateObject)
-            .then(email.sendEmail);
+            .then(() => email.sendEmail());
         } else {
           console.log('already in there', updateObject.state, updateObject.district);
         }

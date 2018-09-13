@@ -99,7 +99,7 @@
       reader.readAsText(files[0]);
       reader.onload = csvReader;
       reader.onerror = errorHandler;
-    }else {
+    } else {
       alert('This feature is not supported in your browser!');
     }
   };
