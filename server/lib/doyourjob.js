@@ -15,7 +15,7 @@ const getMMs = () => {
             if (moc.missingMember === 'false') {
               moc.missingMember = false;
             }
-            if (moc.next_election && moc.next_election !== '2018') {
+            if (moc.next_election && Number(moc.next_election) !== 2018) {
               return;
             }
             if (moc.missingMember && moc.in_office && !moc.retiring) {
