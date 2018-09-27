@@ -43,7 +43,10 @@ const writeOut = (mm, displayName, party) => {
     pledger: displayName,
     pledger_party: party,
   };
-  if (mm.state === 'PA'){
+  if (mm.state === 'PA') {
+    if (mm.district === 10 || mm.district === 12){
+      return;
+    }
     const email = new ErrorReport(`new do your job district in PA ${mm.district}: ${JSON.stringify(updateObject)}`, 'new do your job in PA');
     return email.sendEmail();
   }
