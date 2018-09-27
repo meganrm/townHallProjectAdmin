@@ -48,7 +48,7 @@ const writeOut = (mm, displayName, party) => {
       return;
     }
     const email = new ErrorReport(`new do your job district in PA ${mm.district}: ${JSON.stringify(updateObject)}`, 'new do your job in PA');
-    return email.sendEmail();
+    return;
   }
   if (Number(mm.district)) {
     district = zeropadding(mm.district);
