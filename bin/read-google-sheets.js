@@ -53,7 +53,7 @@ googleMethods.getSheets(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2
       let state = name.split(' ')[0];
       return (states[state]);
     }).map(sheetname => {
-      return `${sheetname}!A:M`;
+      return `${sheetname}!A:O`;
     });
     googleMethods.readMultipleRanges(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2p2g', ranges).then((googleRows) => {
       googleRows.forEach((sheet) => {
@@ -72,7 +72,8 @@ googleMethods.getSheets(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2
             }, {});
             if (obj.Candidate && obj.Candidate.length > 0){
               let newPledger = new Pledger(obj, state);
-              let key = row[row.length - 1];
+              console.log(newPledger)
+              let key = row[12];
               if (key === 'end') {
                 key = firebasedb.ref(`town_hall_pledges/${newPledger.state}`).push().key;
                 row[row.length - 1] = key;
