@@ -72,12 +72,11 @@ googleMethods.getSheets(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2
             }, {});
             if (obj.Candidate && obj.Candidate.length > 0){
               let newPledger = new Pledger(obj, state);
-              console.log(newPledger)
               let key = row[12];
               if (key === 'end') {
                 key = firebasedb.ref(`town_hall_pledges/${newPledger.state}`).push().key;
-                row[row.length - 1] = key;
-                let writeRange = `${sheetName.split('!')[0]}!A${i+ 1}:M${i + 1}`;
+                row[12] = key;
+                let writeRange = `${sheetName.split('!')[0]}!A${i+ 1}:O${i + 1}`;
   
                 let toUpdate = {
                   'range': writeRange,
