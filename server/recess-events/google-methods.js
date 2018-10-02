@@ -17,8 +17,6 @@ googleMethods.read = (auth, spreadsheetId, range) => {
         console.log(err);
         reject(err);
       } else {
-        var numRows = result.values ? result.values.length : 0;
-        console.log('%d rows retrieved.', numRows);
         resolve(result.values);
       }
     });
@@ -37,8 +35,6 @@ googleMethods.readMultipleRanges = (auth, spreadsheetId, ranges) => {
         console.log(err);
         reject(err);
       } else {
-        var numRows = result.valueRanges ? result.valueRanges.length : 0;
-        console.log('%d rows retrieved.', numRows);
         resolve(result.valueRanges);
       }
     });
@@ -80,9 +76,7 @@ googleMethods.write = (auth, sheetId, data) => {
     if(err) {
     // Handle error
       console.log(err);
-    } else {
-      console.log('total updated rows:', result.totalUpdatedRows);
-    }
+    } 
   });
 };
 module.exports = googleMethods;
