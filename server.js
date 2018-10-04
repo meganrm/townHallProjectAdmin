@@ -100,3 +100,29 @@ if (process.env.NODE_ENV === 'production') {
     });
   });
 }
+
+///Checks for changes on MOC in mocData to remove members from mocByStateDistrict when in_office is false
+  firebasedb.ref('mocData/').on('child_changed', function(snapshot){
+    var path;
+    var district;
+    var changedMoc = snapshot.val();
+    if (changedMoc.in_office === false){
+      if(changedMoc.type === 'sen'){
+        path = `mocByStateDistrict/${changedMoc.state}/${changedMoc.state_rank}`;
+      } else if(changedMoc.type === 'rep') {
+        district = changedMoc.at_large ? '00' : '0' + changedMoc.district;
+        path = `mocByStateDistrict/${changedMoc.state}-${district}/`;
+      } else { console.log('No Moc Type');}
+      firebasedb.ref(path).on('value', function(snapshot){
+        let moc = snapshot.val();
+        if(moc.govtrack_id === changedMoc.govtrack_id){
+          console.log('This MOC will be deleted: ', moc); 
+          firebasedb.ref(path).set({
+            displayName: false,
+            govtrack_id: false,
+            propublica_id: false
+          })
+        }
+      })
+    }
+  });
