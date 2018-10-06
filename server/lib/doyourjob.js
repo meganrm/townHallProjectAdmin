@@ -70,7 +70,8 @@ const writeOut = (mm, displayName, party) => {
       .once('value')
       .then(snapshot => {
         updateObject.district = 'Senate';
-        if (!snapshot.exists()) {
+
+        if (!snapshot.exists() && mm.state_rank) {
           const email = new ErrorReport(`new do your job Senate: ${JSON.stringify(updateObject)}`, 'new do your job');
           firebasedb.ref(`do_your_job_districts/${mm.state}-${mm.state_rank}`)
             .update(updateObject)
@@ -109,6 +110,13 @@ const checkPledger = (mm) => {
               }
             } else if (!mm.district && !pledger.district) {
               if (pledger.role === 'Sen' && mm.type === 'sen') {
+                return writeOut(mm, pledger.displayName, pledger.party);
+              }
+              else if (
+                pledger.role.split(' ')[0] === 'Sen' &&
+                 mm.type === 'sen' &&
+                pledger.role.split(' ')[1] === mm.state_rank
+                ) {
                 return writeOut(mm, pledger.displayName, pledger.party);
               }
             } else if (mm.district === 'At-Large' && pledger.role === 'Rep') {
