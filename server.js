@@ -3,6 +3,7 @@ const domain = 'updates.townhallproject.com';
 
 const firebasedb = require('./server/lib/setupFirebase.js');
 const eventValid = require('./server/eventValidation.js');
+const zeropadding = require('./server/util').zeropadding; 
 
 let mailgun;
 if (process.env.NODE_ENV==='production'){
@@ -110,18 +111,22 @@ if (process.env.NODE_ENV === 'production') {
       if(changedMoc.type === 'sen'){
         path = `mocByStateDistrict/${changedMoc.state}/${changedMoc.state_rank}`;
       } else if(changedMoc.type === 'rep') {
-        district = changedMoc.at_large ? '00' : '0' + changedMoc.district;
+        district = changedMoc.at_large ? '00' : zeropadding(changedMoc.district);
         path = `mocByStateDistrict/${changedMoc.state}-${district}/`;
-      } else { console.log('No Moc Type');}
+      } else { 
+        console.log('No Moc Type');
+        return false;
+      }
       firebasedb.ref(path).on('value', function(snapshot){
-        let moc = snapshot.val();
-        if(moc.govtrack_id === changedMoc.govtrack_id){
-          console.log('This MOC will be deleted: ', moc); 
+        let currentMoc = snapshot.val();
+        if(currentMoc.govtrack_id === changedMoc.govtrack_id){
+          console.log('This MOC will be deleted: ', currentMoc); 
           firebasedb.ref(path).set({
             displayName: false,
             govtrack_id: false,
             propublica_id: false
           })
+          return true;
         }
       })
     }
