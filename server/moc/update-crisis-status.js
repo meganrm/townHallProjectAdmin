@@ -8,7 +8,7 @@ const convertDataAndUpdate = (row) => {
   }
 
   const moc = {
-    crisis_status: crisis_status,
+    crisis_status: Number(crisis_status),
     crisis_status_source: row[6] || '',
   };
 
