@@ -39,15 +39,12 @@
   function lookupMember() {
     var $memberInput = $(this);
     var member = $memberInput.val();
-    var $form = $(this).parents('form');
     var $list = $('#current-pending');
     $('.to-remove').remove();
     $('#submit-success').addClass('hidden');
     var compiledTemplate = Handlebars.getTemplate('newMOC');
     var boolFieldsTemplate = Handlebars.getTemplate('mocBoolField');
     $list.empty();
-    var $errorMessage = $('.new-event-form #member-help-block');
-    var $memberformgroup = $('#member-form-group');
     if (validateMember(member)) {
       $('#member-form-group').removeClass('has-error');
       var memberKey = Moc.getMemberKey(member);
@@ -55,7 +52,9 @@
       firebasedb.ref('mocData/' + memberid).once('value').then(function (snapshot) {
         if (snapshot.exists()) {
           var mocdata = snapshot.val();
+          console.log(mocdata)
           Moc.currentMoc = new Moc(mocdata);
+          console.log(Moc.currentMoc)
           $('#moc-editor-form').append(compiledTemplate(mocdata));
           Object.keys(mocdata).forEach(function(key){
             if(typeof mocdata[key] === 'boolean' && key !== 'in_office'){
@@ -81,7 +80,10 @@
     var value = $(this).attr('data-value');
     if (value === 'true') { value = true; }
     if (value === 'false') { value = false; }
-    Moc.currentMoc[$input.attr('id')] = value;
+    if ($input.attr('id')) {
+      $input.val(value);
+      Moc.currentMoc[$input.attr('id')] = value;
+    }
   }
 
   function convertToBool(prop){
@@ -97,7 +99,7 @@
       reader.readAsText(files[0]);
       reader.onload = csvReader;
       reader.onerror = errorHandler;
-    }else {
+    } else {
       alert('This feature is not supported in your browser!');
     }
   };
@@ -283,7 +285,7 @@
   $('#moc-editor-form').on('change', '#member-lookup', lookupMember);
   $('#moc-editor-form').on('change', '.moc-input', updateMember);
   $('#moc-editor-form').on('change', '#displayName', updateDisplayName);
-  $('#moc-editor-form').on('click', '.member-info a', changeDropdown);
+  $('#moc-editor-form').on('click', 'a', changeDropdown);
   $('#moc-editor-form').on('change', '#field-lookup', updateButtonValue);
   $('#moc-editor-form').on('click', '#add-field', addField);
   $('#moc-editor-form').on('click', '#new-field', newField);

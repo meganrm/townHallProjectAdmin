@@ -26,6 +26,10 @@
         <span id="helpBlock" class="help-block">A number, for Senate, leave blank</span>
       </div>
       <div class="form-group col-md-12">
+        <label for="next_election">Next Election Year</label>
+        <input type="text" class="form-control input-underline moc-input" id="next_election" placeholder="next election year" value="{{next_election}}">
+      </div>
+      <div class="form-group col-md-12">
         <label for="in_office">In Office?</label>
         <div class="input-group">
           <input type="text" class="form-control" aria-label="..." id="in_office" value="{{in_office}}" placeholder="is in office"
@@ -44,7 +48,27 @@
             </ul>
           </div>
           </div>
+        </div>
+        <div class="form-group col-md-12">
+        <label for="in_office">Missing Member?</label>
+        <div class="input-group">
+          <input type="text" class="form-control" aria-label="..." id="missing-member" value="{{missingMember}}" placeholder="Missing Member"
+            readonly>
+          <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li>
+                <a data-value="true" href="#">true</a>
+              </li>
+              <li>
+                <a data-value="false" href="#">false</a>
+              </li>
+            </ul>
           </div>
+          </div>
+        </div>
         <div class="form-group party col-md-12">
           <label for="party">Party</label>
           <div class="input-group">
@@ -70,7 +94,29 @@
           <!-- /input-group -->
         </div>
         <!-- /form-group -->
-        <div><h5>Properties</h5></div>
+      <div><h5>Social and contact info</h5></div>
+      <div class="form-group col-md-12">
+        <label for="phone">Phone</label>
+        <input type="text" class="form-control input-underline moc-input" id="phone" placeholder="Phone Number" value="{{phone}}">
+      </div>
+      <div class="form-group col-md-12">
+        <label for="url">Website</label>
+        <input type="text" class="form-control input-underline moc-input" id="url" placeholder="Website" value="{{url}}">
+      </div>
+      <div class="form-group col-md-12">
+        <label for="facebook_official_account">Offical facebook account</label>
+        <input type="text" class="form-control input-underline moc-input" id="facebook_official_account" placeholder="Facebook account" value="{{facebook_official_account}}">
+      </div>
+      <div class="form-group col-md-12">
+        <label for="facebook_campaign_account">Campaign facebook account</label>
+        <input type="text" class="form-control input-underline moc-input" id="facebook_campaign_account" placeholder="Facebook campaign account"
+          value="{{facebook_campaign_account}}">
+      </div>
+      <div class="form-group col-md-12">
+        <label for="twitter_account">Twitter</label>
+        <input type="text" class="form-control input-underline moc-input" id="twitter_account" placeholder="Twitter handle" value="{{twitter_account}}">
+      </div>
+      <div><h5>Properties</h5></div>
       <section id="new-fields">
       </section>
       <div class="form-group col-md-12">

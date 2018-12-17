@@ -650,12 +650,20 @@ form .input-underline{
   margin-top: 10px;
 }
 
+.event-lookup-container {
+  border-bottom: 2px solid grey;
+  margin-bottom: 15px;
+}
+
 #download-old-events-form {
+  border-bottom-style: none;
+  border-bottom: none;
+
   .col-md-4 {
     margin-top: 23px;
   }
   .btn {
-    width: 100%;
+    width: 150px;
     background-color: #9E9E9E;
     border: none;
     border-radius: 3px;
@@ -665,8 +673,21 @@ form .input-underline{
   #download-csv-events-list {
     padding-left: 0;
     margin-left: 0;
+
     li a {
       background-color: #2196F3;
+    }
+  }
+
+  .form-group {
+    padding-left: 0;
+    input {
+      border: none;
+      box-shadow: none;
+      border-bottom: 1px solid #d0d0d0;
+      border-radius: 0;
+    }:focus {
+      border-bottom: 1px solid #0893bd;
     }
   }
 }

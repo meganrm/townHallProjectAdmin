@@ -1,6 +1,6 @@
 function eventValidation() {
   var https = require('https');
-  var moment = require('moment');
+  const moment = require('moment-timezone');
 
   var firebasedb = require('./lib/setupFirebase.js');
   var ErrorReport = require('./lib/errorReporting.js');
@@ -15,7 +15,14 @@ function eventValidation() {
   const STATE_SUBMISSION_PATH = '/state_legislators_user_submission/';
 
   const STATES = ['CO/', 'VA/', 'NC/', 'AZ/'];
-
+  const startMonth = '0';
+  const startYear = '2017';
+  let current = moment([startYear, startMonth])
+  let DATES = [];
+  while (current.isSameOrBefore(moment(), 'month')){
+    DATES.push(current.format('YYYY-M'));
+    current = current.add(1, 'month');
+  }
 
   function TownHall(opts) {
     for (keys in opts) {
@@ -179,6 +186,15 @@ function eventValidation() {
     if (!townhall.lat && townhall.meetingType === 'Tele-Town Hall' && townhall.District === 'Senate') {
       townhall.getLatandLog(townhall.State, 'state', FEDERAL_TOWNHALLS);
     }
+    if (townhall.govtrack_id && townhall.dateObj && townhall.zoneString) {
+      firebasedb.ref(`mocData/${townhall.govtrack_id}/confirmed_events`)
+        .update({
+          [townhall.meetingType]: {
+            [townhall.eventId]: moment.tz(townhall.dateObj, townhall.zoneString).format(),
+          },
+        })
+        .catch(console.log);
+    }
   });
 
   firebasedb.ref(FEDERAL_SUBMISSION_PATH).on('child_added', function(snapshot){
@@ -194,6 +210,7 @@ function eventValidation() {
       dateTimeValidation(townhall, path);
     });
   });
+
   STATES.forEach((state) => {
     let path = `${STATE_TOWNHALLS}${state}`;
     firebasedb.ref(path).on('child_added', function(snapshot){
@@ -201,6 +218,22 @@ function eventValidation() {
       dateTimeValidation(townhall, path);
     });
   });
+  
+  // DATES.forEach((date) => {
+  //   let path = `townHallsOld/${date}`;
+  //   firebasedb.ref(path).on('child_added', function (snapshot) {
+  //     const townhall = snapshot.val();
+  //     if (townhall.meetingType && townhall.govtrack_id && townhall.dateObj && townhall.zoneString) {
+  //       firebasedb.ref(`mocData/${townhall.govtrack_id}/confirmed_events`)
+  //         .update({
+  //           [townhall.meetingType]: {
+  //             [townhall.eventId]: moment.tz(townhall.dateObj, townhall.zoneString).format(),
+  //           },
+  //         })
+  //         .catch(console.log);
+  //     }
+  //   });
+  // });
 
 }
 

@@ -115,18 +115,38 @@
                   <div class="col-md-12">
                     <div class="metadata">
                     </div>
-                    <div class="lookup-old-events">
+                    <section class="row">
+                      <div class="event-lookup-container col-md-10 col-md-offset-1">
+                        <h3>Event Lookup</h3>
                         <form id="download-old-events-form">
-                          <fieldset>
-                            <div class="form-row">
-                              <div class="col-md-4 mb-3">
-                                  <input id="member-input" name="Member" type="text" class="form-control" placeholder="Member Full Name">
-                              </div>
-                              <div class="col-md-4 mb-3">
+                          <section class="member-info">
+                            <h4>Member(s) Information</h4>
+                            <div class="form-group col-sm-12">
+                              <input id="member-search-input" name="Member" type="text" data-provide="typeahead" data-filter="Member" class="form-control dropdown-item filter" placeholder="Member Full Name" autocomplete="off" value="" readonly>
+                            </div>
+                            <div class="form-group col-sm-12">
+                              <input list="party-options" id="party-search-input" name="party" type="text" class="form-control" placeholder="Party">
+                              <datalist id="party-options">
+                                <option value="Republican">
+                                <option value="Democratic">
+                                <option value="Independent">
+                              </datalist>
+                            </div>
+                          </section>
+                          <section class="location-info">
+                            <h4>Location Information</h4>
+                              <div class="form-group col-sm-12">
                                   <input id="state-input" name="state" type="text" class="form-control" placeholder="State Abbr.">
                               </div>
-                              <div class="col-md-4 mb-3">
-                                <input list="event-type-options" id="event-type-input" name="Meeting_Type" type="text" class="form-control" placeholder="Event Type">
+                              <div class="form-group col-sm-12">
+                                  <input id="district-input" name="district" type="text" class="form-control" placeholder="District No.">
+                              </div>
+                          </section>
+                          <section class="event-details">
+                            <h4>Event Details</h4>
+                            <div class="form-group col-sm-12">
+                              <div class="form-group">
+                                  <input list="event-type-options" id="event-type-input" name="meetingType" type="text" class="form-control" placeholder="Event Type">
                                   <datalist id="event-type-options">
                                     <option value="Town Hall">
                                     <option value="Office Hours">
@@ -135,44 +155,41 @@
                                     <option value="Campaign Town Hall">
                                     <option value="Hearing">
                                     <option value="DC Event">
+                                    <option value="Candidate Forum/Debate">
                                     <option value="Other">
                                   </datalist>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12">
+                              <div class="form-group">
+                                <input list="icon-type-options" id="map-icon-input" name="iconFlag" type="text" class="form-control" placeholder="Icon Type">
+                                <datalist id="icon-type-options">
+                                  <option value="in-person">
+                                  <option value="staff">
+                                  <option value="tele">
+                                  <option value="activism">
+                                  <option value="campaign">
+                                  <option value="mfol">
+                                </datalist>
                               </div>
                             </div>
-                            <div class="form-row">
-                                <div class="col-md-2 mb-3">
-                                  <div class="form-group">
-                                    <label for="start-date">Start date</label>
-                                    <input type="date" class="form-control" id="download-start-date" name="start_time" placeholder="MM/DD/YYYY" value=2017-01-01>
-                                  </div>
-                                </div>
-                                <div class="col-md-2 mb-3">
-                                  <div class="form-group">
-                                    <label for="end-date">End date</label>
-                                    <input type="date" class="form-control" id="download-end-date" name="end_time" placeholder="MM/DD/YYYY">
-                                  </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                  <input id="district-input" name="district" type="text" class="form-control" placeholder="District No.">
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                  <input list="party-options" id="party-input" name="Party" type="text" class="form-control" placeholder="Party">
-                                  <datalist id="party-options">
-                                    <option value="Republican">
-                                    <option value="Democratic">
-                                    <option value="Independent">
-                                  </datalist>
-                                </div>
-                              </div>
-                              <div class="form-row justify-content-center">
-                                <div class="col-md-4">
-                                  <button type="submit" class="btn btn-default">Search Events</button>
-                                  <ul id="download-csv-events-list"></ul>
-                                  <span id="search-total"></span>
-                                </div>
-                              </div>
-                          </fieldset>
+                            <div class="form-group col-sm-6">
+                                <label for="start-date">Start date</label>
+                                <input type="date" class="form-control" id="download-start-date" name="start_time" placeholder="MM/DD/YYYY" >
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label for="end-date">End date</label>
+                                <input type="date" class="form-control" id="download-end-date" name="end_time" placeholder="MM/DD/YYYY">
+                            </div>
+                            <div class="form-group col-sm-12">
+                              <button type="submit" class="btn btn-default">Search Events</button>
+                              <ul id="download-csv-events-list"></ul>
+                              <span id="search-total"></span>
+                            </div>
+                          </section>
                         </form>
+                      </div>
+                    </section>
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" id="load-modal" tabindex="-1" role="dialog" aria-labelledby="loadModal" aria-hidden="true">
@@ -554,7 +571,7 @@
                   </h4>
                   <div class="form-group col-md-12" id="member-form-group">
                     <label class="sr-only" for="member-lookup">Member</label>
-                    <input type="text" class="form-control input-underline member-lookup" id="member-lookup" placeholder="Full name" value="" autocomplete="off">
+                    <input type="text" class="form-control input-underline member-lookup" id="member-lookup" placeholder="Lawmaker/Candidate Name" value="" autocomplete="off">
                     <span id="member-help-block" class="help-block">Only first name and last name, not titles</span>
                   </div>
                 </form>
@@ -658,6 +675,7 @@
     <!-- Script Files -->
 
     <script src="/scripts/lib/firebaseinit.js"></script>
+    <script src="/scripts/lib/updateOldEvents.js"></script>
 
     <script src="/scripts/data/states.js"></script>
     <script src="/scripts/data/users.js"></script>
@@ -668,18 +686,16 @@
     <script src="/scripts/models/downloadingEvents.js"></script>
     <script src="/scripts/models/capEvents.js"></script>
     <script src="/scripts/models/User.js"></script>
-    <script src="/scripts/models/updateOldEvents.js"></script>
-    <script src="/scripts/models/CsvTownHall.js"></script>
 
 
     <script src="/scripts/views/eventView.js"></script>
     <script src="/scripts/views/dataViz.js"></script>
     <script src="/scripts/views/updatingEventsView.js"></script>
     <script src="/scripts/views/downloadCenterView.js"></script>
+    <script src="/scripts/views/eventLookUpTools.js"></script>
 
     <script src="/scripts/views/mocReportView.js"></script>
     <script src="/scripts/views/mocEditorView.js"></script>
-    <script src="/scripts/views/missingMemberPosterView.js"></script>
 
     <script src="/scripts/views/state-lawmaker-report.js"></script>
     <script src="/scripts/views/state-updating-events.js"></script>

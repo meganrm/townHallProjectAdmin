@@ -1,4 +1,4 @@
-/*globals mocReportView eventHandler User firebasedb*/
+/*globals mocReportView eventHandler User eventLookUpToolsView firebasedb*/
 
 (function(module){
   var adminSiteController = {};
@@ -145,7 +145,7 @@
         alert('Please add valid input to form.');
         return;
       }
-      eventHandler.lookupOldEvents(searchObj);
+      eventLookUpToolsView.lookupEvents(searchObj);
     });
 
     $('#lookup-old-state-events-form').on('submit', eventHandler.lookupOldStateEvents);

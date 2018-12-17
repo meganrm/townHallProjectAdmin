@@ -4,6 +4,8 @@ class Pledger {
   constructor(row, state) {
     this.state = state;
     this.displayName = row.Candidate;
+    this.missingMember = row['Missing Member'] === 'TRUE';
+    this.hoverText = row['Hover Text'];
     this.district = Number(row.District) ? Number(row.District) : null;
     this.role = Number(row.District) ? 'Rep' : row.District;
     this.chamber = Number(row.District) ? 'lower' : 'upper';

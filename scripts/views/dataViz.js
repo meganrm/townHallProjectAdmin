@@ -54,8 +54,6 @@
     }
   }
 
-
-
   function updateStateProgressBar($bar, $total, total, hasbeenUpdated) {
     if (hasbeenUpdated) {
       var current = Number($bar.attr('data-count'));
@@ -119,7 +117,7 @@
   dataviz.recessProgress = function (townhall, memberSet, houseMapping, senateMapping) {
     var total;
     var newMember = false;
-    if (townhall.meetingType ==='Town Hall') {
+    if (townhall.meetingType ==='Town Hall' && townhall.iconFlag === 'in-person') {
       if (!memberSet.has(townhall.Member)) {
         newMember = true;
         memberSet.add(townhall.Member);
@@ -136,6 +134,7 @@
         total = 100;
         chamber = 'senate';
       }
+      dataviz.total++;
       addToMapping(chamber, townhall.Member, houseMapping, senateMapping);
       parseBars(party, chamber, newMember, total, '-aug-progress-');
     }
@@ -209,14 +208,18 @@
     dataviz.lookupMembers = new Set();
     dataviz.houseMemberMapping = {};
     dataviz.sentateHouseMapping = {};
+    dataviz.total = 0;
     var dateRange = eventHandler.getDateRange();
     var dates = dateRange.dates;
     var start = dateRange.start;
     var end = dateRange.end;
     firebase.database().ref('townHalls/').once('value')
       .then((snapshot)=> {
-        snapshot.forEach((townahll) => {
-          dataviz.recessProgress(townahll.val(), dataviz.lookupMembers, dataviz.houseMemberMapping, dataviz.sentateHouseMapping);
+        snapshot.forEach((ele) => {
+          let townhall = ele.val();
+          if (townhall.dateObj < end) {
+            dataviz.recessProgress(townhall, dataviz.lookupMembers, dataviz.houseMemberMapping, dataviz.sentateHouseMapping);
+          }
         });
       });
     dates.forEach(function(date){

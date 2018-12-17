@@ -7,6 +7,8 @@ const Pledger = require('../server/pledger/model');
 
 const firebasedb = require('../server/lib/setupFirebase');
 const googleMethods = require('../server/recess-events/google-methods');
+const readRowAndUpdate = require('../server/moc/update-crisis-status');
+
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 var clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -53,7 +55,7 @@ googleMethods.getSheets(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2
       let state = name.split(' ')[0];
       return (states[state]);
     }).map(sheetname => {
-      return `${sheetname}!A:M`;
+      return `${sheetname}!A:O`;
     });
     googleMethods.readMultipleRanges(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2p2g', ranges).then((googleRows) => {
       googleRows.forEach((sheet) => {
@@ -72,11 +74,11 @@ googleMethods.getSheets(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2
             }, {});
             if (obj.Candidate && obj.Candidate.length > 0){
               let newPledger = new Pledger(obj, state);
-              let key = row[row.length - 1];
+              let key = row[12];
               if (key === 'end') {
                 key = firebasedb.ref(`town_hall_pledges/${newPledger.state}`).push().key;
-                row[row.length - 1] = key;
-                let writeRange = `${sheetName.split('!')[0]}!A${i+ 1}:M${i + 1}`;
+                row[12] = key;
+                let writeRange = `${sheetName.split('!')[0]}!A${i+ 1}:O${i + 1}`;
   
                 let toUpdate = {
                   'range': writeRange,
@@ -98,4 +100,12 @@ googleMethods.getSheets(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2
   })
   .catch(err => {
     console.log('error reading sheet:', err.message);
+  });
+
+googleMethods.read(oauth2Client, '1_zaj6jbt3JbsNvZxi0hnaKw-NUtx1zmRK7lIf-t2DVw', 'Sheet1!A:G')
+  .then((googleRows) => {
+    googleRows.forEach(row => {
+
+      readRowAndUpdate(row);
+    });
   });
