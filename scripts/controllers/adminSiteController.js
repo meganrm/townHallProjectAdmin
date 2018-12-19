@@ -18,6 +18,7 @@
     eventHandler.readDataUsers('/state_legislators_user_submission/NC', '#for-approval-state');
     eventHandler.readDataUsers('/state_legislators_user_submission/VA', '#for-approval-state');
     eventHandler.readDataUsers('/state_legislators_user_submission/CO', '#for-approval-state');
+    eventHandler.readDataUsers('/state_legislators_user_submission/OR', '#for-approval-state');
     eventHandler.readDataUsers('/state_legislators_user_submission/AZ', '#for-approval-state');
     eventHandler.renderNav('admin');
     Moc.download();
