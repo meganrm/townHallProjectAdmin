@@ -1,13 +1,57 @@
 /* globals firebasedb */
 
 (function (module) {
+  function makeDisplayDistrict (opts) {
+    const constants = {
+      HD: 'House District',
+      SD: 'Senate District',
+      GOV: 'Governor',
+      LTGOV: 'Lt. Governor',
+      upper: 'Sen.',
+      lower: 'Rep.',
+    };
+    if (opts.level === 'state') {
+      //state leg or statewide office
+      var title;
+      if (opts.district) {
+        //state leg
+        //"VA HD-08" (Virginia House District 8)
+        var chamber = opts.district.split('-')[0];
+        var number = opts.district.split('-')[1];
+        var sentence = [opts.district, '(' + opts.stateName, constants[chamber], parseInt(number) + ')'];
+        opts.displayDistrict = sentence.join(' ');
+      } else {
+        //statewide office, ie Governor
+        var office = opts.thp_id.split('-')[1];
+        title = constants[office];
+        opts.displayDistrict = title;
+      }
+    } else {
+      var state = opts.state;
+      if (opts.district && parseInt(opts.district)) {
+        //House
+        opts.displayDistrict = state + '-' + parseInt(opts.district);
+      } else if (opts.chamber === 'upper') {
+        //Senator
+        opts.displayDistrict = state + ', ' + 'Senate';
+      } else if (opts.chamber === 'statewide' && opts.office) {
+        opts.displayDistrict = opts.office.toUpperCase() + ' ' + state;
+      } else {
+        opts.displayDistrict = state;
+      }
+      if (opts.meetingType === 'Campaign Town Hall') {
+        opts.displayDistrict = 'Running for: ' + opts.displayDistrict;
+      }
+    }
+  }
 
   class TownHall {
+
     constructor(opts) {
       for (var keys in opts) {
         this[keys] = opts[keys];
       }
-      this.displayDistrict = this.district ? `${this.state}-${this.district}` : 'Senate';
+      this.displayDistrict = makeDisplayDistrict(opts);
     }
     // writes to townhall, can take a key for update
     updateFB(key, path) {

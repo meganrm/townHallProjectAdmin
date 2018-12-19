@@ -11,7 +11,6 @@ const convertDataAndUpdate = (row) => {
     crisis_status: Number(crisis_status),
     crisis_status_source: row[6] || '',
   };
-
   const ref = firebasedb.ref(`mocData/${govtrackId}`);
 
   ref.once('value')
