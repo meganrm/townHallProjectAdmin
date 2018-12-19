@@ -14,7 +14,7 @@ function eventValidation() {
   const FEDERAL_SUBMISSION_PATH = '/UserSubmission/';
   const STATE_SUBMISSION_PATH = '/state_legislators_user_submission/';
 
-  const STATES = ['CO/', 'VA/', 'NC/', 'AZ/'];
+  const STATES = ['CO/', 'VA/', 'NC/', 'AZ/', 'OR/'];
   const startMonth = '0';
   const startYear = '2017';
   let current = moment([startYear, startMonth])

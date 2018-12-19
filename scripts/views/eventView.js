@@ -236,7 +236,7 @@
       if (!ele.meetingType) {
         console.log('no meeting type', ele);
       } else {
-        updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
+        // updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
       }
       $('#all-events-table').append($toAppend);
     });
@@ -289,7 +289,7 @@
       if (!ele.meetingType) {
         console.log('no meeting type', ele);
       } else {
-        updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
+        // updateEventView.showHideMeetingTypeFields(ele.meetingType, $toAppend);
       }
       if (!ele.lat) {
         $toAppend.find('#geocode-button').removeClass('disabled');

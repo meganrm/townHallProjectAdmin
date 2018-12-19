@@ -93,7 +93,6 @@ googleMethods.getSheets(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2
             }
           }
         }
-        console.log(data);
         googleMethods.write(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2p2g', data);
       });
     });
@@ -105,7 +104,9 @@ googleMethods.getSheets(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2
 googleMethods.read(oauth2Client, '1_zaj6jbt3JbsNvZxi0hnaKw-NUtx1zmRK7lIf-t2DVw', 'Sheet1!A:G')
   .then((googleRows) => {
     googleRows.forEach(row => {
-
       readRowAndUpdate(row);
     });
+  })
+  .catch(e => {
+    console.log('error reading crisis sheet', e)
   });

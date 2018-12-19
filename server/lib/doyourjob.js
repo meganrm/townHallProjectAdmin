@@ -1,6 +1,10 @@
 const firebasedb = require('./setupFirebase');
+const includes = require('lodash').includes;
+
 const zeropadding = require('../util').zeropadding;      
 const ErrorReport = require('./errorReporting');
+
+const WINNER_STATUS = 'Winner';
 
 const getMMs = () => {
   return firebasedb.ref('mocData')
@@ -34,7 +38,7 @@ const getMMs = () => {
         });
 };
 
-const writeOut = (mm, displayName, party) => {
+const writeOut = (mm, displayName, party, winner) => {
   let district;
   let updateObject = {
     state: mm.state,
@@ -42,6 +46,7 @@ const writeOut = (mm, displayName, party) => {
     missing_member_party: mm.mmParty[0],
     pledger: displayName,
     pledger_party: party,
+    winner: winner, 
   };
   if (mm.state === 'PA') {
     if (mm.district == 10 || mm.district == 12){
@@ -97,30 +102,31 @@ const checkPledger = (mm) => {
             if (!pledger.pledged) {
               return;
             }
-            if (pledger.status !== 'Nominee') {
+            if (!includes(['Nominee', WINNER_STATUS], pledger.status)) {
               return;
             }
+          
+            console.log(pledger.status, pledger.state, pledger.district)
             if (pledger.incumbent) {
               return;
             }
-
             if (mm.district && pledger.district) {
               if (Number(mm.district) === Number(pledger.district)) {
-                return writeOut(mm, pledger.displayName, pledger.party);
+                return writeOut(mm, pledger.displayName, pledger.party, pledger.status === WINNER_STATUS);
               }
             } else if (!mm.district && !pledger.district) {
               if (pledger.role === 'Sen' && mm.type === 'sen') {
-                return writeOut(mm, pledger.displayName, pledger.party);
+                return writeOut(mm, pledger.displayName, pledger.party, pledger.status === WINNER_STATUS);
               }
               else if (
                 pledger.role.split(' ')[0] === 'Sen' &&
                  mm.type === 'sen' &&
                 pledger.role.split(' ')[1] === mm.state_rank
                 ) {
-                return writeOut(mm, pledger.displayName, pledger.party);
+                return writeOut(mm, pledger.displayName, pledger.party, pledger.status === WINNER_STATUS);
               }
             } else if (mm.district === 'At-Large' && pledger.role === 'Rep') {
-              return writeOut(mm, pledger.displayName, pledger.party);
+              return writeOut(mm, pledger.displayName, pledger.party, pledger.status === WINNER_STATUS);
             }
 
           });
