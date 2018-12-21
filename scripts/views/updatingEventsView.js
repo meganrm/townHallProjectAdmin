@@ -134,8 +134,8 @@
     if (!approvedTH.Member) {
       return console.log('Needs a member');
     }
-      approvedTH.displayDistrict = null;
-      delete approvedTH.displayDistrict;
+    approvedTH.displayDistrict = null;
+    delete approvedTH.displayDistrict;
     approvedTH.updateFB(key).then(function (dataWritten) {
       if (dataWritten.eventId) {
         console.log(dataWritten);
@@ -164,6 +164,8 @@
     if (!approvedTH.state) {
       return console.log('Needs state');
     }
+    approvedTH.displayDistrict = null;
+    delete approvedTH.displayDistrict;
     approvedTH.updateFB(key, `state_townhalls/${approvedTH.state}/`).then(function (dataWritten) {
       if (dataWritten.eventId) {
         console.log(dataWritten);
