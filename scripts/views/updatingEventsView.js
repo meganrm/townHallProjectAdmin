@@ -4,7 +4,6 @@
 
   var updateEventView = {};
   TownHall.currentKey =  null;
-  TownHall.currentEvent = new TownHall();
 
   updateEventView.updatedView = function updatedView($form, $listgroup) {
     var preview = Handlebars.getTemplate('previewEvent');
@@ -536,6 +535,7 @@
   $('.events-table').on('click', '#archive-button', eventHandler.archiveSubmission);
   $('#archived-lookup').on('submit', updateEventView.loadOldEvents);
   $('#for-approval').on('change', '#Member', updateEventView.memberChanged);
+  $('#for-approval').on('click', '.icon-flag-dropdown a', updateEventView.changeIconFlag);
 
   $('#scroll-to-top').on('click', function () {
     $('html, body').animate({ scrollTop: 0 }, 'slow');
