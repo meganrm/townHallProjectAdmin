@@ -10,7 +10,10 @@
       upper: 'Sen.',
       lower: 'Rep.',
     };
-    if (opts.level === 'state') {
+    if (!opts){
+      return;
+    }
+    if (opts.level && opts.level === 'state') {
       //state leg or statewide office
       var title;
       if (opts.district) {
@@ -26,7 +29,7 @@
         title = constants[office];
         opts.displayDistrict = title;
       }
-    } else {
+    } else if (opts.level && opts.level === 'federal') {
       var state = opts.state;
       if (opts.district && parseInt(opts.district)) {
         //House

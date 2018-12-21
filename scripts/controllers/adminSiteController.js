@@ -12,14 +12,14 @@
   };
 
   adminSiteController.renderAdmin = function(){
-    eventHandler.readData('/townHalls/');
+    eventHandler.readData('/townHalls/', 'federal');
     eventHandler.metaData();
-    eventHandler.readDataUsers('/UserSubmission', '#for-approval');
-    eventHandler.readDataUsers('/state_legislators_user_submission/NC', '#for-approval-state');
-    eventHandler.readDataUsers('/state_legislators_user_submission/VA', '#for-approval-state');
-    eventHandler.readDataUsers('/state_legislators_user_submission/CO', '#for-approval-state');
-    eventHandler.readDataUsers('/state_legislators_user_submission/OR', '#for-approval-state');
-    eventHandler.readDataUsers('/state_legislators_user_submission/AZ', '#for-approval-state');
+    eventHandler.readDataUsers('/UserSubmission', '#for-approval', 'federal');
+    eventHandler.readDataUsers('/state_legislators_user_submission/NC', '#for-approval-state', 'state');
+    eventHandler.readDataUsers('/state_legislators_user_submission/VA', '#for-approval-state', 'state');
+    eventHandler.readDataUsers('/state_legislators_user_submission/CO', '#for-approval-state', 'state');
+    eventHandler.readDataUsers('/state_legislators_user_submission/OR', '#for-approval-state', 'state');
+    eventHandler.readDataUsers('/state_legislators_user_submission/AZ', '#for-approval-state', 'state');
     eventHandler.renderNav('admin');
     Moc.download();
   };

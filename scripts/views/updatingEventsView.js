@@ -4,7 +4,6 @@
 
   var updateEventView = {};
   TownHall.currentKey =  null;
-  TownHall.currentEvent = new TownHall();
 
   updateEventView.updatedView = function updatedView($form, $listgroup) {
     var preview = Handlebars.getTemplate('previewEvent');
@@ -131,6 +130,7 @@
   updateEventView.approveNewEvent = function($form, preview) {
     var key = $form.closest('.list-group-item').attr('id');
     var approvedTH = TownHall.allTownHallsFB[key];
+    console.log(approvedTH)
     if (!approvedTH.Member) {
       return console.log('Needs a member');
     }
@@ -536,6 +536,7 @@
   $('.events-table').on('click', '#archive-button', eventHandler.archiveSubmission);
   $('#archived-lookup').on('submit', updateEventView.loadOldEvents);
   $('#for-approval').on('change', '#Member', updateEventView.memberChanged);
+  $('#for-approval').on('click', '.icon-flag-dropdown a', updateEventView.changeIconFlag);
 
   $('#scroll-to-top').on('click', function () {
     $('html, body').animate({ scrollTop: 0 }, 'slow');
