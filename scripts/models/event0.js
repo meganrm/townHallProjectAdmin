@@ -49,12 +49,13 @@
   }
 
   class TownHall {
-
     constructor(opts) {
       for (var keys in opts) {
         this[keys] = opts[keys];
       }
-      this.displayDistrict = makeDisplayDistrict(opts);
+      if (opts.level && opts.state) {
+        this.displayDistrict = makeDisplayDistrict(opts);
+      }
     }
     // writes to townhall, can take a key for update
     updateFB(key, path) {
