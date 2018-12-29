@@ -130,7 +130,6 @@
   updateEventView.approveNewEvent = function($form, preview) {
     var key = $form.closest('.list-group-item').attr('id');
     var approvedTH = TownHall.allTownHallsFB[key];
-    console.log(approvedTH)
     if (!approvedTH.Member) {
       return console.log('Needs a member');
     }

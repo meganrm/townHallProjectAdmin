@@ -170,7 +170,7 @@
       var newTownHall = this;
       return new Promise(function (resolve, reject) {
         $.ajax({
-          url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM',
+          url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyDP8q2OVisSLyFyOUU6OTgGjNNQCq7Q3rE',
           data: {
             'address': address,
           },
