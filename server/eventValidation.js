@@ -35,7 +35,7 @@ function eventValidation() {
     var addresskey = address.replace(/\W/g, '');
     var options = {
       hostname: 'maps.googleapis.com',
-      path: `/maps/api/geocode/json?address=${addressQuery}&key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM`,
+      path: `/maps/api/geocode/json?address=${addressQuery}&key=AIzaSyDP8q2OVisSLyFyOUU6OTgGjNNQCq7Q3rE`,
       method: 'GET',
     };
     var str = '';
