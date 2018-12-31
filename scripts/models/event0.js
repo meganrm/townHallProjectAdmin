@@ -340,11 +340,21 @@
         else if (prop === 'district' && !townHall.checkDistrictForMatch(searchParams[prop])) {
           return false;
         }
-        else if (prop === 'govtrack_id' && townHall[prop] !== searchParams[prop]) { // govtrack doesn't match
+        else if (prop === 'govtrack_id' && townHall[prop].toString() !== searchParams[prop].toString()) { // govtrack doesn't match
           return false;
         }
-        else if (townHall[prop].toLowerCase() !== searchParams[prop].toLowerCase()) {
-          return false;
+        // number check
+        // (also boolean)
+        else if (!isNaN(townHall[prop]) &&
+                 !isNaN(searchParams[prop]) &&
+                 Number(townHall[prop]) !== Number(searchParams[prop])) {
+            return false;
+        }
+        // string check
+        else if (isNaN(townHall[prop]) &&
+                 isNaN(searchParams[prop]) &&
+                 townHall[prop].toLowerCase() !== searchParams[prop].toLowerCase()) {
+            return false;
         }
       }
       return true;
