@@ -1,16 +1,17 @@
 const firebasedb = require('../lib/setupFirebase.js');
 const statesAb = require('../data/stateMap.js');
-const zeropadding = require('./server/util').zeropadding;
+const zeropadding = require('../util').zeropadding;
 
 class Moc {
     constructor(opts) {
-        if (!opts.member_id) {
-            return;
-        }
+        // if (!opts.member_id) {
+        //     return;
+        // }
         for (let keys in opts) {
             this[keys] = opts[keys];
         }
-        this.propublica_id = opts.member_id;
+        this.propublica_id = opts.member_id || opts.id;
+        this.end_date = opts.end_date || null;
         this.propublica_facebook = opts.facebook_account;
         if (parseInt(this.propublica_facebook)) {
             this.propublica_facebook = parseInt(this.propublica_facebook);
@@ -60,16 +61,17 @@ class Moc {
             propublica_id: this.propublica_id || null,
             displayName: this.displayName || null,
         };
+        console.log('updating moc by district', path, updateObject)
         return firebasedb.ref(path).update(updateObject);
     }
 
     createNew(newPropublicaMember) {
         let updates = {};
         this.displayName = this.first_name + ' ' + this.last_name;
-        this.state = newPropublicaMember.roles[0].state;
-        this.end_date = newPropublicaMember.roles[0].end_date;
+        this.state = this.state || newPropublicaMember.roles[0].state;
+        this.end_date = newPropublicaMember ? newPropublicaMember.roles[0].end_date : this.end_date;
 
-        this.district = newPropublicaMember.roles[0].district || null;
+        // this.district = this.type === 'rep' && newPropublicaMember ? newPropublicaMember.roles[0].district : null;
         this.stateName = statesAb[this.state];
         const lastname = this.last_name.replace(/\W/g, '');
         const firstname = this.first_name.replace(/\W/g, '');
@@ -89,6 +91,7 @@ class Moc {
     update(path) {
     // if match - update only fields that may change (social media)
         console.log('existing member', this.govtrack_id);
+        this.updateMocByStateDistrict();
         return firebasedb.ref(path).update(this);
     }
 }
