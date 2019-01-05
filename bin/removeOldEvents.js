@@ -35,4 +35,5 @@
   TownHall.removeOld('/state_townhalls/CO/', '/state_townhalls_archive/CO/');
   TownHall.removeOld('/state_townhalls/VA/', '/state_townhalls_archive/VA/');
   TownHall.removeOld('/state_townhalls/NC/', '/state_townhalls_archive/NC/');
+  TownHall.removeOld('/state_townhalls/OR/', '/state_townhalls_archive/OR/');
   TownHall.removeOld('/state_townhalls/AZ/', '/state_townhalls_archive/AZ/');
