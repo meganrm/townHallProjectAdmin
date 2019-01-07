@@ -115,53 +115,53 @@ function updateDatabaseWithNewMembers(newPropublicaMembers) {
 //       console.log('Uh oh, something went wrong getting new members ', error);
 //     });
 
-// getNewSenate()
-//   .then(newSenators => {
-//       newSenators.forEach(senator => {
-//           let newSenator = new Moc(senator);
-//           newSenator.type = 'sen';
-//           if (!newSenator.govtrack_id) {
-//               return console.log('no govtrack_id', newSenator.id);
-//           }
-//           var path = '/mocData/' + newSenator.govtrack_id;
-//           firebasedb.ref(path).once('value').then(function (snapshot) {
-//               if (!snapshot.exists()) {
-//                   newSenator.createNew();
-//               }
-//               console.log('already have', newSenator.first_name, newSenator.last_name);
-//               return newSenator.update(path)
-//             .then(function () {
-//                 console.log('done');
-//             }).catch(function (error) {
-//                 let errorEmail = new ErrorReport(newSenator.govtrack_id + ':' + error, 'Could not find propublica member');
-//                 errorEmail.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
-//             });
-//           });
-//       });
-//   });
-
-getNewReps()
-    .then(newReps => {
-      console.log(newReps)
-      newReps.forEach(rep => {
-        let newRep = new Moc(rep);
-        newRep.type = 'rep';
-        if (!newRep.govtrack_id) {
-          return console.log('no govtrack_id', newRep.id);
-        }
-        var path = '/mocData/' + newRep.govtrack_id;
-        firebasedb.ref(path).once('value').then(function (snapshot) {
-          if (!snapshot.exists()) {
-            newRep.createNew();
+getNewSenate()
+  .then(newSenators => {
+      newSenators.forEach(senator => {
+          let newSenator = new Moc(senator);
+          newSenator.type = 'sen';
+          if (!newSenator.govtrack_id) {
+              return console.log('no govtrack_id', newSenator.id);
           }
-          console.log('already have', newRep.first_name, newRep.last_name);
-          return newRep.update(path)
+          var path = '/mocData/' + newSenator.govtrack_id;
+          firebasedb.ref(path).once('value').then(function (snapshot) {
+              if (!snapshot.exists()) {
+                  newSenator.createNew();
+              }
+              console.log('already have', newSenator.first_name, newSenator.last_name);
+              return newSenator.update(path)
             .then(function () {
-              console.log('done');
+                console.log('done');
             }).catch(function (error) {
-              let errorEmail = new ErrorReport(newRep.govtrack_id + ':' + error, 'Could not find propublica member');
-              errorEmail.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
+                let errorEmail = new ErrorReport(newSenator.govtrack_id + ':' + error, 'Could not find propublica member');
+                errorEmail.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
             });
-        });
+          });
       });
-    });
+  });
+
+// getNewReps()
+//     .then(newReps => {
+//       console.log(newReps)
+//       newReps.forEach(rep => {
+//         let newRep = new Moc(rep);
+//         newRep.type = 'rep';
+//         if (!newRep.govtrack_id) {
+//           return console.log('no govtrack_id', newRep.id);
+//         }
+//         var path = '/mocData/' + newRep.govtrack_id;
+//         firebasedb.ref(path).once('value').then(function (snapshot) {
+//           if (!snapshot.exists()) {
+//             newRep.createNew();
+//           }
+//           console.log('already have', newRep.first_name, newRep.last_name);
+//           return newRep.update(path)
+//             .then(function () {
+//               console.log('done');
+//             }).catch(function (error) {
+//               let errorEmail = new ErrorReport(newRep.govtrack_id + ':' + error, 'Could not find propublica member');
+//               errorEmail.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
+//             });
+//         });
+//       });
+//     });

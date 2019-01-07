@@ -56,10 +56,13 @@ class Moc {
             console.log('No Moc Type');
             return false;
         }
+        if (!this.displayName) {
+            return Promise.reject('no display name', this)
+        }
         let updateObject = {
             govtrack_id: this.govtrack_id || null,
             propublica_id: this.propublica_id || null,
-            displayName: this.displayName || null,
+            displayName: this.displayName,
         };
         console.log('updating moc by district', path, updateObject)
         return firebasedb.ref(path).update(updateObject);
@@ -91,6 +94,9 @@ class Moc {
     update(path) {
     // if match - update only fields that may change (social media)
         console.log('existing member', this.govtrack_id);
+        if (!this.displayName){
+            this.displayName = this.first_name + ' ' + this.last_name;
+        }
         this.updateMocByStateDistrict();
         return firebasedb.ref(path).update(this);
     }
