@@ -41,7 +41,7 @@ if (process.env.NODE_ENV === 'production') {
             <p>Thank you for your event submission to Town Hall Project. We have approved your event:</p>
             <ul>
               <li>Lawmaker: ${townhall.Member}</li>
-              <li>Date: ${townhall.Date}</li>
+              <li>Date: ${townhall.dateString}</li>
               <li>Time: ${townhall.Time}</li>
               <li>Location: ${townhall.Location}</li>
               <li>Address: ${townhall.address}</li>
@@ -79,7 +79,7 @@ if (process.env.NODE_ENV === 'production') {
       <p>Thank you for your event submission to Town Hall Project. We were not able to approve your event for the following reason: <br>${reason}</p>
       <ul>
         <li>Lawmaker: ${townhall.Member}</li>
-        <li>Date: ${townhall.Date}</li>
+        <li>Date: ${townhall.dateString}</li>
         <li>Time: ${townhall.Time}</li>
         <li>Location: ${townhall.Location}</li>
         <li>Address: ${townhall.address}</li>

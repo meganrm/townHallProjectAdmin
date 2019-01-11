@@ -114,7 +114,7 @@
       else {
         databaseTH = this;
       }
-      var time = Date.parse(newTownHall.Date + ' ' + databaseTH.Time) / 1000;
+      var time = Date.parse(newTownHall.dateString + ' ' + databaseTH.Time) / 1000;
       var loc = databaseTH.lat + ',' + databaseTH.lng;
       return new Promise(function (resolve, reject) {
         var url = `https://maps.googleapis.com/maps/api/timezone/json?location=${loc}&timestamp=${time}&key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM`;
@@ -135,7 +135,7 @@
             }
             var zone = hawaiiTime ? hawaiiTime : newTownHall.timeZone;
             // console.log(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone);
-            newTownHall.dateObj = new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone).getTime();
+            newTownHall.dateObj = new Date(newTownHall.dateString.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + zone).getTime();
             resolve(newTownHall);
           }
         });

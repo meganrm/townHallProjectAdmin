@@ -29,7 +29,7 @@
         newObj[cur.id] = $curValue;
         var dateFormats = ['YYYY-MM-DD', 'MM/DD/YYYY', 'MM-DD-YYYY', 'MMMM D, YYYY'];
         newObj.dateString = moment($curValue, dateFormats).format('ddd, MMM D YYYY');
-        newObj.Date = moment($curValue, dateFormats).format('ddd, MMM D YYYY');
+        // newObj.Date = moment($curValue, dateFormats).format('ddd, MMM D YYYY');
         break; 
       default:
         newObj[cur.id] = $curValue;
@@ -100,7 +100,7 @@
     var dateUpdated = newTownHall;
     if (databaseTH.timeZone || databaseTH.meetingType.slice(0, 4) === 'Tele') {
       var timeZone = databaseTH.timeZone;
-      dateUpdated.dateObj = timeZone ? new Date(dateUpdated.Date.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + timeZone).getTime() : new Date(newTownHall.Date.replace(/-/g, '/') + ' ' + databaseTH.Time).getTime();
+      dateUpdated.dateObj = timeZone ? new Date(dateUpdated.dateString.replace(/-/g, '/') + ' ' + databaseTH.Time + ' ' + timeZone).getTime() : new Date(newTownHall.dateString.replace(/-/g, '/') + ' ' + databaseTH.Time).getTime();
       dateUpdated.dateValid = dateUpdated.dateObj ? true : false;
       return (dateUpdated);
     } else if (databaseTH.lat) {
@@ -112,7 +112,7 @@
         console.log('could not get timezone', error);
       });
     } else {
-      dateUpdated.dateObj = new Date(dateUpdated.Date.replace(/-/g, '/') + ' ' + databaseTH.Time).getTime();
+      dateUpdated.dateObj = new Date(dateUpdated.dateString.replace(/-/g, '/') + ' ' + databaseTH.Time).getTime();
       dateUpdated.dateValid = newTownHall.dateObj ? true : false;
       return (dateUpdated);
     }
@@ -215,7 +215,7 @@
             return false;
           }
         }
-        if (newTownHall.Date) {
+        if (newTownHall.dateString) {
           newTownHall = updateEventView.validateDate(id, databaseTH, newTownHall);
         }
         if (newTownHall) {
