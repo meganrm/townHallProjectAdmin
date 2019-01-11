@@ -13,5 +13,6 @@ admin.initializeApp({
   }),
   databaseURL: process.env.FIREBASE_DB_URL,
 });
+// admin.database.enableLogging(true)
 
 module.exports = admin.database();

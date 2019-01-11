@@ -10,7 +10,10 @@
       upper: 'Sen.',
       lower: 'Rep.',
     };
-    if (opts.level === 'state') {
+    if (!opts){
+      return;
+    }
+    if (opts.level && opts.level === 'state') {
       //state leg or statewide office
       var title;
       if (opts.district) {
@@ -26,7 +29,7 @@
         title = constants[office];
         opts.displayDistrict = title;
       }
-    } else {
+    } else if (opts.level && opts.level === 'federal') {
       var state = opts.state;
       if (opts.district && parseInt(opts.district)) {
         //House
@@ -46,12 +49,13 @@
   }
 
   class TownHall {
-
     constructor(opts) {
       for (var keys in opts) {
         this[keys] = opts[keys];
       }
-      this.displayDistrict = makeDisplayDistrict(opts);
+      if (opts.level && opts.state) {
+        this.displayDistrict = makeDisplayDistrict(opts);
+      }
     }
     // writes to townhall, can take a key for update
     updateFB(key, path) {
@@ -166,7 +170,7 @@
       var newTownHall = this;
       return new Promise(function (resolve, reject) {
         $.ajax({
-          url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyB868a1cMyPOQyzKoUrzbw894xeoUhx9MM',
+          url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyDP8q2OVisSLyFyOUU6OTgGjNNQCq7Q3rE',
           data: {
             'address': address,
           },
@@ -336,11 +340,21 @@
         else if (prop === 'district' && !townHall.checkDistrictForMatch(searchParams[prop])) {
           return false;
         }
-        else if (prop === 'govtrack_id' && townHall[prop] !== searchParams[prop]) { // govtrack doesn't match
+        else if (prop === 'govtrack_id' && townHall[prop].toString() !== searchParams[prop].toString()) { // govtrack doesn't match
           return false;
         }
-        else if (townHall[prop].toLowerCase() !== searchParams[prop].toLowerCase()) {
-          return false;
+        // number check
+        // (also boolean)
+        else if (!isNaN(townHall[prop]) &&
+                 !isNaN(searchParams[prop]) &&
+                 Number(townHall[prop]) !== Number(searchParams[prop])) {
+            return false;
+        }
+        // string check
+        else if (isNaN(townHall[prop]) &&
+                 isNaN(searchParams[prop]) &&
+                 townHall[prop].toLowerCase() !== searchParams[prop].toLowerCase()) {
+            return false;
         }
       }
       return true;

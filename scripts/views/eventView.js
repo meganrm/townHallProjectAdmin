@@ -217,12 +217,14 @@
     $('.var-nav.' + flag).removeClass('hidden');
   };
 
-  eventHandler.readData = function (path) {
+  eventHandler.readData = function (path, type) {
     var $currentState = $('#current-state');
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
       var total = parseInt($currentState.attr('data-total')) + 1;
       $currentState.attr('data-total', total);
-      var ele = new TownHall(snapshot.val());
+      var data = snapshot.val();
+      data.level = type;
+      var ele = new TownHall(data);
       // dataviz.recessProgress(ele, dataviz.membersEvents);
       eventHandler.checkLastUpdated(ele);
       eventHandler.checkEndTime(ele);
@@ -278,9 +280,11 @@
   };
 
 
-  eventHandler.readDataUsers = function (path, table) {
+  eventHandler.readDataUsers = function (path, table, type) {
     firebase.database().ref(path).on('child_added', function getSnapShot(snapshot) {
-      var ele = new TownHall(snapshot.val());
+      var data = snapshot.val();
+      data.level = type;
+      var ele = new TownHall(data);
       TownHall.allTownHallsFB[ele.eventId] = ele;
       var tableRowTemplate = Handlebars.getTemplate('eventTableRow');
       var approveButtons = Handlebars.getTemplate('approveButtons');
