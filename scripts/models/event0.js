@@ -13,7 +13,7 @@
     if (!opts){
       return;
     }
-    if (opts && opts.level && opts.level === 'state') {
+    if (opts.level && opts.level === 'state') {
       //state leg or statewide office
       var title;
       if (opts.district) {
@@ -50,6 +50,9 @@
 
   class TownHall {
     constructor(opts) {
+      if (!opts) {
+        return;
+      }
       for (var keys in opts) {
         this[keys] = opts[keys];
       }
