@@ -189,7 +189,7 @@ function eventValidation() {
     if (townhall.govtrack_id && townhall.dateObj && townhall.zoneString) {
       firebasedb.ref(`mocData/${townhall.govtrack_id}/confirmed_events`)
         .update({
-          [townhall.meetingType]: {
+          [townhall.meetingType.replace(/\./g, '')]: {
             [townhall.eventId]: moment.tz(townhall.dateObj, townhall.zoneString).format(),
           },
         })
