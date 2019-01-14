@@ -13,7 +13,7 @@
     if (!opts){
       return;
     }
-    if (opts.level && opts.level === 'state') {
+    if (opts && opts.level && opts.level === 'state') {
       //state leg or statewide office
       var title;
       if (opts.district) {
