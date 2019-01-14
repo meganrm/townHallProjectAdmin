@@ -120,7 +120,8 @@
   updateEventView.updateMOCEvents = function (dataWritten) {
     if (dataWritten.govtrack_id) {
       console.log('govtrack_id', dataWritten);
-      firebase.database().ref('mocData/' + dataWritten.govtrack_id + '/' + dataWritten.meetingType + '/' + dataWritten.eventId).set(dataWritten.eventId);
+      
+      firebase.database().ref('mocData/' + dataWritten.govtrack_id + '/' + dataWritten.meetingType.replace(/\./g, ''); + '/' + dataWritten.eventId).set(dataWritten.eventId);
       if (dataWritten.meetingType === 'Town Hall' && moment(dataWritten.dateObj).isBefore('2018-8-8')) {
         firebase.database().ref('mocData/' + dataWritten.govtrack_id + '/missingMember').set(false);
       }
