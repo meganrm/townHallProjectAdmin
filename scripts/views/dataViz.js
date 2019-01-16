@@ -122,8 +122,9 @@
         newMember = true;
         memberSet.add(townhall.Member);
       }
-      if (townhall.party === 'Republican') {
-        var party = 'rep';
+      var party;
+      if (townhall.party === 'R') {
+        party = 'rep';
       } else {
         party = 'dem';
       }
@@ -143,8 +144,9 @@
   dataviz.mocReportProgress = function (member) {
     var total;
     var newMember = true;
+    var party;
     if (member.party === 'Republican') {
-      var party = 'rep';
+      party = 'rep';
     } else {
       party = 'dem';
     }
