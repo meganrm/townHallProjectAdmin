@@ -123,20 +123,23 @@ getNewSenate()
           if (!newSenator.govtrack_id) {
               return console.log('no govtrack_id', newSenator.id);
           }
-          var path = '/mocData/' + newSenator.govtrack_id;
-          firebasedb.ref(path).once('value').then(function (snapshot) {
-              if (!snapshot.exists()) {
-                  newSenator.createNew();
-              }
-              console.log('already have', newSenator.first_name, newSenator.last_name);
-              return newSenator.update(path)
-            .then(function () {
-                console.log('done');
-            }).catch(function (error) {
-                let errorEmail = new ErrorReport(newSenator.govtrack_id + ':' + error, 'Could not find propublica member');
-                errorEmail.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
-            });
-          });
+          // var path = '/mocData/' + newSenator.govtrack_id;
+          const path = `moc_by_congress/115`;
+          firebasedb.ref(path).push(newSenator.govtrack_id);
+
+          // firebasedb.ref(path).once('value').then(function (snapshot) {
+          //     if (!snapshot.exists()) {
+          //         newSenator.createNew();
+          //     }
+          //     console.log('already have', newSenator.first_name, newSenator.last_name);
+          //     return newSenator.update(path)
+          //   .then(function () {
+          //       console.log('done');
+          //   }).catch(function (error) {
+          //       let errorEmail = new ErrorReport(newSenator.govtrack_id + ':' + error, 'Could not find propublica member');
+          //       errorEmail.sendEmail('Megan Riel-Mehan <meganrm@townhallproject.com>');
+          //   });
+          // });
       });
   });
 
@@ -165,3 +168,16 @@ getNewSenate()
 //         });
 //       });
 //     });
+
+getNewReps()
+  .then(newReps => {
+    newReps.forEach(rep => {
+      let newRep = new Moc(rep);
+      newRep.type = 'rep';
+      if (!newRep.govtrack_id) {
+        return console.log('no govtrack_id', newRep.id);
+      }
+      const path = `moc_by_congress/115`;
+      firebasedb.ref(path).push(newRep.govtrack_id);
+    });
+  });
