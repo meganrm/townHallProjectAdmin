@@ -131,7 +131,7 @@
             });
           }
         });
-        Moc.download();
+        Moc.download_116();
         console.log(allupdated.length);
         allupdated.sort(function (a, b) {
           if (a.state < b.state) {
@@ -166,15 +166,33 @@
         return allNames;
       });
     }
-    static loadAllData() {
+    static loadAllData(listOfIds) {
+
       var allMocs = [];
       return firebasedb.ref('mocData/').once('value').then(function (snapshot) {
         snapshot.forEach(function (member) {
           var memberobj = new Moc(member.val());
+        
           Moc.allMocsObjsByID[memberobj.govtrack_id] = memberobj;
           allMocs.push(memberobj);
         });
+        if (listOfIds) {
+          console.log(listOfIds);
+          allMocs = allMocs.filter((ele) => {
+            console.log(listOfIds.indexOf(ele.govtrack_id) > -1)
+            return listOfIds.indexOf(ele.govtrack_id) > -1;
+          })
+        }
         return allMocs;
+      });
+    }
+    static getCongressIDs(path) {
+      var allMocsIds = [];
+      return firebasedb.ref(`moc_by_congress/${path}`).once('value').then(function (snapshot) {
+        snapshot.forEach(ele => {
+          allMocsIds.push(ele.val());
+        })
+        return allMocsIds;
       });
     }
     static getMemberKey(member) {
@@ -188,7 +206,7 @@
       return memberKey;
     }
 
-    static download() {
+    static download_116() {
       let data;
       Moc.loadAllData()
         .then(() => {
@@ -228,10 +246,49 @@
             // it needs to implement server side export
             link.setAttribute('href', 'http://www.example.com/export');
           }
-          link.innerHTML = 'Download Mocs';
+          link.innerHTML = 'Download 116th Mocs';
           document.getElementById('THP-downloads').appendChild(link);
         });
     }
+     static download_115() {
+       let data;
+       Moc.getCongressIDs('115')
+        .then(Moc.loadAllData)
+        .then((mocs) => {
+           const data = mocs;
+           // prepare CSV data
+           var csvData = [];
+           csvData.push('id, name, party, chamber, state, district, missing_member');
+           data.forEach(function (item) {
+             csvData.push('"' + item.govtrack_id +
+               '","' + item.displayName +
+               '","' + item.party +
+               '","' + item.type +
+               '","' + item.state +
+               '","' + item.district +
+               '","' + item.missingMember +
+               '"');
+           });
+           // download stuff
+           var fileName = 'mocs.csv';
+           var buffer = csvData.join('\n');
+           var blob = new Blob([buffer], {
+             'type': 'text/csv;charset=utf8;',
+           });
+           var link = document.createElement('a');
+           if (link.download !== undefined) { // feature detection
+             // Browsers that support HTML5 download attribute
+             link.setAttribute('href', window.URL.createObjectURL(blob));
+             link.setAttribute('download', fileName);
+           } else {
+             // it needs to implement server side export
+             link.setAttribute('href', 'http://www.example.com/export');
+           }
+           link.innerHTML = ' Download 115th Mocs ';
+           document.getElementById('THP-downloads').appendChild(link);
+         });
+     }
+    
   }
 
   Moc.allMocsObjsByID = {};
