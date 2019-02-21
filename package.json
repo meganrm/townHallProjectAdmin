@@ -23,6 +23,7 @@
     "@google/maps": "^0.3.1",
     "body-parser": "^1.16.0",
     "bower": "^1.8.4",
+    "csv-parser": "^2.1.0",
     "dotenv": "^4.0.0",
     "express": "^4.14.0",
     "express-request-proxy": "^2.0.0",
@@ -45,6 +46,8 @@
     "request-promise": "^4.2.1",
     "sendgrid": "^4.7.1",
     "superagent": "^3.8.2",
+    "tsv": "^0.2.0",
+    "tsv-parser": "^2.0.3",
     "twilio": "^2.11.1"
   },
   "devDependencies": {
