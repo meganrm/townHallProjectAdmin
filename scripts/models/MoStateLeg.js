@@ -9,11 +9,7 @@
     this.stateName = statesAb[this.state];
     this.phone_capitol = opts.phone_capitol || null;
     this.phone_district = opts.phone_district || null;
-    if (this.state === 'AZ' && this.chamber != 'statewide') {
-      this.email = opts.email.split('Email: ')[1].toLowerCase() + '@azleg.gov';
-    } else {
-      this.email = opts.email;
-    }
+    this.email = opts.email;
     this.in_office = true;
     this.role = opts.role || null;
     this.url = opts.url || null;
