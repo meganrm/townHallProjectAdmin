@@ -474,8 +474,12 @@
           else {
             console.log('couldnt make obj', response.divisions);
           }
+        } else {
+          console.log('no divisions', response)
         }
-      });
+      }).fail((error) => {
+        console.log('err', error)
+      })
     }
     // converts time to 24hour time
     static toTwentyFour(time) {
