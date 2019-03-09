@@ -225,7 +225,7 @@
         });
       });
     dates.forEach(function(date){
-      dataviz.getPastEvents('townHallsOld/' + date, start, end, dataviz.lookupMembers, dataviz.houseMemberMapping,  dataviz.sentateHouseMapping);
+      dataviz.getPastEvents('archive_clean/' + date, start, end, dataviz.lookupMembers, dataviz.houseMemberMapping, dataviz.sentateHouseMapping);
     });
   };
 

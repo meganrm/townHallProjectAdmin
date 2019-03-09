@@ -39,7 +39,7 @@
       console.log(date_key);
       firebase
           .database()
-          .ref('/townHallsOld/' + date_key)
+          .ref('/archive_clean/' + date_key)
           .once('value')
           .then(function(snapshot) {
             snapshot.forEach(function(oldTownHall) {

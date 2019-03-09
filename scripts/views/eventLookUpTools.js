@@ -60,7 +60,7 @@
     var dateObj = eventHandler.getDateRange();
     var dates = dateObj.dates;
     let promiseArray = dates.map(date => {
-      return TownHall.getDataByDate(`townHallsOld/${date}`, dateObj.start, dateObj.end);
+      return TownHall.getDataByDate(`archive_clean/${date}`, dateObj.start, dateObj.end);
     });
     promiseArray.push(TownHall.getDataByDate(`townHalls/`, dateObj.start, dateObj.end));
     Promise.all(promiseArray).then((returnedSets) => {

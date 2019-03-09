@@ -318,7 +318,7 @@
         var month = new Date(townHall.dateObj).getMonth();
         var dateKey = year + '-' + month;
 
-        firebase.database().ref('/townHallsOld/' + dateKey + '/' + event.target.dataset.id).update(townHall);
+        firebase.database().ref('/archive_clean/' + dateKey + '/' + event.target.dataset.id).update(townHall);
 
         firebase.database().ref(event.target.dataset.path).child(event.target.dataset.id).remove();
         $(`#${event.target.dataset.id}`).remove();

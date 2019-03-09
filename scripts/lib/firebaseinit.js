@@ -8,6 +8,15 @@ var config = {
   messagingSenderId: '208752196071',
 };
 
+var testingConfig = {
+  apiKey: "AIzaSyCJncx2G6bUnecl4H2VHSBTDfRRxg7H5Fs",
+  authDomain: "townhalltestingsms.firebaseapp.com",
+  databaseURL: "https://townhalltestingsms.firebaseio.com",
+  projectId: "townhalltestingsms",
+  storageBucket: "townhalltestingsms.appspot.com",
+  messagingSenderId: "86976100332"
+};
+
 firebase.initializeApp(config);
 var firebasedb = firebase.database();
 var provider = new firebase.auth.GoogleAuthProvider();

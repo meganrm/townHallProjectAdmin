@@ -238,7 +238,7 @@
         var month = new Date(ele.dateObj).getMonth();
         dateKey = year + '-' + month;
       }
-      firebasedb.ref('/townHallsOld/' + dateKey + '/' + ele.eventId).update(ele);
+      firebasedb.ref('/archive_clean/' + dateKey + '/' + ele.eventId).update(ele);
       return new Promise(function (resolve, reject) {
         var removed = oldTownHall.remove();
         if (removed) {
