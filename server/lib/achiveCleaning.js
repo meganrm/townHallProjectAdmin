@@ -5,7 +5,7 @@ var moment = require('moment-timezone');
 const firebasedb = require('./setupFirebase');
 const createDateObj = (dateString, zone) => {
     const dateTime = moment.tz(dateString, 'ddd, MMM D YYYY, h:mm A', zone).format();
-    return moment(dateTime).utc().unix();
+    return moment(dateTime).utc().valueOf();
 };
 
 const getMemberList = (number) => {
@@ -45,10 +45,10 @@ function addToArchive(congress115, congress116) {
                 if (isStateEvent) {
                     archivePath = 'state_fixes';
                 } else if (isAfterNewCongress || (townHall.repeatingEvent && isInNewCongress)) {
-                    archivePath = 'archive_116th_congress_session';
+                    archivePath = 'archive_clean';
                 }
                 else if (isBeforeNewCongress || (townHall.repeatingEvent && isInOldCongress)) {
-                    archivePath = 'archive_115th_congress_session';
+                    archivePath = 'archive_clean';
                 } 
                 else {
                     archivePath = 'archive_other';
@@ -61,6 +61,11 @@ function addToArchive(congress115, congress116) {
                     } else if (eventDate.isValid()) {
                         var year = eventDate.get('year');
                         var month = eventDate.get('month');
+                        townHall.dateString = townHall.dateString ? moment(townHall.dateString).format('ddd, MMM D YYYY') : moment(townHall.yearMonthDay).format('ddd, MMM D YYYY');
+                        const newDate = townHall.dateString ? moment.tz(`${townHall.dateString}, ${townHall.Time}`, ['ddd, MMM D YYYY, h:mm A', 'ddd MMM D YYYY, h:mm A'], 'America/New_York').format(): townHall.dateObj;
+                    
+                        townHall.dateObj = moment(newDate).utc().valueOf();
+
                         var dateKey = year + '-' + month;
                         if (year.toString().length === 4) {
                             path = `${archivePath}/${dateKey}`;
@@ -88,10 +93,41 @@ function addToArchive(congress115, congress116) {
 let congress115;
 let congress116;
 
-Promise.all([getMemberList(115), getMemberList(116)])
-    .then(returned => {
-        congress115 = returned[0];
-        congress116 = returned[1];
-        addToArchive(congress115, congress116);
+// Promise.all([getMemberList(115), getMemberList(116)])
+//     .then(returned => {
+//         congress115 = returned[0];
+//         congress116 = returned[1];
+//         addToArchive(congress115, congress116);
 
-    });
+//     });
+
+
+    // firebasedb.ref('state_legislators_user_submission/NC').on('child_added', (snapshot) => {
+
+    //     const townHall = snapshot.val();
+    //     console.log(townHall.state)
+    //     firebasedb.ref(`UserSubmission/${townHall.eventId}`).update(townHall)
+
+    // })
+
+    // firebasedb.ref('archive_clean/1970-01').on('child_added', (snapshot) => {
+
+    //     const townHall = snapshot.val();
+    //     console.log(townHall.state)
+    //     firebasedb.ref(`UserSubmission/${townHall.eventId}`).update(townHall)
+
+    // })
+
+       firebasedb.ref('townHalls').on('child_added', (snapshot) => {
+
+           const townHall = snapshot.val();
+           if (townHall.dateObj < 10000000000) {
+               console.log(townHall.dateObj);
+               townHall.dateObj = townHall.dateObj * 1000;
+               console.log(townHall.dateObj);
+               firebasedb.ref(`townHalls/${townHall.eventId}`).update(townHall);
+
+           }
+        //    firebasedb.ref(`UserSubmission/${townHall.eventId}`).update(townHall)
+
+       })

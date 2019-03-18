@@ -15,6 +15,7 @@ class Candidate {
         this.thp_id = props.thp_id || null;
         this.chamber = props.chamber || 'citywide';
         this.city = props.city || null;
+        this.state = props.state || null;
     }
 
     update(nameKey){
@@ -92,6 +93,13 @@ const updateCandidatesFromPledgeDatabase = () => {
 
 // updateCandidatesFromPledgeDatabase();
 
+const newCandidate = {
+    role: 'Sen',
+    displayName: 'Bradley Byrne',
+    party: 'R',
+    chamber: 'upper',
+    state: 'AL',
+}
 
 const updateFromJSONArray = (peopleFromArray) => {
     peopleFromArray.forEach(person => {
@@ -105,3 +113,13 @@ const updateFromJSONArray = (peopleFromArray) => {
 };
 
 // updateFromJSONArray(mayorCandidates);
+
+const updateOne = (person) => {
+    const newId = firebasedb.ref().child('candidate_data').push().key;
+    person.thp_id = newId;
+    const newCandidate = new Candidate(person);
+    console.log(newCandidate)
+    console.log(createKeyFromName(person.displayName))
+    newCandidate.update(createKeyFromName(person.displayName));
+}
+updateOne(newCandidate);

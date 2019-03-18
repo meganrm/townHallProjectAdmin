@@ -89,278 +89,136 @@ const updateCandidates = () => {
 };
 
 // updateCandidates();
-const presCandidatesData = [{
-    "title": "Sen",
-    "displayName": "Amy Klobuchar",
-    "party": "D",
-    "GovTrackID": "",
+const presCandidatesData = [
+  {
+    "title": "Mr",
+    "displayName": "Howard Schultz",
+    "party": "I",
+    "govtrack_id": "",
     "Pledge Sent Date": "",
     "Follow Up Date": "",
     "Pledge Returned Date": "",
-    "declared": "",
+    "Declared": "",
     "Newletter": "",
     "Notes": "",
-    "in_database": "yes"
+    "in_database": ""
   },
   {
-    "title": "Sen",
-    "displayName": "Bernie Sanders",
+    "title": "Mr",
+    "displayName": "Andrew Yang",
     "party": "D",
-    "GovTrackID": "",
+    "govtrack_id": "",
     "Pledge Sent Date": "",
     "Follow Up Date": "",
     "Pledge Returned Date": "",
-    "declared": "",
+    "Declared": "Y",
     "Newletter": "",
     "Notes": "",
-    "in_database": "yes"
+    "in_database": ""
   },
   {
-    "title": "Rep",
-    "displayName": "Beto O'Rourke",
+    "title": "Ms",
+    "displayName": "Marianne Williamson",
     "party": "D",
-    "GovTrackID": "",
+    "govtrack_id": "",
     "Pledge Sent Date": "",
     "Follow Up Date": "",
     "Pledge Returned Date": "",
-    "declared": "",
+    "Declared": "Y",
     "Newletter": "",
     "Notes": "",
-    "in_database": "(need to update)"
-  },
-  {
-    "title": "Sen",
-    "displayName": "Cory Booker",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "",
-    "Newletter": "",
-    "Notes": "",
-    "in_database": "yes"
-  },
-  {
-    "title": "Sen",
-    "displayName": "Elizabeth Warren",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "Y",
-    "Newletter": "Y",
-    "Notes": "",
-    "in_database": "yes"
-  },
-  {
-    "title": "Rep",
-    "displayName": "Eric Swalwell",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "",
-    "Newletter": "",
-    "Notes": "",
-    "in_database": "yes"
+    "in_database": ""
   },
   {
     "title": "Gov",
-    "displayName": "Jay Inslee",
+    "displayName": "Steve Bullock",
     "party": "D",
-    "GovTrackID": "",
+    "govtrack_id": "",
     "Pledge Sent Date": "",
     "Follow Up Date": "",
     "Pledge Returned Date": "",
-    "declared": "",
+    "Declared": "",
     "Newletter": "",
     "Notes": "",
-    "in_database": "no"
-  },
-  {
-    "title": "Sen",
-    "displayName": "Jeff Merkley",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "",
-    "Newletter": "",
-    "Notes": "",
-    "in_database": "yes"
-  },
-  {
-    "title": "Vice Pres",
-    "displayName": "Joe Biden",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "",
-    "Newletter": "",
-    "Notes": "",
-    "in_database": "no"
-  },
-  {
-    "title": "Rep",
-    "displayName": "John Delaney",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "Y",
-    "Newletter": "Y",
-    "Notes": "",
-    "in_database": "yes"
+    "in_database": ""
   },
   {
     "title": "Gov",
-    "displayName": "John Hickenlooper",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "",
-    "Newletter": "",
-    "Notes": "",
-    "in_database": "no"
-  },
-  {
-    "title": "Gov",
-    "displayName": "John Kasich",
+    "displayName": "Bill Weld",
     "party": "R",
-    "GovTrackID": "",
+    "govtrack_id": "",
     "Pledge Sent Date": "",
     "Follow Up Date": "",
     "Pledge Returned Date": "",
-    "declared": "",
+    "Declared": "",
     "Newletter": "",
     "Notes": "",
-    "in_database": "no"
-  },
-  {
-    "title": "Sec",
-    "displayName": "Julian Castro",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "Y",
-    "Newletter": "Y",
-    "Notes": "",
-    "in_database": "no"
-  },
-  {
-    "title": "Sen",
-    "displayName": "Kamala Harris",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "Y",
-    "Newletter": "",
-    "Notes": "",
-    "in_database": "yes"
-  },
-  {
-    "title": "Sen",
-    "displayName": "Kirsten Gillibrand",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "Y",
-    "Newletter": "",
-    "Notes": "",
-    "in_database": "yes"
+    "in_database": ""
   },
   {
     "title": "Mayor",
-    "displayName": "Michael Bloomberg",
+    "displayName": "Bill de Blasio",
     "party": "D",
-    "GovTrackID": "",
+    "govtrack_id": "",
     "Pledge Sent Date": "",
     "Follow Up Date": "",
     "Pledge Returned Date": "",
-    "declared": "",
+    "Declared": "",
     "Newletter": "",
     "Notes": "",
-    "in_database": "no"
-  },
-  {
-    "title": "Mayor",
-    "displayName": "Pete Buttigieg",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "Y",
-    "Newletter": "",
-    "Notes": "",
-    "in_database": "no"
+    "in_database": ""
   },
   {
     "title": "Rep",
-    "displayName": "Richard Ojeda",
+    "displayName": "Tim Ryan",
     "party": "D",
-    "GovTrackID": "",
+    "govtrack_id": "",
     "Pledge Sent Date": "",
     "Follow Up Date": "",
     "Pledge Returned Date": "",
-    "declared": "Y",
-    "Newletter": "Y",
-    "Notes": "Dropped out",
-    "in_database": "yes"
+    "Declared": "",
+    "Newletter": "",
+    "Notes": "",
+    "in_database": ""
   },
   {
     "title": "Sen",
-    "displayName": "Sherrod Brown",
+    "displayName": "Michael Bennett",
     "party": "D",
-    "GovTrackID": "",
+    "govtrack_id": "",
     "Pledge Sent Date": "",
     "Follow Up Date": "",
     "Pledge Returned Date": "",
-    "declared": "",
+    "Declared": "",
     "Newletter": "",
     "Notes": "",
-    "in_database": "yes"
+    "in_database": ""
+  },
+  {
+    "title": "Rep",
+    "displayName": "Seth Moulton",
+    "party": "D",
+    "govtrack_id": "",
+    "Pledge Sent Date": "",
+    "Follow Up Date": "",
+    "Pledge Returned Date": "",
+    "Declared": "",
+    "Newletter": "",
+    "Notes": "",
+    "in_database": ""
   },
   {
     "title": "Gov",
-    "displayName": "Terry McAuliffe",
-    "party": "D",
-    "GovTrackID": "",
+    "displayName": "Larry Hogan",
+    "party": "R",
+    "govtrack_id": "",
     "Pledge Sent Date": "",
     "Follow Up Date": "",
     "Pledge Returned Date": "",
-    "declared": "",
+    "Declared": "",
     "Newletter": "",
     "Notes": "",
-    "in_database": "no"
-  },
-  {
-    "title": "Rep",
-    "displayName": "Tulsi Gabbard",
-    "party": "D",
-    "GovTrackID": "",
-    "Pledge Sent Date": "",
-    "Follow Up Date": "",
-    "Pledge Returned Date": "",
-    "declared": "Y",
-    "Newletter": "",
-    "Notes": "",
-    "in_database": "yes"
+    "in_database": ""
   }
 ]
 
@@ -392,14 +250,14 @@ const addCanidateFromName = (member) => {
 };
 
 presCandidatesData.forEach(candidate => {
-  if(candidate.in_database === 'no') {
+  // if(candidate.in_database === 'no') {
     const newId = firebasedb.ref().child('candidate_data').push().key;
     candidate.thp_id = newId;
     const newCandidate = new PresCandidate(candidate);
     console.log(newCandidate)
     console.log(createKeyFromName(candidate.displayName));
     newCandidate.update(createKeyFromName(candidate.displayName))
-  }
+  // }
     // addCanidateFromName(candidate)
 })
 
