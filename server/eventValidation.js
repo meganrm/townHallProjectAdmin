@@ -100,6 +100,13 @@ function eventValidation() {
 
   function dateTimeValidation(townhall, path) {
     let update;
+    if (townhall.dateObj < 10000000000) {
+      const newDateObj = townhall.dateObj * 1000;
+      console.log('bad date obj');
+      updateEvent(townhall.eventId, {
+        dateObj: newDateObj,
+      }, path);
+    }
     if (
       !townhall.repeatingEvent &&
       townhall.lat &&
