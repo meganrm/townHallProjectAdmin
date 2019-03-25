@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+require('dotenv').load();
 
 const states = require('../server/data/stateMap');
 var readline = require('readline');
@@ -10,6 +11,10 @@ const googleMethods = require('../server/recess-events/google-methods');
 const readRowAndUpdate = require('../server/moc/update-crisis-status');
 
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+const TESTING_SHEETS_ID = "1tAfnKQz-2HUmCSKjbblqzs-T8Q4trn1GbVUJklTbbjc";
+const PLEDGER_SHEETS_ID = '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2p2g';
+const SHEETS_ID = process.env.NODE_ENV === 'production' ? PLEDGER_SHEETS_ID : TESTING_SHEETS_ID;
+console.log('testing google sheet:', SHEETS_ID === TESTING_SHEETS_ID)
 
 var clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 var clientId = process.env.GOOGLE_CLIENT_ID;
@@ -49,57 +54,109 @@ function getNewToken(oauth2Client, callback) {
   });
 }
 
-googleMethods.getSheets(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2p2g')
-  .then((sheetsNames)=> {
-    let ranges = sheetsNames.filter(name => {
-      let state = name.split(' ')[0];
-      return (states[state]);
-    }).map(sheetname => {
-      return `${sheetname}!A:O`;
-    });
-    googleMethods.readMultipleRanges(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2p2g', ranges).then((googleRows) => {
-      googleRows.forEach((sheet) => {
-        let data = [];
-        let sheetName = sheet.range;
-        let state = sheetName.split(' ')[0].split('\'')[1];
-        let values = sheet.values;
-        let columnNames = values[0];
-        for (let i = 1; i < values.length; i++){
-          let row = values[i];
-          if (row.length === columnNames.length){
+const isMayoralSheet = columnNames => columnNames.includes("state")
+
+const sleep = ms =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+
+let writeToSheetPromises = []
+
+let numberOfTimesFailed = 1
+
+// Keep trying to write to sheet. If an error happens, sleep
+// for an exponential amount of time and try again
+const writeToSheet = async data => {
+  try {
+    await googleMethods.write(oauth2Client, SHEETS_ID, data)
+  } catch (error) {
+    const sleepDuration = 60 * 1000 * Math.min(numberOfTimesFailed, 5)
+    await sleep(sleepDuration)
+    numberOfTimesFailed *= 2
+    return writeToSheet(data)
+  }
+}
+
+googleMethods
+  .getSheets(oauth2Client, SHEETS_ID)
+  .then(sheetsNames => {
+    const ranges = sheetsNames
+      .filter(name => /\w{2} \d{4}/.test(name) || /\d{4} Mayoral/i.test(name))
+      .map(sheetname => `${sheetname}!A:P`)
+
+    googleMethods
+      .readMultipleRanges(oauth2Client, SHEETS_ID, ranges)
+      .then(googleRows => {
+        googleRows.forEach(sheet => {
+          let data = []
+          let sheetName = sheet.range
+          let values = sheet.values
+          let columnNames = values[0]
+          let state, year
+          if (!isMayoralSheet(columnNames)) {
+            ;
+            [_, state, year] = /([A-Z]{2}) (\d{4})/.exec(sheetName)
+          } else {
+            ;
+            [_, year] = /(\d{4}) Mayoral/i.exec(sheetName)
+          }
+          for (let i = 1; i < values.length; i++) {
+            let row = values[i]
             let obj = row.reduce((acc, cur, index) => {
-              let columnName = columnNames[index];
-              acc[columnName] = cur;
-              return acc;
-            }, {});
-            if (obj.Candidate && obj.Candidate.length > 0){
-              let newPledger = new Pledger(obj, state);
-              let key = row[12];
-              if (key === 'end') {
-                key = firebasedb.ref(`town_hall_pledges/${newPledger.state}`).push().key;
-                row[12] = key;
-                let writeRange = `${sheetName.split('!')[0]}!A${i+ 1}:O${i + 1}`;
-  
-                let toUpdate = {
-                  'range': writeRange,
-                  'majorDimension': 'ROWS',
-                  'values': [
-                    row,
-                  ],
-                };
-                data.push(toUpdate);
+              let columnName = columnNames[index]
+              acc[columnName] = cur
+              return acc
+            }, {})
+            let newPledger = new Pledger(obj, state, year)
+            let isNew = false;
+            if (obj.Candidate && obj.Candidate.length > 0) {
+              let key = isMayoralSheet(columnNames) ? row[15] : row[12]
+              if (key === "end" || !key) {
+                isNew = true;
+                try {
+                  key = firebasedb
+                    .ref('town_hall_pledges')
+                    .child(year)
+                    .child(state || newPledger.state)
+                    .push(newPledger).key
+                  if (isMayoralSheet(columnNames)) {
+                    row[15] = key
+                  } else {
+                    row[12] = key
+                  }
+                } catch (error) {}
+              } else {
+                firebasedb
+                  .ref(`town_hall_pledges/${newPledger.year}/${newPledger.state}/${key}`)
+                  .update(newPledger)
               }
-              firebasedb.ref(`town_hall_pledges/${newPledger.state}/${key}`).update(newPledger);
+              if (isNew) {
+                let writeRange = `${sheetName.split("!")[0]}!A${i + 1}:P${i + 1}`
+                let toUpdate = {
+                  range: writeRange,
+                  majorDimension: "ROWS",
+                  values: [row]
+                }
+                data.push(toUpdate)
+              }
             }
           }
-        }
-        googleMethods.write(oauth2Client, '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2p2g', data);
-      });
-    });
+          // If row is empty, ignore and don't push data to sheet
+          if (data.length !== 0) {
+            writeToSheetPromises.push(writeToSheet(data))
+          }
+        })
+        Promise.all(writeToSheetPromises).then(() => {
+          console.log('wrote to sheet')
+          process.exit(0)
+        })
+      })
   })
   .catch(err => {
-    console.log('error reading sheet:', err.message);
-  });
+    console.log("error reading sheet:", err.message)
+    process.exit(1)
+  })
 
 googleMethods.read(oauth2Client, '1_zaj6jbt3JbsNvZxi0hnaKw-NUtx1zmRK7lIf-t2DVw', 'Sheet1!A:G')
   .then((googleRows) => {
