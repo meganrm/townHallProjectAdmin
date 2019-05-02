@@ -16,13 +16,10 @@
               var townHall = new TownHall(townHallSnap.val());
         
               if (townHall.dateObj && townHall.dateObj < time && !townHall.repeatingEvent) {
-                  const eventDate = moment(townHall.dateObj);
                   console.log('old', townHall.eventId, moment(townHall.dateObj).format(), townHall.dateString);
                   if (townHall.eventId) {
 
-                      const year = eventDate.get('year');
-                      const month = eventDate.get('month');
-                      var dateKey = `${year}-${month}`;
+                      const dateKey = townHall.dateObj ? moment(townHall.dateObj).format('YYYY-MM') : 'no_date';
                       var oldTownHall = firebasedb.ref(townhallPath + townHall.eventId);
                       firebasedb.ref(`/townHallIds/${townHall.eventId}`).update({
                           status: 'archived',
@@ -36,9 +33,9 @@
       });
   };
 
-  TownHall.removeOld('/townHalls/', '/archive_clean/');
-  TownHall.removeOld('/state_townhalls/CO/', '/state_townhalls_archive/CO/');
-  TownHall.removeOld('/state_townhalls/VA/', '/state_townhalls_archive/VA/');
-  TownHall.removeOld('/state_townhalls/NC/', '/state_townhalls_archive/NC/');
-  TownHall.removeOld('/state_townhalls/OR/', '/state_townhalls_archive/OR/');
-  TownHall.removeOld('/state_townhalls/AZ/', '/state_townhalls_archive/AZ/');
+  TownHall.removeOld('/townHalls/', '/archived_town_halls/');
+  TownHall.removeOld('/state_townhalls/CO/', '/archived_state_town_halls/CO/');
+  TownHall.removeOld('/state_townhalls/VA/', '/archived_state_town_halls/VA/');
+  TownHall.removeOld('/state_townhalls/NC/', '/archived_state_town_halls/NC/');
+  TownHall.removeOld('/state_townhalls/OR/', '/archived_state_town_halls/OR/');
+  TownHall.removeOld('/state_townhalls/AZ/', '/archived_state_town_halls/AZ/');
