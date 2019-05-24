@@ -365,7 +365,7 @@
 
     static getOldStateData(state, dateKey) {
       var db = firebasedb;
-      var ref = db.ref(`/state_townhalls_archive/${state}/${dateKey}`);
+      var ref = db.ref(`/archived_state_town_halls/${state}/${dateKey}`);
       var totals = new Set();
       return new Promise(function (resolve) {
         ref.once('value').then(function (snapshot) {

@@ -314,11 +314,9 @@
         firebase.database().ref(event.target.dataset.path).child(event.target.dataset.id).once('value')
       .then(function (snapshot) {
           var townHall = snapshot.val();
-          var year = new Date(townHall.dateObj).getFullYear();
-          var month = new Date(townHall.dateObj).getMonth();
-          var dateKey = year + '-' + month;
+          const dateKey = townHall.dateObj ? moment(townHall.dateObj).format('YYYY-MM') : 'no_date';
 
-          firebase.database().ref('/archive_clean/' + dateKey + '/' + event.target.dataset.id).update(townHall);
+          firebase.database().ref('/archived_town_halls/' + dateKey + '/' + event.target.dataset.id).update(townHall);
 
           firebase.database().ref(event.target.dataset.path).child(event.target.dataset.id).remove();
           $(`#${event.target.dataset.id}`).remove();
