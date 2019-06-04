@@ -14,7 +14,10 @@ var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const TESTING_SHEETS_ID = "1tAfnKQz-2HUmCSKjbblqzs-T8Q4trn1GbVUJklTbbjc";
 const PLEDGER_SHEETS_ID = '15B6AjwdKrtbE1NZ4NeQUopiZfyzplJwKdmfTRki2p2g';
 const SHEETS_ID = process.env.NODE_ENV === 'production' ? PLEDGER_SHEETS_ID : TESTING_SHEETS_ID;
+
+const ROOT_DATABASE_PATH = 'town_hall_pledges';
 console.log('testing google sheet:', SHEETS_ID === TESTING_SHEETS_ID)
+console.log('production google sheet:', SHEETS_ID === PLEDGER_SHEETS_ID)
 
 var clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 var clientId = process.env.GOOGLE_CLIENT_ID;
@@ -71,6 +74,7 @@ const writeToSheet = async data => {
   try {
     await googleMethods.write(oauth2Client, SHEETS_ID, data)
   } catch (error) {
+    console.log('trying to write but failed', error)
     const sleepDuration = 60 * 1000 * Math.min(numberOfTimesFailed, 5)
     await sleep(sleepDuration)
     numberOfTimesFailed *= 2
@@ -82,7 +86,7 @@ googleMethods
   .getSheets(oauth2Client, SHEETS_ID)
   .then(sheetsNames => {
     const ranges = sheetsNames
-      .filter(name => /\w{2} \d{4}/.test(name) || /\d{4} Mayoral/i.test(name))
+      .filter(name => /([A-Z]{2}) \d{4}/.test(name) || /\d{4} Mayoral/i.test(name))
       .map(sheetname => `${sheetname}!A:P`)
 
     googleMethods
@@ -95,11 +99,18 @@ googleMethods
           let columnNames = values[0]
           let state, year
           if (!isMayoralSheet(columnNames)) {
-            ;
-            [_, state, year] = /([A-Z]{2}) (\d{4})/.exec(sheetName)
+            try {
+
+              [_, state, year] = /([A-Z]{2}) (\d{4})/.exec(sheetName)
+            } catch (e) {
+              console.log(e)
+            }
           } else {
-            ;
-            [_, year] = /(\d{4}) Mayoral/i.exec(sheetName)
+            try{
+              [_, year] = /(\d{4}) Mayoral/i.exec(sheetName)
+            } catch(e) {
+              console.log(e)
+            }
           }
           for (let i = 1; i < values.length; i++) {
             let row = values[i]
@@ -109,14 +120,16 @@ googleMethods
               return acc
             }, {})
             let newPledger = new Pledger(obj, state, year)
+
             let isNew = false;
             if (obj.Candidate && obj.Candidate.length > 0) {
-              let key = isMayoralSheet(columnNames) ? row[15] : row[12]
+              let key = isMayoralSheet(columnNames) ? row[15] : row[12];
+              
               if (key === "end" || !key) {
                 isNew = true;
                 try {
                   key = firebasedb
-                    .ref('town_hall_pledges')
+                    .ref(ROOT_DATABASE_PATH)
                     .child(year)
                     .child(state || newPledger.state)
                     .push(newPledger).key
@@ -125,10 +138,12 @@ googleMethods
                   } else {
                     row[12] = key
                   }
-                } catch (error) {}
+                } catch (error) {
+                  // console.log('error making firebase key', error, ROOT_DATABASE_PATH, year, state, newPledger.state, sheetName)
+                }
               } else {
                 firebasedb
-                  .ref(`town_hall_pledges/${newPledger.year}/${newPledger.state}/${key}`)
+                  .ref(`${ROOT_DATABASE_PATH}/${newPledger.year}/${newPledger.state}/${key}`)
                   .update(newPledger)
               }
               if (isNew) {
