@@ -259,5 +259,5 @@ presCandidatesData.forEach(candidate => {
     newCandidate.update(createKeyFromName(candidate.displayName))
   // }
     // addCanidateFromName(candidate)
-})
+});
 
