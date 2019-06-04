@@ -9,6 +9,9 @@ function getUserId(townHall) {
     if (townHall.userID && townHall.enteredBy.includes('@')) {
         return townHall.userID;
     }
+    if (townHall.enteredBy.includes('@')) {
+        return;
+    }
     return townHall.enteredBy;
 }
 
