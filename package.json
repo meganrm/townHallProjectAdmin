@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "do-your-job": "node server/lib/doyourjob",
-    "postinstall": "bower install && grunt dist-css"
+    "postinstall": "bower install && grunt dist-css",
+    "update-pledges": "node bin/read-google-sheets.js"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
     "firebase-admin": "^4.1.1",
     "firebaseui": "^1.0.0",
     "geo-distance": "^0.1.2",
+    "geolib": "^2.0.24",
     "google-auth-library": "^0.12.0",
     "google-maps": "^3.2.1",
     "googleapis": "^24.0.0",
