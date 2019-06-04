@@ -115,11 +115,6 @@ function eventValidation() {
       timeValid(townhall.timeStart24) &&
       timeValid(townhall.timeEnd24)) {
             update = {};
-
-            if (!townhall.dateObj) {
-                const dateObj = moment(`${townhall.yearMonthDay} ${townhall.timeStart24} ${townhall.zoneString}`).utc().valueOf();
-                console.log(dateObj)
-            }
             if (!townhall.dateValid) {
                 update.dateValid = true;
                 console.log('updating date valid');
@@ -178,7 +173,6 @@ function eventValidation() {
             update.stateName = stateMap[state];
             console.log('adding state', state, stateMap[state]);
         }
-        console.log(townhall.State);
         updateEvent(townhall.eventId, update, path);
     }
 
@@ -193,6 +187,9 @@ function eventValidation() {
 
     function updateEvent(key, update, path) {
         console.log('updating event!', path + key, update);
+        if (!key) {
+            return console.log('no event id');
+        }
         firebasedb.ref(path + key).update(update);
     }
 
@@ -203,7 +200,7 @@ function eventValidation() {
 
     firebasedb.ref(FEDERAL_TOWNHALLS).on('child_added', function(snapshot){
         var townhall = new TownHall(snapshot.val());
-        checkMemberDisplayName(townhall, FEDERAL_SUBMISSION_PATH);
+        checkMemberDisplayName(townhall, FEDERAL_TOWNHALLS);
 
         if (townhall.meetingType === 'Tele-Town Hall' && townhall.chamber === 'upper') {
             townhall.getLatandLog(townhall.State, 'state', FEDERAL_TOWNHALLS);
