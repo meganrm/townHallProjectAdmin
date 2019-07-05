@@ -1,6 +1,7 @@
 const moment = require('moment-timezone');
 
-var firebasedb = require('../lib/setupFirebase.js');
+const firebasedb = require('../lib/setupFirebase.js');
+const getStateLegs = require('../data/get-states').getStateLegs;
 const eventValidation = require('../events/eventValidation');
 const TownHall = require('../events');
 
@@ -62,24 +63,9 @@ function databaseListeners(states) {
 
 }
 
-function getStates() {
-    return firebasedb.ref('states').once('value')
-        .then((snapshot) => {
-            let toReturn = [];
-            snapshot.forEach((state) => {
-                const stateInfo = state.val();
-                if (stateInfo.state_legislature_covered) {
-                    toReturn.push(stateInfo.state);
-                }
-            });
-            return toReturn;
-        });
-}
-
 function startListeners() {
-    return getStates()
+    return getStateLegs()
         .then(states => {
-            console.log(states)
             databaseListeners(states);
         });
 }
