@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
   const firebasedb = require('../server/lib/setupFirebase.js');
+  
+  const getStateLegs = require('../server/data/get-states').getStateLegs;
   const moment = require('moment');
 
   function TownHall(opts) {
@@ -34,8 +36,11 @@
   };
 
   TownHall.removeOld('/townHalls/', '/archived_town_halls/');
-  TownHall.removeOld('/state_townhalls/CO/', '/archived_state_town_halls/CO/');
-  TownHall.removeOld('/state_townhalls/VA/', '/archived_state_town_halls/VA/');
-  TownHall.removeOld('/state_townhalls/NC/', '/archived_state_town_halls/NC/');
-  TownHall.removeOld('/state_townhalls/OR/', '/archived_state_town_halls/OR/');
-  TownHall.removeOld('/state_townhalls/AZ/', '/archived_state_town_halls/AZ/');
+  
+  getStateLegs()
+    .then(states => {
+        states.forEach(state => {
+            TownHall.removeOld(`/state_townhalls/${state}/`, `/archived_state_town_halls/${state}/`);
+        });
+    });
+
