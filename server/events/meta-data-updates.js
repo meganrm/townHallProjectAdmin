@@ -90,8 +90,7 @@ const updateUserWhenEventSubmitted = (townhall) => {
                 status: 'pending',
                 date_created: moment().format(),
                 time_start: moment.tz(`${townhall.dateString} ${townhall.Time}`, 'ddd, MMM D YYYY, h:mm A', townhall.zoneString).format(),
-                // TODO: flip this once all working
-                email_sent: true,
+                email_sent: false,
             };
             const mocData = {
                 govtrack_id: metaData.govtrack_id || null,
