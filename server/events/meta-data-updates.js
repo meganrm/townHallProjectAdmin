@@ -33,6 +33,19 @@ const saveMocUpdatedBy = (mocDataPath, townhall) => {
     return firebasedb.ref(`${mocDataPath}/${memberId}`).update(updates);
 };
 
+const updateUserWhenEventArchived = townhall => {
+    const uid = getUserId(townhall);
+    if (!uid) {
+        return Promise.resolve();
+    }
+    const path = `users/${uid}`;
+    const currentEvent = {
+        status: 'archived',
+    };
+
+    return firebasedb.ref(`${path}/events/${townhall.eventId}`).update(currentEvent);
+};
+
 const updateUserWhenEventApproved = (townhall) => {
     const uid = getUserId(townhall);
     if (!uid){
@@ -66,7 +79,7 @@ const updateUserWhenEventSubmitted = (townhall) => {
         memberId: townhall.govtrack_id || townhall.thp_id,
         uid,
     };
-    checkIfAlreadySet(metaData)
+    return checkIfAlreadySet(metaData)
         .then(exists => {
             if (exists) {
                 return Promise.resolve(); 
@@ -82,7 +95,7 @@ const updateUserWhenEventSubmitted = (townhall) => {
             };
             const mocData = {
                 govtrack_id: metaData.govtrack_id || null,
-                lastUpdated: Date.now(),
+                lastUpdated: townhall.dateCreated || moment(townhall.lastUpdated).format() || moment().format(),
                 thp_id: metaData.thp_id || null,
             };
             let id = metaData.govtrack_id ? metaData.govtrack_id : metaData.thp_id;
@@ -97,4 +110,5 @@ module.exports = {
     updateUserWhenEventSubmitted,
     saveMocUpdatedBy,
     updateUserWhenEventApproved,
+    updateUserWhenEventArchived,
 };

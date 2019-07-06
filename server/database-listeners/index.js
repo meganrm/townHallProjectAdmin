@@ -1,5 +1,5 @@
 const moment = require('moment-timezone');
-
+const lodash = require('lodash');
 const firebasedb = require('../lib/setupFirebase.js');
 const getStateLegs = require('../data/get-states').getStateLegs;
 const eventValidation = require('../events/eventValidation');
@@ -15,8 +15,49 @@ const STATE_LEG_DATA = 'state_legislators_data';
 const FEDERAL_SUBMISSION_PATH = '/UserSubmission/';
 const STATE_SUBMISSION_PATH = '/state_legislators_user_submission/';
 
+const USER_KEYS = ['email', 'mocs', 'username', 'events', 'isAdmin', 'moderator', 'rsvpDownloads', 'eventDownloads', 'mocDownload'];
 
 function databaseListeners(states) {
+    firebasedb.ref('users').once('value')
+        .then(snapshot => {
+            snapshot.forEach(userSnapshot => {
+                userSnapshot.forEach(node => {
+
+                    if (!lodash.includes(USER_KEYS, node.key)) {
+                        console.log('removing ', `users/${userSnapshot.key}/${node.key}`)
+                        const ref = firebasedb.ref(`users/${userSnapshot.key}/${node.key}`);
+                        ref.remove();
+                    }
+                });
+            });
+        });
+    firebasedb.ref('archived_town_halls').once('value')
+        .then((snapshot) => {
+            snapshot.forEach((dateSnapshot) => {
+                dateSnapshot.forEach(function (eventSnapShot) {
+                    const townhall = eventSnapShot.val();
+                    metaDataUpdates.updateUserWhenEventSubmitted(townhall)
+                        .then(() => {
+                            metaDataUpdates.updateUserWhenEventArchived(townhall);
+                        });
+                });
+            });
+        });
+    firebasedb.ref('archived_state_town_halls').once('value')
+            .then((snapshot) => {
+                snapshot.forEach((stateSnapshot) => {
+                    console.log(stateSnapshot.key)
+                    stateSnapshot.forEach(dateSnapshot => {
+                        dateSnapshot.forEach(eventSnapShot => {                  
+                            const townhall = eventSnapShot.val();
+                            metaDataUpdates.updateUserWhenEventSubmitted(townhall)
+                            .then(() => {
+                                metaDataUpdates.updateUserWhenEventArchived(townhall);
+                            });
+                        });
+                    });
+                });
+            });
 
     // LIVE FEDERAL EVENTS CREATED
     firebasedb.ref(FEDERAL_TOWNHALLS).on('child_added', function (snapshot) {
