@@ -1,4 +1,5 @@
 const firebasedb = require('../lib/setupFirebase.js');
+const zeropadding = require('./server/util').zeropadding;
 
 ///Checks for changes on MOC in mocData to remove members from mocByStateDistrict when in_office is false
 module.exports = () => firebasedb.ref('mocData/').on('child_changed', function (snapshot) {
