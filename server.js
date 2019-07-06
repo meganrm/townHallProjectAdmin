@@ -1,7 +1,4 @@
-const firebasedb = require('./server/lib/setupFirebase.js');
-const eventValid = require('./server/eventValidation');
-const zeropadding = require('./server/util').zeropadding; 
-const emailTriggers = require('./server/emailTriggers');
+const eventListeners = require('./server/database-listeners');
 const mocInOfficeListener = require('./server/moc/in-office-listener');
 
 const express = require('express'),
@@ -19,6 +16,5 @@ app.listen(port, function() {
     console.log('Server started on port ' + port + '!');
 });
 
-eventValid();
-emailTriggers();
+eventListeners();
 mocInOfficeListener();
