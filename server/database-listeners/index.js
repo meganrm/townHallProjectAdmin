@@ -150,5 +150,4 @@ function startListeners() {
         });
 }
 
-startListeners();
 module.exports = startListeners;
