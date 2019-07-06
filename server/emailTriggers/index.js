@@ -15,52 +15,52 @@ function getUserId(townHall) {
     return townHall.enteredBy;
 }
 
-module.exports = () => {
+const emailConfirmation = (townHall) => {
     if (process.env.NODE_ENV !== 'production') {
         return;
     }
-    mailgun = require('mailgun-js')({
+    const mailgun = require('mailgun-js')({
         apiKey: mailgun_api_key,
         domain: domain,
     });
-    firebasedb.ref('townHalls/').on('child_added', function (snapshot) {
-        var townHall = snapshot.val();
-        const userId = getUserId(townHall);
-        if (userId) {
-            firebasedb.ref(`users/${userId}`).once('value', function (usersnap) {
-                var user = usersnap.val();
-                if (user[townHall.eventId] !== 'sent') {
-                    var data = {
-                        from: 'Town Hall Updates <update@updates.townhallproject.com>',
-                        to: `${user.email}`,
-                        subject: 'Event approved',
-                        html: `
-                <p>Thank you for your event submission to Town Hall Project. We have approved your event:</p>
-                <ul>
-                <li>Lawmaker: ${townHall.displayName}</li>
-                <li>Date: ${townHall.dateString}</li>
-                <li>Time: ${townHall.Time}</li>
-                <li>Location: ${townHall.Location}</li>
-                <li>Address: ${townHall.address}</li>
-                </ul>
-                <p>Your event is now live on townhallproject.com. Keep up the great work!</p>
-                <br>
-                <br>
-                <br>
-                <br>
-                <footer><p><a href="%tag_unsubscribe_url%">Click to stop getting email updates about your submitted events</a></p></footer>`,
-                    };
-                    data['h:Reply-To'] = 'TownHall Project <info@townhallproject.com>';
-                    data['o:tag'] = 'researcher-update';
-                    mailgun.messages().send(data, function () {
-                        console.log('sent email');
-                        firebasedb.ref(`users/${userId}/${townHall.eventId}`).set('sent');
-                    });
-                }
-            });
-        }
-    });
+    const userId = getUserId(townHall);
+    if (userId) {
+        firebasedb.ref(`users/${userId}`).once('value', function (usersnap) {
+            var user = usersnap.val();
+            const { eventId } = townHall;
+            if (user.events && user.events[eventId] && !user.events[eventId].email_sent) {
+                var data = {
+                    from: 'Town Hall Updates <update@updates.townhallproject.com>',
+                    to: `${user.email}`,
+                    subject: 'Event approved',
+                    html: `
+            <p>Thank you for your event submission to Town Hall Project. We have approved your event:</p>
+            <ul>
+            <li>Lawmaker: ${townHall.displayName}</li>
+            <li>Date: ${townHall.dateString}</li>
+            <li>Time: ${townHall.Time}</li>
+            <li>Location: ${townHall.Location}</li>
+            <li>Address: ${townHall.address}</li>
+            </ul>
+            <p>Your event is now live on townhallproject.com. Keep up the great work!</p>
+            <br>
+            <br>
+            <br>
+            <br>
+            <footer><p><a href="%tag_unsubscribe_url%">Click to stop getting email updates about your submitted events</a></p></footer>`,
+                };
+                data['h:Reply-To'] = 'TownHall Project <info@townhallproject.com>';
+                data['o:tag'] = 'researcher-update';
+                mailgun.messages().send(data, function () {
+                    console.log('sent email');
+                    firebasedb.ref(`users/${userId}/events/${townHall.eventId}`).update({ email_sent: true });
+                });
+            }
+        });
+    }
+};
 
+const emailEventRejection = () =>{
     firebasedb.ref('deletedTownHalls/').on('child_added', function (snapshot) {
         var key = snapshot.key;
         var metaData = snapshot.val();
@@ -97,4 +97,9 @@ module.exports = () => {
             }
         });
     });
+};
+
+module.exports = {
+    emailConfirmation,
+    emailEventRejection,
 };
