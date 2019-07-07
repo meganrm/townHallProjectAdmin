@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
   const firebasedb = require('../server/lib/setupFirebase.js');
-  
+  const metaDataUpdates = require('../events/meta-data-updates');
+
   const getStateLegs = require('../server/data/get-states').getStateLegs;
   const moment = require('moment');
 
@@ -27,6 +28,7 @@
                           status: 'archived',
                           archive_path: `${archivePath}${dateKey}`,
                       });
+                      metaDataUpdates.updateUserWhenEventArchived(townHall);
                       firebasedb.ref(archivePath + dateKey + '/' + townHall.eventId).update(townHall);
                       oldTownHall.remove();
                   }
