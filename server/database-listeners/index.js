@@ -101,7 +101,7 @@ function databaseListeners(states) {
 
     firebasedb.ref(FEDERAL_SUBMISSION_PATH).on('child_added', function (snapshot) {
         var townhall = snapshot.val();
-        console.log('Child added to submission endpoint');
+
         metaDataUpdates.updateUserWhenEventSubmitted(townhall);
         metaDataUpdates.saveMocUpdatedBy(FEDERAL_MOC_DATA, townhall);
 
