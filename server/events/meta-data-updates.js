@@ -28,9 +28,12 @@ const saveMocUpdatedBy = (mocDataPath, townhall) => {
     if (townhall.meetingType === 'Town Hall') {
         // quick reference for 'days since last town hall' 
         updates.last_town_hall = townhall.dateObj;
-        updates.missing_member = {
-            116: false,
-        };
+        // TODO : make this less breakable 
+        if (mocDataPath === 'mocData') {
+            updates.missing_member = {
+                116: false,
+            };
+        }
         console.log('true town hall', `${mocDataPath}/${memberId}`)
     }
 
