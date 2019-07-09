@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
   const firebasedb = require('../server/lib/setupFirebase.js');
-  const metaDataUpdates = require('../events/meta-data-updates');
+  const metaDataUpdates = require('../server/events/meta-data-updates');
 
   const getStateLegs = require('../server/data/get-states').getStateLegs;
   const moment = require('moment');
@@ -17,7 +17,6 @@
       firebasedb.ref(townhallPath).once('value').then(function getSnapShot(snapshot) {
           snapshot.forEach(function (townHallSnap) {
               var townHall = new TownHall(townHallSnap.val());
-        
               if (townHall.dateObj && townHall.dateObj < time && !townHall.repeatingEvent) {
                   console.log('old', townHall.eventId, moment(townHall.dateObj).format(), townHall.dateString);
                   if (townHall.eventId) {
@@ -29,18 +28,20 @@
                           archive_path: `${archivePath}${dateKey}`,
                       });
                       metaDataUpdates.updateUserWhenEventArchived(townHall);
-                      firebasedb.ref(archivePath + dateKey + '/' + townHall.eventId).update(townHall);
-                      oldTownHall.remove();
+                      firebasedb.ref(archivePath + dateKey + '/' + townHall.eventId).update(townHall)
+                        .then(() => oldTownHall.remove())
+                        .catch(console.log);
                   }
               }
           });
-      });
+      }).catch(console.log);
   };
 
   TownHall.removeOld('/townHalls/', '/archived_town_halls/');
   
   getStateLegs()
     .then(states => {
+        console.log('states', states);
         states.forEach(state => {
             TownHall.removeOld(`/state_townhalls/${state}/`, `/archived_state_town_halls/${state}/`);
         });
