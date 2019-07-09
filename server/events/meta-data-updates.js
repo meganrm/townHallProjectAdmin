@@ -25,9 +25,13 @@ const saveMocUpdatedBy = (mocDataPath, townhall) => {
         lastUpdated: townhall.dateCreated || moment(townhall.lastUpdated).format() || moment().format(),
         lastUpdatedBy: uid,
     };
-    // quick reference for 'days since last town hall' 
     if (townhall.meetingType === 'Town Hall') {
-        updates.lastTownHall = townhall.dateObj;
+        // quick reference for 'days since last town hall' 
+        updates.last_town_hall = townhall.dateObj;
+        updates.missing_member = {
+            116: false,
+        };
+        console.log('true town hall', `${mocDataPath}/${memberId}`)
     }
 
     return firebasedb.ref(`${mocDataPath}/${memberId}`).update(updates);
