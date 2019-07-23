@@ -30,6 +30,8 @@
         newObj.dateString = moment($curValue, dateFormats).format('ddd, MMM D YYYY');
         // newObj.Date = moment($curValue, dateFormats).format('ddd, MMM D YYYY');
         break; 
+      case 'ada_accessible':
+        $curValue = checkInputBox(cur);
       default:
         newObj[cur.id] = $curValue;
       }
@@ -41,6 +43,14 @@
     $listgroup.find('.preview').html(preview(updatedTH));
     return new TownHall(updates);
   };
+
+  let checkInputBox = function(cur) {
+    if ($(cur).is(':checked')) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   // ADMIN ONLY METHODS
   updateEventView.archiveEvent = function (event) {
@@ -534,6 +544,7 @@
   $('.events-table').on('keyup', '.event-input', updateEventView.formChanged);
   $('.events-table').on('change', '.datetime', updateEventView.dateChanged);
   $('.events-table').on('change', '.date-string', updateEventView.dateString);
+  $('.events-table').on('change', '.ada-accessible-input', updateEventView.formChanged);
   $('.events-table').on('click', '#archive', updateEventView.archiveEvent);
   $('.events-table').on('submit', 'form', updateEventView.submitUpdateForm);
   $('.events-table').on('click', '#delete', updateEventView.deleteEvent);

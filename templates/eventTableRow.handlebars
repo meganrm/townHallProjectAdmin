@@ -173,6 +173,12 @@
         <label  for="linkName">Link name (optional)</label>
         <input type="text" class="form-control event-input" id="linkName" placeholder="Link Name" value="{{linkName}}">
       </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" class="ada-accessible-input" id="ada_accessible" {{#if ada_accessible}}checked{{/if}}>
+          <span class="checkbox-label">ADA Accessible?</span>
+        </label>
+      </div>
     </div>
     <div class="notes-data">
       <div class="row">
