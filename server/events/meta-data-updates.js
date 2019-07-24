@@ -19,16 +19,14 @@ function getUserId(townHall) {
 
 const saveMocUpdatedBy = (mocDataPath, townhall) => {
     const uid = getUserId(townhall);
-    if (!uid) {
-        return Promise.resolve();
-    }
+
     const memberId = townhall.govtrack_id || townhall.thp_id;
 
     if (!memberId) {
         return Promise.resolve();
     }
     const updates = {};
-    if (moment(townhall.dateObj).isAfter()) {
+    if (uid && moment(townhall.dateObj).isAfter()) {
         updates.lastUpdated = townhall.dateCreated || moment(townhall.lastUpdated).format() || moment().format();
         updates.lastUpdatedBy = uid;
     }
@@ -38,25 +36,26 @@ const saveMocUpdatedBy = (mocDataPath, townhall) => {
         if (moment(townhall.dateObj).isAfter()) {
             updates.last_town_hall = townhall.dateObj;
         }
-        
+
         if (mocDataPath === MOC_DATA_PATH) {
-            if (moment(townhall.dateObj).isAfter('01/03/2019')) {
-                updates.missing_member = {
+            if (moment(townhall.dateObj).isAfter('2019-01-02', 'YYYY-MM-DD')) {
+                firebasedb.ref(`${mocDataPath}/${memberId}/missing_member`).update({
                     116: false,
-                };
+                });
+                
             } else {
-                console.log('115th', moment(townhall.dateObj).format('DD/MM/YYYY'));
-                updates.missing_member = {
+                firebasedb.ref(`${mocDataPath}/${memberId}/missing_member`).update({
                     115: false,
-                };
+                });
+
             }
         }
-        console.log('true town hall', `${mocDataPath}/${memberId}`)
+        // console.log('true town hall', townhall.eventId, townhall.displayName, moment(townhall.dateObj).format('MM/DD/YYYY'))
     }
     if (!isEmpty(updates)) {
-        console.log(updates)
         return firebasedb.ref(`${mocDataPath}/${memberId}`).update(updates);
     }
+    return Promise.resolve();
 
 };
 
