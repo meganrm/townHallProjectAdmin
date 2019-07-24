@@ -1,6 +1,12 @@
 const moment = require('moment');
 const firebasedb = require('../lib/setupFirebase');
-
+const isEmpty = require('lodash').isEmpty;
+const constants = require('../constants');
+const {
+    STATE_LEG_DATA_PATH,
+    MOC_DATA_PATH,
+    FEDERAL_LEVEL,
+} = constants;
 function getUserId(townHall) {
     if (townHall.userID && townHall.enteredBy.includes('@')) {
         return townHall.userID;
@@ -21,23 +27,37 @@ const saveMocUpdatedBy = (mocDataPath, townhall) => {
     if (!memberId) {
         return Promise.resolve();
     }
-    const updates = {
-        lastUpdated: townhall.dateCreated || moment(townhall.lastUpdated).format() || moment().format(),
-        lastUpdatedBy: uid,
-    };
+    const updates = {};
+    if (moment(townhall.dateObj).isAfter()) {
+        updates.lastUpdated = townhall.dateCreated || moment(townhall.lastUpdated).format() || moment().format();
+        updates.lastUpdatedBy = uid;
+    }
+
     if (townhall.meetingType === 'Town Hall') {
         // quick reference for 'days since last town hall' 
-        updates.last_town_hall = townhall.dateObj;
-        // TODO : make this less breakable 
-        if (mocDataPath === 'mocData') {
-            updates.missing_member = {
-                116: false,
-            };
+        if (moment(townhall.dateObj).isAfter()) {
+            updates.last_town_hall = townhall.dateObj;
+        }
+        
+        if (mocDataPath === MOC_DATA_PATH) {
+            if (moment(townhall.dateObj).isAfter('01/03/2019')) {
+                updates.missing_member = {
+                    116: false,
+                };
+            } else {
+                console.log('115th', moment(townhall.dateObj).format('DD/MM/YYYY'));
+                updates.missing_member = {
+                    115: false,
+                };
+            }
         }
         console.log('true town hall', `${mocDataPath}/${memberId}`)
     }
+    if (!isEmpty(updates)) {
+        console.log(updates)
+        return firebasedb.ref(`${mocDataPath}/${memberId}`).update(updates);
+    }
 
-    return firebasedb.ref(`${mocDataPath}/${memberId}`).update(updates);
 };
 
 const updateUserWhenEventArchived = townhall => {
@@ -101,6 +121,7 @@ const updateUserWhenEventSubmitted = (townhall) => {
             };
             const mocData = {
                 govtrack_id: metaData.govtrack_id || null,
+                path: townhall.level === FEDERAL_LEVEL ? MOC_DATA_PATH : `${STATE_LEG_DATA_PATH}/${townhall.state}`,
                 lastUpdated: townhall.dateCreated || moment(townhall.lastUpdated).format() || moment().format(),
                 thp_id: metaData.thp_id || null,
             };
