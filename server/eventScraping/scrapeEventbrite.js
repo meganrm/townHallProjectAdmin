@@ -36,7 +36,7 @@ eventBriteModule.transformEventbriteTownhall = (eventBriteEvent) => {
         stateName: statesAb[eventBriteEvent.MoC.state],
         state: eventBriteEvent.MoC.state,
         eventName: eventBriteEvent.name.text,
-        meetingType: 'unknown',
+        meetingType: '',
         link: eventBriteEvent.url,
         linkName: 'Eventbrite RSVP',
         dateObj: moment(eventBriteEvent.start.utc).valueOf(),
@@ -47,6 +47,7 @@ eventBriteModule.transformEventbriteTownhall = (eventBriteEvent) => {
         timeEnd24: end.format('HH:mm:ss'),
         yearMonthDay: start.format('YYYY-MM-DD'),
         lastUpdated: Date.now(),
+        zoneString: start.timezone,
     };
 
     if (eventBriteEvent.hasOwnProperty('venue')) {
