@@ -1,5 +1,6 @@
 const uniq = require('lodash').uniq;
 const includes = require('lodash').includes;
+const metaDataUpdates = require('../events/meta-data-updates');
 var moment = require('moment-timezone');
 
 const firebasedb = require('./setupFirebase');
@@ -77,7 +78,7 @@ function addToArchive(congress115, congress116) {
                     promises.push(firebasedb.ref(`${path}/${townHall.eventId}`).update(townHall));
                     
                 } else {
-                    console.log('no path', dateSnapshot.key, townHall.eventId, townHall.thp_id)
+                    console.log('no path', dateSnapshot.key, townHall.eventId, townHall.thp_id);
                 }
 
             });
@@ -85,7 +86,7 @@ function addToArchive(congress115, congress116) {
     })
     .then(() => {
         Promise.all(promises)
-            .then(() => console.log('done'))
+            .then(() => console.log('done'));
     })
     .catch(console.log);
 }
@@ -118,16 +119,31 @@ let congress116;
 
     // })
 
-       firebasedb.ref('townHalls').on('child_added', (snapshot) => {
+    //    firebasedb.ref('townHalls').on('child_added', (snapshot) => {
 
-           const townHall = snapshot.val();
-           if (townHall.dateObj < 10000000000) {
-               console.log(townHall.dateObj);
-               townHall.dateObj = townHall.dateObj * 1000;
-               console.log(townHall.dateObj);
-               firebasedb.ref(`townHalls/${townHall.eventId}`).update(townHall);
+    //        const townHall = snapshot.val();
+    //        if (townHall.dateObj < 10000000000) {
+    //            console.log(townHall.dateObj);
+    //            townHall.dateObj = townHall.dateObj * 1000;
+    //            console.log(townHall.dateObj);
+    //            firebasedb.ref(`townHalls/${townHall.eventId}`).update(townHall);
 
-           }
-        //    firebasedb.ref(`UserSubmission/${townHall.eventId}`).update(townHall)
+    //        }
+    //     //    firebasedb.ref(`UserSubmission/${townHall.eventId}`).update(townHall)
 
-       })
+    //    })
+
+const updateMissingMembers = () => {
+
+    firebasedb.ref('archived_town_halls').once('value')
+           .then((snapshot) => {
+               snapshot.forEach((dateSnapshot) => {
+                   dateSnapshot.forEach(function (eventSnapShot) {
+                       metaDataUpdates.saveMocUpdatedBy('mocData', eventSnapShot.val())
+                        .catch(() => console.log('date error'));
+                   });
+               });
+           }).catch((e) => console.log('lookup error'))
+};
+
+updateMissingMembers();
