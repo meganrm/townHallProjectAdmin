@@ -38,11 +38,13 @@ const saveMocUpdatedBy = (mocDataPath, townhall) => {
         }
         if (mocDataPath === MOC_DATA_PATH) {
             if (moment(townhall.dateObj).isAfter('2019-01-02', 'YYYY-MM-DD')) {
+                console.log('no longer missing member 116th congress', memberId);
                 firebasedb.ref(`${mocDataPath}/${memberId}/missing_member`).update({
                     116: false,
                 });
                 
             } else {
+                console.log('no longer missing member 115th congress', memberId);
                 firebasedb.ref(`${mocDataPath}/${memberId}/missing_member`).update({
                     115: false,
                 });
