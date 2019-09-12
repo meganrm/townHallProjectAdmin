@@ -36,7 +36,6 @@ const saveMocUpdatedBy = (mocDataPath, townhall) => {
         if (moment(townhall.dateObj).isAfter()) {
             updates.last_town_hall = townhall.dateObj;
         }
-
         if (mocDataPath === MOC_DATA_PATH) {
             if (moment(townhall.dateObj).isAfter('2019-01-02', 'YYYY-MM-DD')) {
                 firebasedb.ref(`${mocDataPath}/${memberId}/missing_member`).update({
@@ -81,7 +80,6 @@ const updateUserWhenEventApproved = (townhall) => {
     const currentEvent = {
         status: 'approved',
     };
-
     return firebasedb.ref(`${path}/events/${townhall.eventId}`).update(currentEvent);
 };
 

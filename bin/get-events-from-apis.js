@@ -25,7 +25,8 @@ const submitPromises = (promises, transformFunction, existingTownHallIds, prefix
             console.log('error submitting', error);
         });
             } else {
-                console.log('already submitted', prefix + eventToSubmit.id);
+                
+                console.log('already submitted', prefix + JSON.stringify(eventToSubmit));
             }
         });
     }).catch((error) => {
