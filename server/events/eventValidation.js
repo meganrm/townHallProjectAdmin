@@ -48,6 +48,19 @@ function dateTimeValidation(townhall, path) {
             dateObj: newDateObj,
         }, path);
     }
+
+    if (townhall.dateObj === 0 && townhall.dateString && townhall.Time) {
+        const zone = townhall.zoneString || 'America/New_York';
+        const newDate = moment.tz(`${townhall.dateString}, ${townhall.Time}`, ['ddd, MMM D YYYY, h:mm A', 'ddd MMM D YYYY, h:mm A'], zone).format();
+
+        const newDateObj = moment(newDate).utc().valueOf();
+        console.log(townhall.dateString, townhall.Time, newDateObj, newDate);
+        updateEvent(townhall.eventId, {
+            dateObj: newDateObj,
+        }, path);
+    }
+
+    // checking if date valid, set if true
     if (
     !townhall.repeatingEvent &&
     townhall.lat &&
