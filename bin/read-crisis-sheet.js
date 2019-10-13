@@ -22,7 +22,7 @@ const currentToken =
 oauth2Client.credentials = currentToken;
 
 
-googleMethods.read(oauth2Client, '1_zaj6jbt3JbsNvZxi0hnaKw-NUtx1zmRK7lIf-t2DVw', 'Sheet1!A:G')
+googleMethods.read(oauth2Client, '1_zaj6jbt3JbsNvZxi0hnaKw-NUtx1zmRK7lIf-t2DVw', '116th Congress!A:H')
   .then((googleRows) => {
       googleRows.forEach(row => {
           readRowAndUpdate(row);
