@@ -12,7 +12,6 @@ const convertDataAndUpdate = (row) => {
         crisis_status_source: row[7] || '',
     };
     const ref = firebasedb.ref(`mocData/${govtrackId}`);
-    console.log(moc)
     ref.once('value')
         .then((snapshot) => {
             if (snapshot.exists()) {
