@@ -9,7 +9,8 @@
     "remove-old": "node bin/removeOldEvents.js",
     "do-your-job": "node server/lib/doyourjob",
     "postinstall": "bower install && grunt dist-css",
-    "update-pledges": "node bin/read-google-sheets.js"
+    "update-pledges": "node bin/read-google-sheets.js",
+    "update-crisis": "node bin/read-crisis-sheet.js"
   },
   "repository": {
     "type": "git",
