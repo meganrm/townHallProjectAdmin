@@ -47,7 +47,6 @@ eventBriteModule.transformEventbriteTownhall = (eventBriteEvent) => {
         timeEnd24: end.format('HH:mm:ss'),
         yearMonthDay: start.format('YYYY-MM-DD'),
         lastUpdated: Date.now(),
-        zoneString: start.timezone,
     };
 
     if (eventBriteEvent.hasOwnProperty('venue')) {
