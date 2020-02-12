@@ -70,7 +70,7 @@ let numberOfTimesFailed = 1
 
 // Keep trying to write to sheet. If an error happens, sleep
 // for an exponential amount of time and try again
-const writeToSheet = async data => {
+const writeToSheet = async (data) => {
   try {
     await googleMethods.write(oauth2Client, SHEETS_ID, data)
   } catch (error) {
@@ -80,6 +80,42 @@ const writeToSheet = async data => {
     numberOfTimesFailed *= 2
     return writeToSheet(data)
   }
+}
+
+const getYearAndState = (columnNames, sheetName) => {
+  let state;
+  let year;
+      if (!isMayoralSheet(columnNames)) {
+        try {
+
+          [_, state, year] = /([A-Z]{2}) (\d{4})/.exec(sheetName)
+        } catch (e) {
+          console.log(e)
+        }
+      } else {
+        try {
+          [_, year] = /(\d{4}) Mayoral/i.exec(sheetName)
+        } catch (e) {
+          console.log(e)
+        }
+      }
+  return {
+    state,
+    year
+  }
+}
+
+const getNewKey = (year, state, newPledger) => {
+         try {
+           key = firebasedb
+             .ref(ROOT_DATABASE_PATH)
+             .child(year)
+             .child(state || newPledger.state)
+             .push(newPledger).key
+         } catch (error) {
+           console.log('error making firebase key', error, ROOT_DATABASE_PATH, year, state, newPledger.state, sheetName)
+         }
+         return key;
 }
 
 googleMethods
@@ -93,75 +129,58 @@ googleMethods
       .readMultipleRanges(oauth2Client, SHEETS_ID, ranges)
       .then(googleRows => {
         googleRows.forEach(sheet => {
-          let data = []
+          let updateDataForSheet = []
           let sheetName = sheet.range
           let values = sheet.values
-          let columnNames = values[0]
-          let state, year
-          if (!isMayoralSheet(columnNames)) {
-            try {
-
-              [_, state, year] = /([A-Z]{2}) (\d{4})/.exec(sheetName)
-            } catch (e) {
-              console.log(e)
-            }
-          } else {
-            try{
-              [_, year] = /(\d{4}) Mayoral/i.exec(sheetName)
-            } catch(e) {
-              console.log(e)
-            }
-          }
+          let columnNames = values[0]; // HEADER OF THE SHEET
+          let {
+            state,
+            year
+          } = getYearAndState(columnNames, sheetName)
+          
           for (let i = 1; i < values.length; i++) {
+        
             let row = values[i]
             let obj = row.reduce((acc, cur, index) => {
               let columnName = columnNames[index]
               acc[columnName] = cur
               return acc
             }, {})
+      
             let newPledger = new Pledger(obj, state, year)
 
-            let isNew = false;
+            let newKey = false;
             if (obj.Candidate && obj.Candidate.length > 0) {
               let key = isMayoralSheet(columnNames) ? row[15] : row[12];
-              
               if (key === "end" || !key) {
-                isNew = true;
-                try {
-                  key = firebasedb
-                    .ref(ROOT_DATABASE_PATH)
-                    .child(year)
-                    .child(state || newPledger.state)
-                    .push(newPledger).key
-                  if (isMayoralSheet(columnNames)) {
-                    row[15] = key
-                  } else {
-                    row[12] = key
-                  }
-                } catch (error) {
-                  // console.log('error making firebase key', error, ROOT_DATABASE_PATH, year, state, newPledger.state, sheetName)
+                newKey = getNewKey(year, state, newPledger);
+                if (isMayoralSheet(columnNames)) {
+                  row[15] = newKey
+                } else {
+                  row[12] = newKey
                 }
               } else {
                 firebasedb
                   .ref(`${ROOT_DATABASE_PATH}/${newPledger.year}/${newPledger.state}/${key}`)
                   .update(newPledger)
               }
-              if (isNew) {
+              if (newKey) {
                 let writeRange = `${sheetName.split("!")[0]}!A${i + 1}:P${i + 1}`
                 let toUpdate = {
                   range: writeRange,
                   majorDimension: "ROWS",
                   values: [row]
                 }
-                data.push(toUpdate)
+                updateDataForSheet.push(toUpdate)
               }
             }
           }
-          // If row is empty, ignore and don't push data to sheet
-          if (data.length !== 0) {
-            writeToSheetPromises.push(writeToSheet(data))
+          if (updateDataForSheet.length) {
+            writeToSheetPromises.push(writeToSheet(updateDataForSheet))
+
           }
         })
+      }).then(()=> {
         Promise.all(writeToSheetPromises).then(() => {
           console.log('wrote to sheet')
           process.exit(0)
@@ -173,12 +192,12 @@ googleMethods
     process.exit(1)
   })
 
-googleMethods.read(oauth2Client, '1_zaj6jbt3JbsNvZxi0hnaKw-NUtx1zmRK7lIf-t2DVw', 'Sheet1!A:G')
-  .then((googleRows) => {
-    googleRows.forEach(row => {
-      readRowAndUpdate(row);
-    });
-  })
-  .catch(e => {
-    console.log('error reading crisis sheet', e)
-  });
+// googleMethods.read(oauth2Client, '1_zaj6jbt3JbsNvZxi0hnaKw-NUtx1zmRK7lIf-t2DVw', 'Sheet1!A:G')
+//   .then((googleRows) => {
+//     googleRows.forEach(row => {
+//       readRowAndUpdate(row);
+//     });
+//   })
+//   .catch(e => {
+//     console.log('error reading crisis sheet', e)
+//   });
