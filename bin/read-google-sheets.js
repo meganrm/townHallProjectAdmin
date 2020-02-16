@@ -160,9 +160,10 @@ googleMethods
                   row[12] = newKey
                 }
               } else {
+                writeToSheetPromises.push(
                 firebasedb
                   .ref(`${ROOT_DATABASE_PATH}/${newPledger.year}/${newPledger.state}/${key}`)
-                  .update(newPledger)
+                  .update(newPledger))
               }
               if (newKey) {
                 let writeRange = `${sheetName.split("!")[0]}!A${i + 1}:P${i + 1}`
