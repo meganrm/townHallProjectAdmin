@@ -16,5 +16,5 @@ app.listen(port, function() {
     console.log('Server started on port ' + port + '!');
 });
 
-// eventListeners();
-// mocInOfficeListener();
+eventListeners();
+mocInOfficeListener();
