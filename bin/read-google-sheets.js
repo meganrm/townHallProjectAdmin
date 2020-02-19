@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 require('dotenv').load();
 
-const states = require('../server/data/stateMap');
 var readline = require('readline');
 var googleAuth = require('google-auth-library');
 const Pledger = require('../server/pledger/model');
 
 const firebasedb = require('../server/lib/setupFirebase');
 const googleMethods = require('../server/recess-events/google-methods');
-const readRowAndUpdate = require('../server/moc/update-crisis-status');
 
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const TESTING_SHEETS_ID = "1tAfnKQz-2HUmCSKjbblqzs-T8Q4trn1GbVUJklTbbjc";
@@ -192,13 +190,3 @@ googleMethods
     console.log("error reading sheet:", err.message)
     process.exit(1)
   })
-
-// googleMethods.read(oauth2Client, '1_zaj6jbt3JbsNvZxi0hnaKw-NUtx1zmRK7lIf-t2DVw', 'Sheet1!A:G')
-//   .then((googleRows) => {
-//     googleRows.forEach(row => {
-//       readRowAndUpdate(row);
-//     });
-//   })
-//   .catch(e => {
-//     console.log('error reading crisis sheet', e)
-//   });
