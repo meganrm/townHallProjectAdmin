@@ -23,8 +23,8 @@ class Pledger {
         this.year = year;
         this.chamber = Number(row.District) ? 'lower' : 'upper';
         this.city = row['City/Municipality'] || null;
-        let plegedDate = row['Pledge Returned Date'] || '';
-        this.pledged = moment(plegedDate, 'MM/DD/YYYY').isValid() ? true : false;
+        let pledgedDate = row['Pledge Returned Date'] || '';
+        this.pledged = moment(pledgedDate, ['M/D/YYYY', 'M/D', 'YYYY']).isValid() ? true : false;
         this.incumbent =
       row['Incumbent'] && row['Incumbent'].toLowerCase() === 'x' ? true : false;
         this.party = row.Party;
