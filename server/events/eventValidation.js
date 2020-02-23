@@ -1,6 +1,6 @@
 const moment = require('moment-timezone');
 
-var firebasedb = require('../lib/setupFirebase.js');
+var firebasedb = require('../lib/setupFirebase.js').realtimedb;
 var ErrorReport = require('../lib/errorReporting.js');
 var utils = require('../util');
 
@@ -62,7 +62,7 @@ function dateTimeValidation(townhall, path) {
 
     // checking if date valid, set if true
     if (
-    !townhall.repeatingEvent &&
+        !townhall.repeatingEvent &&
     townhall.lat &&
     townhall.zoneString &&
     dateValid(townhall.yearMonthDay) &&

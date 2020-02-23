@@ -1,7 +1,7 @@
 
 function ScrapingModule() {}
 
-ScrapingModule.firebasedb = require('./setupFirebase');
+ScrapingModule.firebasedb = require('./setupFirebase').realtimedb;
 
 ScrapingModule.getTownhalls = function() {
     return new Promise(function(resolve) {
@@ -10,15 +10,15 @@ ScrapingModule.getTownhalls = function() {
 
         ScrapingModule.firebasedb.ref('/townHallIds/').once('value').then(function(snapshot){
             snapshot.forEach(node => {
-              existingTownHallIds.push(node.val().eventId);
-          });
+                existingTownHallIds.push(node.val().eventId);
+            });
 
             ScrapingModule.firebasedb.ref('mocData/').once('value').then((snapshot) => {
-              resolve ({
-                existingTownHallIds: existingTownHallIds,
-                MoCs: snapshot.val(),
+                resolve ({
+                    existingTownHallIds: existingTownHallIds,
+                    MoCs: snapshot.val(),
+                });
             });
-          });
         });
     });
 };

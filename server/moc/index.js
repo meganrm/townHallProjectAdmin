@@ -1,4 +1,4 @@
-const firebasedb = require('../lib/setupFirebase.js');
+const firebasedb = require('../lib/setupFirebase.js').realtimedb;
 const statesAb = require('../data/stateMap.js');
 const zeropadding = require('../util').zeropadding;
 

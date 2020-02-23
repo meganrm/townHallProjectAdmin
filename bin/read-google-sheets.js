@@ -5,7 +5,7 @@ var readline = require('readline');
 var googleAuth = require('google-auth-library');
 const Pledger = require('../server/pledger/model');
 
-const firebasedb = require('../server/lib/setupFirebase');
+const firebasedb = require('../server/lib/setupFirebase').realtimedb;
 const googleMethods = require('../server/recess-events/google-methods');
 
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
@@ -111,7 +111,7 @@ const getNewKey = (year, state, newPledger) => {
              .child(state || newPledger.state)
              .push(newPledger).key
          } catch (error) {
-           console.log('error making firebase key', error, ROOT_DATABASE_PATH, year, state, newPledger.state, sheetName)
+           console.log('error making firebase key', error, ROOT_DATABASE_PATH, year, state, newPledger.state)
          }
          return key;
 }

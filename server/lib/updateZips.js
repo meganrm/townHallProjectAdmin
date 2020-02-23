@@ -1,7 +1,7 @@
 const fs = require('fs');
 const csv = require('csv-parser');
 
-const firebasedb = require('./setupFirebase');
+const firebasedb = require('./setupFirebase').realtimedb;
 const zeropadding = require('../util').zeropadding;
 
 const path = '/Users/meganriel-mehan/dev/thp/map-data-maker/pa-zip-files';

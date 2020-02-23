@@ -1,4 +1,4 @@
-const firebasedb = require('../lib/setupFirebase');
+const firebasedb = require('../lib/setupFirebase').realtimedb;
 
 const convertDataAndUpdate = (row) => {
     const govtrackId = row[0];

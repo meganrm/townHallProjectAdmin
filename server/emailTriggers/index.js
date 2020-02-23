@@ -1,7 +1,7 @@
 const mailgun_api_key = process.env.MAILGUN_API_KEY2;
 const domain = 'updates.townhallproject.com';
 
-const firebasedb = require('../lib/setupFirebase.js');
+const firebasedb = require('../lib/setupFirebase.js').realtimedb;
 
 let mailgun;
 

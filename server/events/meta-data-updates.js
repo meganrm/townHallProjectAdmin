@@ -1,5 +1,5 @@
 const moment = require('moment');
-const firebasedb = require('../lib/setupFirebase');
+const firebasedb = require('../lib/setupFirebase').realtimedb;
 const isEmpty = require('lodash').isEmpty;
 const constants = require('../constants');
 const {

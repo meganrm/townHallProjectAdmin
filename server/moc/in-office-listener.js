@@ -1,4 +1,4 @@
-const firebasedb = require('../lib/setupFirebase.js');
+const firebasedb = require('../lib/setupFirebase.js').realtimedb;
 const zeropadding = require('../util').zeropadding;
 
 ///Checks for changes on MOC in mocData to remove members from mocByStateDistrict when in_office is false

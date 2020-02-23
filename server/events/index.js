@@ -1,6 +1,6 @@
 var https = require('https');
 const moment = require('moment-timezone');
-const firebasedb = require('../lib/setupFirebase');
+const firebasedb = require('../lib/setupFirebase').realtimedb;
 
 const startMonth = '0';
 const startYear = '2017';

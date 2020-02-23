@@ -1,5 +1,5 @@
 const moment = require('moment-timezone');
-const firebasedb = require('../lib/setupFirebase.js');
+const firebasedb = require('../lib/setupFirebase.js').realtimedb;
 const getStateLegs = require('../data/get-states').getStateLegs;
 const eventValidation = require('../events/eventValidation');
 const TownHall = require('../events');

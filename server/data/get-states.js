@@ -1,5 +1,5 @@
 const lodash = require('lodash');
-const firebasedb = require('../lib/setupFirebase.js');
+const firebasedb = require('../lib/setupFirebase.js').realtimedb;
 
 const getAllStates = () => firebasedb.ref('states').once('value')
     .then(snapshot => {
