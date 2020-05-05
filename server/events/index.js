@@ -54,7 +54,7 @@ class TownHall {
                     const update =  {
                         lat: newTownHall.lat,
                         lng: newTownHall.lng,
-                        formatted_address: newTownHall.address,
+                        address: newTownHall.address,
                     };
                     console.log('got lat log', newTownHall.eventId);
                     TownHall.updateEvent(newTownHall.eventId, update, path);

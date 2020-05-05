@@ -26,7 +26,7 @@ function databaseListeners(states) {
         eventValidation.checkMemberDisplayName(townhall, FEDERAL_TOWNHALLS);
         metaDataUpdates.updateUserWhenEventApproved(townhall);
         if (townhall.meetingType === 'Tele-Town Hall' && townhall.chamber === 'upper') {
-            townhall.getLatandLog(townhall.state, FEDERAL_TOWNHALLS);
+            townhall.getLatandLog(townhall.stateName, FEDERAL_TOWNHALLS);
         }
 
         // UPDATING MOC DATA
