@@ -3,10 +3,10 @@ const moment = require('moment');
 class Pledger {
     constructor(row, state, year) {
     // If state has not been passed in, we are working on a mayoral candidate
-        if (!row.District) {
-            return {};
-        }
         if (state) {
+            if (!row.District) {
+                return {};
+            }
             this.level = row.District.split('-').length > 1 ? 'state' : 'federal';
             this.role = Number(row.District) ? 'Rep' : row.District;
             this.chamber = Number(row.District) ? 'lower' : 'upper';

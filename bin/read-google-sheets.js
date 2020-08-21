@@ -88,13 +88,13 @@ const getYearAndState = (columnNames, sheetName) => {
 
           [_, state, year] = /([A-Z]{2}) (\d{4})/.exec(sheetName)
         } catch (e) {
-          console.log(e)
+          return console.log(e)
         }
       } else {
         try {
           [_, year] = /(\d{4}) Mayoral/i.exec(sheetName)
         } catch (e) {
-          console.log(e)
+          return console.log(e)
         }
       }
   return {
@@ -135,7 +135,6 @@ googleMethods
             state,
             year
           } = getYearAndState(columnNames, sheetName)
-          
           for (let i = 1; i < values.length; i++) {
         
             let row = values[i]
@@ -146,7 +145,6 @@ googleMethods
             }, {})
       
             let newPledger = new Pledger(obj, state, year)
-
             let newKey = false;
             if (obj.Candidate && obj.Candidate.length > 0) {
               let key = isMayoralSheet(columnNames) ? row[15] : row[12];
