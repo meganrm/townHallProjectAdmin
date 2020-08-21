@@ -4,8 +4,7 @@
   "description": "admin site for town hall project",
   "main": "server.js",
   "engines": {
-    "node": "12.x",
-    "npm": "6.4.x"
+    "node": "12.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
