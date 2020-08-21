@@ -105,15 +105,15 @@ const getYearAndState = (columnNames, sheetName) => {
 
 const getNewKey = (year, state, newPledger) => {
          try {
-           key = firebasedb
+           const key = firebasedb
              .ref(ROOT_DATABASE_PATH)
              .child(year)
              .child(state || newPledger.state)
              .push(newPledger).key
+            return key;
          } catch (error) {
-           console.log('error making firebase key', error, ROOT_DATABASE_PATH, year, state, newPledger.state)
+           return console.log('error making firebase key', error, ROOT_DATABASE_PATH, year, state, newPledger.state)
          }
-         return key;
 }
 
 googleMethods
