@@ -3,6 +3,8 @@ require('dotenv').load();
 
 var readline = require('readline');
 var googleAuth = require('google-auth-library');
+const moment = require('moment');
+
 const Pledger = require('../server/pledger/model');
 
 const firebasedb = require('../server/lib/setupFirebase').realtimedb;
@@ -22,7 +24,7 @@ var clientId = process.env.GOOGLE_CLIENT_ID;
 var redirectUrl = process.env.GOOGLE_REDIRECT_URI_1;
 var auth = new googleAuth();
 var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
-
+const CURRENT_YEAR = moment().format('YYYY')
 const currentToken =
   { access_token: process.env.GOOGLE_ACCESS_TOKEN,
     refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
@@ -122,7 +124,6 @@ googleMethods
     const ranges = sheetsNames
       .filter(name => /([A-Z]{2}) \d{4}/.test(name) || /\d{4} Mayoral/i.test(name))
       .map(sheetname => `${sheetname}!A:P`)
-
     googleMethods
       .readMultipleRanges(oauth2Client, SHEETS_ID, ranges)
       .then(googleRows => {
@@ -135,6 +136,10 @@ googleMethods
             state,
             year
           } = getYearAndState(columnNames, sheetName)
+          if (year !== CURRENT_YEAR) {
+            console.log('not current year', year)
+            return;
+          }
           for (let i = 1; i < values.length; i++) {
         
             let row = values[i]
