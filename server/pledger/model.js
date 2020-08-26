@@ -13,7 +13,7 @@ class Pledger {
             this.chamber = isNumber(row.District) ? 'lower' : 'upper';
         } else {
             this.level = 'city';
-            this.role = 'Mayor';
+            this.role = row.role || 'Mayor';
             this.chamber = 'citywide';
         }
         this.state = row.state || state;
