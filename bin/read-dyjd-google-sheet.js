@@ -48,7 +48,7 @@ const writeOut = (mm, displayName, party, winner) => {
         }
         return;
     }
-    if (Number(mm.district)) {
+    if (Number(mm.district) || mm.district == 0) {
         district = zeropadding(mm.district);
         return firebasedb.ref(`do_your_job_districts/${CURRENT_YEAR}/${mm.state}-${district}`)
             .once('value')
@@ -107,7 +107,7 @@ googleMethods
     
     }).then(()=> {
         console.log('read all');
-        process.exit(0);
+        // process.exit(0);
   
     })
   
