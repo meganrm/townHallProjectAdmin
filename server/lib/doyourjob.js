@@ -1,41 +1,55 @@
 const firebasedb = require('./setupFirebase').realtimedb;
+const firestore = require('./setupFirebase').firestore;
 const includes = require('lodash').includes;
 
 const zeropadding = require('../util').zeropadding;      
 const ErrorReport = require('./errorReporting');
 
 const WINNER_STATUS = 'Winner';
+const YEAR = 2020;
 
 const getMMs = () => {
-    return firebasedb.ref('mocData')
-        .once('value')
+    return firestore.collection('116th_congress')
+        .get()
         .then((snapshot) => {
-            let missingMembers = [];
-            snapshot.forEach((ele) => {
-                let moc = ele.val();
-                if (moc.missingMember === 'true'){
-                    moc.missingMember = true;
-                }
-                if (moc.missingMember === 'false') {
-                    moc.missingMember = false;
-                }
-                if (moc.next_election && Number(moc.next_election) !== 2018) {
-                    return;
-                }
-                if (moc.missingMember && moc.in_office && !moc.retiring) {
-                    const mmDistrict = {
-                        state: moc.state,
-                        district: moc.district,
-                        type: moc.type,
-                        mmName:  moc.displayName,
-                        mmParty: moc.party,
-                        state_rank: moc.state_rank || null,
-                    };
-                    missingMembers.push(mmDistrict);
-                }
-            });
-            return missingMembers;
-        });
+            const ids = [];
+            snapshot.forEach((ele) => ids.push(ele.id));
+            return Promise.all(ids.map(id => firestore.collection('office_people').doc(id).get() ))
+                .then(snapshot => {
+                    let missingMembers = [];    
+                    snapshot.forEach((ele) => {
+                        const moc = ele.data();
+                        if (!moc) {
+                            return;
+                        }
+                        const role = moc.roles[moc.current_office_index || 0];
+
+            
+                        if (role.next_election && Number(role.next_election) !== 2020) {
+                            return;
+                        }
+                        let rank;
+                        if (role.title && role.title.includes('1st Class')) {
+                            rank = 'junior';
+                        } else if (role.title && role.title.includes('2nd Class')) {
+                            rank = 'senior';
+                        }
+                        if (role.missing_member && moc.in_office) {
+                            const mmDistrict = {
+                                state: role.state,
+                                district: role.district,
+                                chamber: role.chamber,
+                                type: role.short_title.toLowerCase().replace('.', ''),
+                                mmName:  moc.displayName,
+                                mmParty: moc.party,
+                                state_rank: rank || null,
+                            };
+                            missingMembers.push(mmDistrict);
+                        }
+                    });
+                    return missingMembers;
+                });
+            });  
 };
 
 const writeOut = (mm, displayName, party, winner) => {
@@ -57,13 +71,13 @@ const writeOut = (mm, displayName, party, winner) => {
     }
     if (Number(mm.district)) {
         district = zeropadding(mm.district);
-        firebasedb.ref(`do_your_job_districts/${mm.state}-${district}`)
+        firebasedb.ref(`do_your_job_districts/${YEAR}/${mm.state}-${district}`)
             .once('value')
             .then(snapshot => {
                 updateObject.district = district;
                 if (!snapshot.exists()) {
                     const email = new ErrorReport(`new do your job district: ${mm.state}-${district} ${JSON.stringify(updateObject)}`, 'new do your job');
-                    firebasedb.ref(`do_your_job_districts/${mm.state}-${district}`)
+                    firebasedb.ref(`do_your_job_districts/${YEAR}/${mm.state}-${district}`)
                         .update(updateObject)
                         .then(() => email.sendEmail());
                 } else {
@@ -71,14 +85,14 @@ const writeOut = (mm, displayName, party, winner) => {
                 }
             });
     } else {
-        firebasedb.ref(`do_your_job_districts/${mm.state}-${mm.state_rank}`)
+        firebasedb.ref(`do_your_job_districts/${YEAR}/${mm.state}-${mm.state_rank}`)
             .once('value')
             .then(snapshot => {
                 updateObject.district = 'Senate';
 
                 if (!snapshot.exists() && mm.state_rank) {
                     const email = new ErrorReport(`new do your job Senate: ${JSON.stringify(updateObject)}`, 'new do your job');
-                    firebasedb.ref(`do_your_job_districts/${mm.state}-${mm.state_rank}`)
+                    firebasedb.ref(`do_your_job_districts/${YEAR}/${mm.state}-${mm.state_rank}`)
                         .update(updateObject)
                         .then(email.sendEmail);
                 } else {
@@ -93,7 +107,7 @@ const getPledgers = (mmArray) => {
 };
 
 const checkPledger = (mm) => {
-    return firebasedb.ref(`town_hall_pledges/${mm.state}`)
+    return firebasedb.ref(`town_hall_pledges/${YEAR}/${mm.state}`)
         .once('value')
         .then(pledgers => {
 
