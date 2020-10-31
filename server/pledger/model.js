@@ -9,7 +9,7 @@ class Pledger {
                 return {};
             }
             this.level = row.District.split('-').length > 1 ? 'state' : 'federal';
-            this.role = isNumber(row.District) ? 'Rep' : row.District.toLowerCase().includes('sen') ? 'Sen' : row.District;
+            this.role = isNumber(row.District) ? 'Rep' : row.District.toLowerCase() === 'sen' ? 'Sen' : row.District;
             this.chamber = row.District.toLowerCase().includes('sen') ? 'upper' : 'lower';
         } else {
             this.level = 'city';
