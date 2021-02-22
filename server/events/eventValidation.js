@@ -1,4 +1,5 @@
 const moment = require('moment-timezone');
+const isEmpty = require('lodash').isEmpty;
 
 var firebasedb = require('../lib/setupFirebase.js').realtimedb;
 var ErrorReport = require('../lib/errorReporting.js');
@@ -41,24 +42,7 @@ function timeValid(time) {
 
 function dateTimeValidation(townhall, path) {
     let update = {};
-    if (townhall.dateObj < 10000000000 && townhall.dateObj > 0) {
-        const newDateObj = townhall.dateObj * 1000;
-        console.log('bad date obj:', townhall.dateObj);
-        updateEvent(townhall.eventId, {
-            dateObj: newDateObj,
-        }, path);
-    }
 
-    if (townhall.dateObj === 0 && townhall.dateString && townhall.Time) {
-        const zone = townhall.zoneString || 'America/New_York';
-        const newDate = moment.tz(`${townhall.dateString}, ${townhall.Time}`, ['ddd, MMM D YYYY, h:mm A', 'ddd MMM D YYYY, h:mm A'], zone).format();
-
-        const newDateObj = moment(newDate).utc().valueOf();
-        console.log(townhall.dateString, townhall.Time, newDateObj, newDate);
-        updateEvent(townhall.eventId, {
-            dateObj: newDateObj,
-        }, path);
-    }
 
     // checking if date valid, set if true
     if (
@@ -127,7 +111,10 @@ function checkDistrictAndState(townhall, path) {
         update.stateName = stateMap[state];
         console.log('adding state', state, stateMap[state]);
     }
-    updateEvent(townhall.eventId, update, path);
+    if (!isEmpty(update)) {
+
+        updateEvent(townhall.eventId, update, path);
+    }
 }
 
 function checkMemberDisplayName(townHall, path) {

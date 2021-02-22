@@ -53,7 +53,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.1",
     "sendgrid": "^4.7.1",
-    "superagent": "^3.8.2",
+    "superagent": "^3.8.3",
     "twilio": "^2.11.1"
   },
   "devDependencies": {

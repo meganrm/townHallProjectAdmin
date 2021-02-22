@@ -25,10 +25,16 @@ function databaseListeners(states) {
         
         eventValidation.checkMemberDisplayName(townhall, FEDERAL_TOWNHALLS);
         metaDataUpdates.updateUserWhenEventApproved(townhall);
-        if (townhall.meetingType === 'Tele-Town Hall' && townhall.chamber === 'upper' && !townhall.address) {
+
+        if (townhall.meetingType === 'Tele-Town Hall' && townhall.chamber === 'upper' && townhall.lat === 0) {
+            console.log('getting lat lng for tele town hall')
             townhall.getLatandLog(townhall.stateName, FEDERAL_TOWNHALLS);
         }
 
+        if (!townhall.dateObj && townhall.dateString && townhall.Time && !townhall.zoneString && townhall.lat) {
+            console.log('needs time zone');
+            townhall.getTimeZone(townhall.dateString, townhall.Time, townhall.lat, townhall.lng, FEDERAL_TOWNHALLS)
+        }
         // UPDATING MOC DATA
         // if (townhall.govtrack_id && townhall.dateObj && townhall.zoneString) {
         //     firebasedb.ref(`mocData/${townhall.govtrack_id}/confirmed_events`)

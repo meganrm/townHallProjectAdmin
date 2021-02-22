@@ -1,5 +1,4 @@
 const eventListeners = require('./server/database-listeners');
-const mocInOfficeListener = require('./server/moc/in-office-listener');
 
 const express = require('express'),
     port = process.env.PORT || 3000,

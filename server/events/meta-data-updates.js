@@ -9,6 +9,7 @@ const {
     MOC_DATA_PATH,
     FEDERAL_LEVEL,
 } = constants;
+
 function getUserId(townHall) {
     if (townHall.userID && townHall.enteredBy.includes('@')) {
         return townHall.userID;
@@ -40,14 +41,14 @@ const saveMocUpdatedBy = (mocDataPath, townhall) => {
         }
         if (mocDataPath === MOC_DATA_PATH) {
             let congressNo;
-            if (moment(townhall.dateObj).isAfter('2019-01-02', 'YYYY-MM-DD')) {
-                console.log('no longer missing member 116th congress', townhall.displayName);
-                congressNo = '116';
+            if (moment(townhall.dateObj).isAfter('2021-01-04', 'YYYY-MM-DD')) {
+                console.log('no longer missing member 117th congress', townhall.displayName);
+                congressNo = '117';
             } else {
-                congressNo = '115'
+                congressNo = '116'
             }
             let queryRef;
-            if (townhall.officePersonId)  {
+            if (townhall.officePersonId) {
                 console.log('has id')
                 queryRef = firestore.collection('office_people').doc(townhall.officePersonId)
             } else {
@@ -55,12 +56,34 @@ const saveMocUpdatedBy = (mocDataPath, townhall) => {
                 queryRef = ref.where('displayName', '==', townhall.displayName)
             }
             queryRef.get().then((personSnap) => {
-                if(!personSnap.empty) {
-                    
+                if (personSnap.data) {
+                    let person = personSnap.data();
+                    let {
+                        roles
+                    } = person;
+                    if (!roles) {
+                        return Promise.resolve();
+                    }
+                    let newRoles = roles.map((role) => {
+                        if (role.congress == congressNo) {
+                            return {
+                                ...role,
+                                missing_member: false
+                            }
+                        }
+                        return role;
+                    })
+                    return firestore.collection('office_people').doc(person.id).update({
+                        roles: newRoles,
+                    })
+                } else if (!personSnap.empty) {
+
                     personSnap.forEach((ele) => {
 
                         let person = ele.data();
-                        let { roles } = person;
+                        let {
+                            roles
+                        } = person;
                         if (!roles) {
                             return Promise.resolve();
                         }
@@ -81,7 +104,7 @@ const saveMocUpdatedBy = (mocDataPath, townhall) => {
                     console.log('couldnt find', townhall.displayName)
                 }
             }).catch(console.log)
-            
+
         }
         // console.log('true town hall', townhall.eventId, townhall.displayName, moment(townhall.dateObj).format('MM/DD/YYYY'))
     }
@@ -107,7 +130,7 @@ const updateUserWhenEventArchived = townhall => {
 
 const updateUserWhenEventApproved = (townhall) => {
     const uid = getUserId(townhall);
-    if (!uid){
+    if (!uid) {
         return Promise.resolve();
     }
     const path = `users/${uid}`;
@@ -140,7 +163,7 @@ const updateUserWhenEventSubmitted = (townhall) => {
     return checkIfAlreadySet(metaData)
         .then(exists => {
             if (exists) {
-                return Promise.resolve(); 
+                return Promise.resolve();
             }
             const path = `users/${metaData.uid}`;
             const updates = {};

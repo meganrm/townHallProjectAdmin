@@ -1,4 +1,5 @@
 var https = require('https');
+const request = require('superagent');
 const moment = require('moment-timezone');
 const firebasedb = require('../lib/setupFirebase').realtimedb;
 
@@ -65,6 +66,53 @@ class TownHall {
             console.error('error requests', e, newTownHall.eventId);
         });
         req.end();
+    }
+    getTimeZone (dateString, startTime, lat, lng, path) {
+        const time = Date.parse(`${dateString} ${startTime}`) / 1000;
+        const loc = `${lat},${lng}`;
+        console.log(time, loc);
+        const newTownHall = this;
+        const url = `https://maps.googleapis.com/maps/api/timezone/json?location=${loc}&timestamp=${time}&key=AIzaSyBvs-ugD9uydf8lUBwiwvN4dB5X9lbgpLw`;
+        return request
+            .get(url)
+            .then((r) => {
+                const response = r.body;
+                if (!response.timeZoneName) {
+                    return Error('no timezone results', response);
+                }
+                const zoneString = response.timeZoneId;
+                const timezoneAb = response.timeZoneName.split(' ');
+                const timeZone = timezoneAb.reduce((acc, cur) => {
+                    acc += cur[0];
+                    return acc;
+                }, '');
+                const offset = response.rawOffset / 60 / 60 + response.dstOffset / 60 / 60;
+                let utcoffset;
+                if (Number(offset) === offset) {
+                    utcoffset = `UTC${offset}00`;
+                } else {
+                    const fract = ((offset * 10) % 10) / 10;
+                    const integr = Math.trunc(offset);
+                    let mins = (Math.abs(fract * 60)).toString();
+                    const zeros = '00';
+                    mins = zeros.slice(mins.length) + mins;
+                    utcoffset = `UTC${integr}${mins}`;
+                }
+
+                const dateObj = moment(`${dateString} ${startTime} ${utcoffset}`).utc().valueOf();
+                console.log(dateObj, moment(dateObj).format());
+                const update = {
+                    dateObj,
+                    timeZone,
+                    zoneString,
+                };
+                console.log(update)
+
+                TownHall.updateEvent(newTownHall.eventId, update, path);
+            
+            }).catch((error) => {
+                console.log(error);
+            });
     }
 }
 
