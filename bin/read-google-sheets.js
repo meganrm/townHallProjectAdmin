@@ -137,7 +137,6 @@ googleMethods
             year
           } = getYearAndState(columnNames, sheetName)
           if (year !== CURRENT_YEAR) {
-            console.log('not current year', year)
             return;
           }
           for (let i = 1; i < values.length; i++) {
