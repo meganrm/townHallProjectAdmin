@@ -64,7 +64,7 @@ const sleep = ms =>
     setTimeout(resolve, ms)
   })
 
-let writeToSheetPromises = []
+let promisesToSend = []
 
 let numberOfTimesFailed = 1
 
@@ -160,7 +160,7 @@ googleMethods
                   row[12] = newKey
                 }
               } else {
-                writeToSheetPromises.push(
+                promisesToSend.push(
                 firebasedb
                   .ref(`${ROOT_DATABASE_PATH}/${newPledger.year}/${newPledger.state}/${key}`)
                   .update(newPledger))
@@ -172,17 +172,21 @@ googleMethods
                   majorDimension: "ROWS",
                   values: [row]
                 }
+                promisesToSend.push(
+                  firebasedb
+                  .ref(`${ROOT_DATABASE_PATH}/${newPledger.year}/${newPledger.state}/${newKey}`)
+                  .set(newPledger))
                 updateDataForSheet.push(toUpdate)
               }
             }
           }
           if (updateDataForSheet.length) {
-            writeToSheetPromises.push(writeToSheet(updateDataForSheet))
+            promisesToSend.push(writeToSheet(updateDataForSheet))
 
           }
         })
       }).then(()=> {
-        Promise.all(writeToSheetPromises).then(() => {
+        Promise.all(promisesToSend).then(() => {
           console.log('wrote to sheet')
           process.exit(0)
         })
